@@ -1,0 +1,21 @@
+{
+    "name": "@bejibun/core",
+    "version": "0.1.0",
+    "description": "Core of Bejibun Framework",
+    "keywords": [
+        "bun",
+        "bun framework",
+        "core",
+        "bejibun",
+        "typescript"
+    ],
+    "type": "module",
+    "main": "index.ts",
+    "module": "index.ts",
+    "devDependencies": {
+        "@types/bun": "latest"
+    },
+    "peerDependencies": {
+        "typescript": "^5"
+    }
+}
