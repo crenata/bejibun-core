@@ -1,6 +1,6 @@
 {
     "name": "@bejibun/core",
-    "version": "0.1.18",
+    "version": "0.1.19",
     "description": "Core of Bejibun Framework",
     "keywords": [
         "bun",
@@ -28,7 +28,14 @@
             "import": "./dist/index.js",
             "types": "./dist/index.d.ts"
         },
-        "./*": "./dist/*"
+        "./enum": {
+            "import": "./dist/utils/Enum.js",
+            "types": "./dist/utils/Enum.d.ts"
+        },
+        "./str": {
+            "import": "./dist/utils/Str.js",
+            "types": "./dist/utils/Str.d.ts"
+        }
     },
     "files": [
         "dist"
