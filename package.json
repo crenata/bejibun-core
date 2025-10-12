@@ -9,13 +9,32 @@
         "bejibun",
         "typescript"
     ],
+    "homepage": "https://github.com/crenata/bejibun-core#readme",
+    "bugs": {
+        "url": "https://github.com/crenata/bejibun-core/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/crenata/bejibun-core.git"
+    },
+    "license": "MIT",
+    "author": "Havea Crenata <havea.crenata@gmail.com>",
     "type": "module",
     "main": "index.ts",
-    "module": "index.ts",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "dependencies": {
+        "bun-types": "^1.3.0",
+        "csstype": "^3.1.3",
+        "typescript": "^5.9.3",
+        "undici-types": "^7.14.0"
+    },
     "devDependencies": {
         "@types/bun": "latest"
     },
     "peerDependencies": {
         "typescript": "^5"
-    }
+    },
+    "module": "index.ts"
 }
