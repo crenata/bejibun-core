@@ -1,5 +1,5 @@
-import Enum from "@/utils/Enum";
-import Str from "@/utils/Str";
+import Enum from "@/facades/Enum";
+import Str from "@/facades/Str";
 import * as Utils from "@/utils/utils";
 
 export {Enum, Str};
