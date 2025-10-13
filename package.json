@@ -1,6 +1,6 @@
 {
     "name": "@bejibun/core",
-    "version": "0.1.21",
+    "version": "0.1.23",
     "description": "Core of Bejibun Framework",
     "keywords": [
         "bun",
@@ -59,7 +59,7 @@
     "scripts": {
         "clean": "rm -rf dist",
         "build": "bun run clean && tsc -p tsconfig.json && tsc-alias -p tsconfig.json && cp -rf src/types dist/types",
-        "publish": "bun run build && npm publish --access public"
+        "deploy": "bun run build && npm publish --access public"
     },
     "dependencies": {
         "@vinejs/vine": "^3.0.1",

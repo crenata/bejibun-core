@@ -26,14 +26,14 @@ const unique = async (value: unknown, options: Options, field: any): Promise<voi
 const uniqueRule = vine.createRule(unique, {isAsync: true});
 
 const registerUniqueMacro = (Type: any): void => {
-    Type.macro("unique", (tableOrOptions: typeof BaseModel | Options, column?: string, withTrashed?: boolean) => {
+    Type.macro("unique", function (this: typeof Type, tableOrOptions: typeof BaseModel | Options, column?: string, withTrashed?: boolean) {
         const isModel = typeof tableOrOptions === "function" && Object.prototype.isPrototypeOf.call(BaseModel, tableOrOptions);
 
         const options: Options = isModel
             ? {table: tableOrOptions as typeof BaseModel, column, withTrashed}
             : tableOrOptions as Options;
 
-        return (this as any).use(uniqueRule(options));
+        return this.use(uniqueRule(options));
     });
 };
 
