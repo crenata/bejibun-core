@@ -1,5 +1,10 @@
 import {isEmpty} from "@/utils/utils";
 
+export type EnumItem = {
+    name: string;
+    value: number;
+}
+
 export default class EnumBuilder {
     protected enums: any;
 

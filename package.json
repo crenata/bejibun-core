@@ -22,19 +22,35 @@
     "type": "module",
     "main": "./dist/index.js",
     "module": "./dist/index.js",
-    "types": "./dist/index.d.ts",
+    "types": "./types/index.d.ts",
     "exports": {
         ".": {
             "import": "./dist/index.js",
             "types": "./dist/index.d.ts"
         },
-        "./enum": {
-            "import": "./dist/facades/Enum.js",
-            "types": "./dist/facades/Enum.d.ts"
+        "./bootstrap": {
+            "import": "./dist/bootstrap.js",
+            "types": "./dist/bootstrap.d.ts"
         },
-        "./str": {
-            "import": "./dist/facades/Str.js",
-            "types": "./dist/facades/Str.d.ts"
+        "./bases/*": {
+            "import": "./dist/bases/*.js",
+            "types": "./dist/bases/*.d.ts"
+        },
+        "./enums/*": {
+            "import": "./dist/enums/*.js",
+            "types": "./dist/enums/*.d.ts"
+        },
+        "./exceptions/*": {
+            "import": "./dist/exceptions/*.js",
+            "types": "./dist/exceptions/*.d.ts"
+        },
+        "./facades/*": {
+            "import": "./dist/facades/*.js",
+            "types": "./dist/facades/*.d.ts"
+        },
+        "./types/*": {
+            "import": "./dist/types/*.js",
+            "types": "./dist/types/*.d.ts"
         }
     },
     "files": [
@@ -42,11 +58,20 @@
     ],
     "scripts": {
         "clean": "rm -rf dist",
-        "build": "bun run clean && tsc -p tsconfig.json && tsc-alias -p tsconfig.json"
+        "build": "bun run clean && tsc -p tsconfig.json && tsc-alias -p tsconfig.json && cp -rf src/types dist/types",
+        "publish": "bun run build && npm publish --access public"
     },
-    "dependencies": {},
+    "dependencies": {
+        "@vinejs/vine": "^3.0.1",
+        "chalk": "^5.6.2",
+        "knex": "^3.1.0",
+        "luxon": "^3.7.2",
+        "objection": "^3.1.5",
+        "pg": "^8.16.3"
+    },
     "devDependencies": {
         "@types/bun": "latest",
+        "@types/luxon": "^3.7.1",
         "tsc-alias": "^1.8.16",
         "typescript": "^5.9.3"
     },
