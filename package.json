@@ -1,36 +1,13 @@
 {
     "name": "@bejibun/core",
     "version": "0.1.33",
-    "description": "Core of Bejibun Framework",
-    "keywords": [
-        "bun",
-        "bun framework",
-        "core",
-        "bejibun",
-        "typescript"
-    ],
-    "homepage": "https://github.com/crenata/bejibun-core#readme",
-    "bugs": {
-        "url": "https://github.com/crenata/bejibun-core/issues"
-    },
+    "author": "Havea Crenata <havea.crenata@gmail.com>",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/crenata/bejibun-core.git"
     },
-    "license": "MIT",
-    "author": "Havea Crenata <havea.crenata@gmail.com>",
-    "type": "module",
     "main": "index.js",
     "module": "index.js",
-    "types": "index.d.ts",
-    "scripts": {
-        "alias": "bunx tsc-alias -p tsconfig.json",
-        "copy": "cp -rf src/types dist",
-        "rsync": "rsync -a dist/ ./",
-        "clean": "rm -rf dist",
-        "build": "bunx tsc -p tsconfig.json && bun run alias && bun run copy && bun run rsync && bun run clean",
-        "deploy": "bun run build && npm publish --access public"
-    },
     "dependencies": {
         "@vinejs/vine": "^3.0.1",
         "chalk": "^5.6.2",
@@ -44,7 +21,27 @@
         "@types/luxon": "^3.7.1",
         "tsc-alias": "^1.8.16"
     },
-    "peerDependencies": {
-        "typescript": "^5"
-    }
+    "bugs": {
+        "url": "https://github.com/crenata/bejibun-core/issues"
+    },
+    "description": "Core of Bejibun Framework",
+    "homepage": "https://github.com/crenata/bejibun-core#readme",
+    "keywords": [
+        "bun",
+        "bun framework",
+        "core",
+        "bejibun",
+        "typescript"
+    ],
+    "license": "MIT",
+    "scripts": {
+        "alias": "bunx tsc-alias -p tsconfig.json",
+        "copy": "cp -rf src/types dist",
+        "rsync": "rsync -a dist/ ./",
+        "clean": "rm -rf dist",
+        "build": "bunx tsc -p tsconfig.json && bun run alias && bun run copy && bun run rsync && bun run clean",
+        "deploy": "bun run build && npm publish --access public"
+    },
+    "type": "module",
+    "types": "index.d.ts"
 }
