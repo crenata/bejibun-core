@@ -1,6 +1,6 @@
 {
     "name": "@bejibun/core",
-    "version": "0.1.33",
+    "version": "0.1.35",
     "author": "Havea Crenata <havea.crenata@gmail.com>",
     "repository": {
         "type": "git",
@@ -39,7 +39,7 @@
         "copy": "cp -rf src/types dist",
         "rsync": "rsync -a dist/ ./",
         "clean": "rm -rf dist",
-        "build": "bunx tsc -p tsconfig.json && bun run alias && bun run copy && bun run rsync && bun run clean",
+        "build": "bunx tsc -p tsconfig.json && bun run copy && bun run alias && bun run rsync && bun run clean",
         "deploy": "bun run build && npm publish --access public"
     },
     "type": "module",

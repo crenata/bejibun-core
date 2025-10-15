@@ -1,4 +1,4 @@
-import type {HandlerType} from "@/types/router";
+import type {HandlerType} from "../types/router";
 
 export type MiddlewareType = (handler: HandlerType) => HandlerType;
 

@@ -1,5 +1,5 @@
-import type { IMiddleware } from "@/types/middleware";
-import type { HandlerType, RouterGroup } from "@/types/router";
+import type { IMiddleware } from "../types/middleware";
+import type { HandlerType, RouterGroup } from "../types/router";
 import RouterBuilder, { ResourceOptions } from "../builders/RouterBuilder";
 import HttpMethodEnum from "../enums/HttpMethodEnum";
 export default class Router {
