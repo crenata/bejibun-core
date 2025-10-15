@@ -1,6 +1,6 @@
 {
     "name": "@bejibun/core",
-    "version": "0.1.23",
+    "version": "0.1.33",
     "description": "Core of Bejibun Framework",
     "keywords": [
         "bun",
@@ -20,45 +20,15 @@
     "license": "MIT",
     "author": "Havea Crenata <havea.crenata@gmail.com>",
     "type": "module",
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "types": "./types/index.d.ts",
-    "exports": {
-        ".": {
-            "import": "./dist/index.js",
-            "types": "./dist/index.d.ts"
-        },
-        "./bootstrap": {
-            "import": "./dist/bootstrap.js",
-            "types": "./dist/bootstrap.d.ts"
-        },
-        "./bases/*": {
-            "import": "./dist/bases/*.js",
-            "types": "./dist/bases/*.d.ts"
-        },
-        "./enums/*": {
-            "import": "./dist/enums/*.js",
-            "types": "./dist/enums/*.d.ts"
-        },
-        "./exceptions/*": {
-            "import": "./dist/exceptions/*.js",
-            "types": "./dist/exceptions/*.d.ts"
-        },
-        "./facades/*": {
-            "import": "./dist/facades/*.js",
-            "types": "./dist/facades/*.d.ts"
-        },
-        "./types/*": {
-            "import": "./dist/types/*.js",
-            "types": "./dist/types/*.d.ts"
-        }
-    },
-    "files": [
-        "dist"
-    ],
+    "main": "index.js",
+    "module": "index.js",
+    "types": "index.d.ts",
     "scripts": {
+        "alias": "bunx tsc-alias -p tsconfig.json",
+        "copy": "cp -rf src/types dist",
+        "rsync": "rsync -a dist/ ./",
         "clean": "rm -rf dist",
-        "build": "bun run clean && tsc -p tsconfig.json && tsc-alias -p tsconfig.json && cp -rf src/types dist/types",
+        "build": "bunx tsc -p tsconfig.json && bun run alias && bun run copy && bun run rsync && bun run clean",
         "deploy": "bun run build && npm publish --access public"
     },
     "dependencies": {
@@ -72,8 +42,7 @@
     "devDependencies": {
         "@types/bun": "latest",
         "@types/luxon": "^3.7.1",
-        "tsc-alias": "^1.8.16",
-        "typescript": "^5.9.3"
+        "tsc-alias": "^1.8.16"
     },
     "peerDependencies": {
         "typescript": "^5"

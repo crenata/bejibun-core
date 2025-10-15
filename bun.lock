@@ -15,7 +15,6 @@
         "@types/bun": "latest",
         "@types/luxon": "^3.7.1",
         "tsc-alias": "^1.8.16",
-        "typescript": "^5.9.3",
       },
       "peerDependencies": {
         "typescript": "^5",
