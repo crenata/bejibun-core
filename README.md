@@ -26,3 +26,16 @@ bun ace install @bejibun/core
 
 ## Contributors
 - [Havea Crenata](mailto:havea.crenata@gmail.com)
+
+## ☕ Support / Donate
+
+If you find this project helpful and want to support it, you can donate via PayPal :
+
+[![Donate with PayPal](https://img.shields.io/badge/Donate-PayPal-blue.svg?logo=paypal)](https://paypal.me/hafiizhghulam)
+
+Or if you are prefer using crypto :
+
+| EVM | Solana |
+| --- | ------ |
+| <img src="https://github.com/crenata/bejibun/blob/master/public/images/EVM.png?raw=true" width="150" /> | <img src="https://github.com/crenata/bejibun/blob/master/public/images/SOL.png?raw=true" width="150" /> |
+| 0xdABe8750061410D35cE52EB2a418c8cB004788B3 | GAnoyvy9p3QFyxikWDh9hA3fmSk2uiPLNWyQ579cckMn |
