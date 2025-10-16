@@ -1,4 +1,4 @@
-import { defineValue } from "../utils/utils";
+import { defineValue } from "@bejibun/utils";
 export default class ValidatorException extends Error {
     code;
     constructor(message, code) {

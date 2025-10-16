@@ -1,7 +1,7 @@
+import { isEmpty } from "@bejibun/utils";
+import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
+import Enum from "@bejibun/utils/facades/Enum";
 import RouterBuilder from "../builders/RouterBuilder";
-import HttpMethodEnum from "../enums/HttpMethodEnum";
-import Enum from "../facades/Enum";
-import { isEmpty } from "../utils/utils";
 export default class Router {
     static prefix(basePath) {
         return new RouterBuilder().prefix(basePath);

@@ -1,9 +1,9 @@
+import {isEmpty} from "@bejibun/utils";
+import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
+import path from "path";
 import type {IMiddleware} from "@/types/middleware";
 import type {HandlerType, ResourceAction, RouterGroup} from "@/types/router";
-import HttpMethodEnum from "@/enums/HttpMethodEnum";
 import RouterInvalidException from "@/exceptions/RouterInvalidException";
-import {isEmpty} from "@/utils/utils";
-import path from "path";
 
 export interface ResourceOptions {
     only?: Array<ResourceAction>;

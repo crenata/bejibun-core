@@ -1,7 +1,7 @@
+import {defineValue, isEmpty} from "@bejibun/utils";
 import vine, {VineNumber, VineString} from "@vinejs/vine";
 import {QueryBuilderType} from "objection";
 import BaseModel from "@/bases/BaseModel";
-import {defineValue, isEmpty} from "@/utils/utils";
 
 type Options = {
     table: typeof BaseModel;

@@ -1,9 +1,9 @@
 import type {IMiddleware} from "@/types/middleware";
 import type {HandlerType, RouterGroup} from "@/types/router";
+import {isEmpty} from "@bejibun/utils";
+import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
+import Enum from "@bejibun/utils/facades/Enum";
 import RouterBuilder, {ResourceOptions} from "@/builders/RouterBuilder";
-import HttpMethodEnum from "@/enums/HttpMethodEnum";
-import Enum from "@/facades/Enum";
-import {isEmpty} from "@/utils/utils";
 
 export default class Router {
     public static prefix(basePath: string): RouterBuilder {

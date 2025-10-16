@@ -1,6 +1,6 @@
+import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import type { IMiddleware } from "../types/middleware";
 import type { HandlerType, ResourceAction, RouterGroup } from "../types/router";
-import HttpMethodEnum from "../enums/HttpMethodEnum";
 export interface ResourceOptions {
     only?: Array<ResourceAction>;
     except?: Array<ResourceAction>;

@@ -1,6 +1,6 @@
+import { defineValue, isNotEmpty } from "@bejibun/utils";
 import vine, { VineNumber, VineString } from "@vinejs/vine";
 import BaseModel from "../../bases/BaseModel";
-import { defineValue, isNotEmpty } from "../../utils/utils";
 const unique = async (value, options, field) => {
     if (!field.isValid)
         return;

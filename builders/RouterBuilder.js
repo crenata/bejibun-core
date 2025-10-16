@@ -1,6 +1,6 @@
-import RouterInvalidException from "../exceptions/RouterInvalidException";
-import { isEmpty } from "../utils/utils";
+import { isEmpty } from "@bejibun/utils";
 import path from "path";
+import RouterInvalidException from "../exceptions/RouterInvalidException";
 export default class RouterBuilder {
     basePath = "";
     middlewares = [];

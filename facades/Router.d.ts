@@ -1,7 +1,7 @@
 import type { IMiddleware } from "../types/middleware";
 import type { HandlerType, RouterGroup } from "../types/router";
+import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import RouterBuilder, { ResourceOptions } from "../builders/RouterBuilder";
-import HttpMethodEnum from "../enums/HttpMethodEnum";
 export default class Router {
     static prefix(basePath: string): RouterBuilder;
     static middleware(...middlewares: Array<IMiddleware>): RouterBuilder;
