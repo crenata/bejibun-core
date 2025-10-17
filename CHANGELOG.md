@@ -3,6 +3,21 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.39](https://github.com/crenata/bejibun-core/compare/v0.1.38...v0.1.39) - 2025-10-17
+
+### 🩹 Fixes
+- Fix load database configuration on bootstrap & base model
+
+### 📖 Changes
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+- Ghulje ([@ghulje](https://github.com/ghulje))
+
+**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.38](https://github.com/crenata/bejibun-core/compare/v0.1.36...v0.1.38) - 2025-10-17
 
 ### 🩹 Fixes

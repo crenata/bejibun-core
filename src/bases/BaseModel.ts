@@ -47,8 +47,6 @@ export default class BaseModel extends Model implements BaseColumns {
 
     public static QueryBuilder = BunQueryBuilder;
 
-    public static knex: (knex?: Knex) => Knex;
-
     declare id: number | bigint;
     declare created_at: DateTime | string;
     declare updated_at: DateTime | string;
