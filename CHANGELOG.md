@@ -3,6 +3,30 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.38](https://github.com/crenata/bejibun-core/compare/v0.1.36...v0.1.38) - 2025-10-17
+
+### 🩹 Fixes
+
+### 📖 Changes
+What's New :
+- Adding `ace` for commands
+- Adding commands directory structure
+
+Available Commands :
+- `db:seed` Run database seeders
+- `migrate:fresh` Rollback all migrations and re-run migrations
+- `migrate:latest` Run latest migration
+- `migrate:rollback` Rollback the latest migrations
+- `migrate:status` List migrations status
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+- Ghulje ([@ghulje](https://github.com/ghulje))
+
+**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.36](https://github.com/crenata/bejibun-core/compare/v0.1.35...v0.1.36) - 2025-10-14
 
 ### 🩹 Fixes

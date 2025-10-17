@@ -23,6 +23,7 @@ export default class BaseModel extends Model {
     static idColumn;
     static deletedColumn = "deleted_at";
     static QueryBuilder = BunQueryBuilder;
+    static knex;
     static get namespace() {
         const filePath = fileURLToPath(import.meta.url);
         const appRoot = process.cwd();

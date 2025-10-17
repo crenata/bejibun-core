@@ -24,6 +24,51 @@ bun add @bejibun/core
 bun ace install @bejibun/core
 ```
 
+### Ace
+Any commands for development
+
+```bash
+Usage: ace [options] [command]
+
+Ace for your commander
+Author: Havea Crenata <havea.crenata@gmail.com>
+
+Options:
+  -v, --version            Show the current version
+  -h, --help               display help for command
+
+Commands:
+  db:seed                  Run database seeders
+  migrate:fresh [options]  Rollback all migrations and re-run migrations
+  migrate:latest           Run latest migration
+  migrate:rollback         Rollback the latest migrations
+  migrate:status           List migrations status
+  help [command]           display help for command
+
+Examples:
+  $ bun ace --help
+  $ bun ace --version
+  $ bun ace migrate:latest
+```
+
+### Available Commands
+To see list of available commands, run.
+
+```bash
+bun ace
+bun ace help
+bun ace --h
+bun ace --help
+```
+
+To see help of specific command, run :
+
+```bash
+bun ace help migrate:latest
+bun ace migrate:latest --h
+bun ace migrate:latest --help
+```
+
 ## Contributors
 - [Havea Crenata](mailto:havea.crenata@gmail.com)
 

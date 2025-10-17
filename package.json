@@ -1,6 +1,6 @@
 {
     "name": "@bejibun/core",
-    "version": "0.1.37",
+    "version": "0.1.38",
     "author": "Havea Crenata <havea.crenata@gmail.com>",
     "repository": {
         "type": "git",
@@ -11,12 +11,13 @@
     "dependencies": {
         "@bejibun/cors": "^0.1.0",
         "@bejibun/logger": "^0.1.13",
-        "@bejibun/utils": "^0.1.0",
+        "@bejibun/utils": "^0.1.1",
         "@vinejs/vine": "^3.0.1",
-        "chalk": "^5.6.2",
+        "commander": "^14.0.1",
         "knex": "^3.1.0",
         "luxon": "^3.7.2",
         "objection": "^3.1.5",
+        "ora": "^9.0.0",
         "pg": "^8.16.3"
     },
     "devDependencies": {

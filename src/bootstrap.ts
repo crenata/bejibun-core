@@ -1,13 +1,4 @@
 import BaseModel from "@/bases/BaseModel";
-import fs from "fs";
-import knex from "knex";
-import path from "path";
+import {initDatabase} from "@/config/database";
 
-const configPath = path.resolve(process.cwd(), "config/database.ts");
-
-let config: any;
-
-if (fs.existsSync(configPath)) config = require(configPath).default;
-else config = require("@/config/database").default;
-
-BaseModel.knex(knex(config));
+BaseModel.knex(initDatabase());

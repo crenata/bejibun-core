@@ -1,3 +1,4 @@
+import type {Knex} from "knex";
 import {defineValue, isEmpty} from "@bejibun/utils";
 import Str from "@bejibun/utils/facades/Str";
 import {DateTime} from "luxon";
@@ -45,6 +46,8 @@ export default class BaseModel extends Model implements BaseColumns {
     public static deletedColumn: string = "deleted_at";
 
     public static QueryBuilder = BunQueryBuilder;
+
+    public static knex: (knex?: Knex) => Knex;
 
     declare id: number | bigint;
     declare created_at: DateTime | string;

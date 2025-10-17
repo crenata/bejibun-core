@@ -1,3 +1,4 @@
+import type { Knex } from "knex";
 import { DateTime } from "luxon";
 import { Constructor, Model, ModelOptions, PartialModelObject, QueryBuilder, QueryBuilderType, QueryContext, TransactionOrKnex } from "objection";
 import SoftDeletes from "../facades/SoftDeletes";
@@ -15,6 +16,7 @@ export default class BaseModel extends Model implements BaseColumns {
     static idColumn: string;
     static deletedColumn: string;
     static QueryBuilder: typeof BunQueryBuilder;
+    static knex: (knex?: Knex) => Knex;
     id: number | bigint;
     created_at: DateTime | string;
     updated_at: DateTime | string;
