@@ -10,7 +10,7 @@
     "module": "index.js",
     "dependencies": {
         "@bejibun/cors": "^0.1.1",
-        "@bejibun/logger": "^0.1.14",
+        "@bejibun/logger": "^0.1.15",
         "@bejibun/utils": "^0.1.1",
         "@vinejs/vine": "^3.0.1",
         "commander": "^14.0.1",
