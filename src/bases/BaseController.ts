@@ -1,6 +1,6 @@
+import type {BunRequest} from "bun";
 import {defineValue, isEmpty, isNotEmpty} from "@bejibun/utils";
 import {errors, VineValidator} from "@vinejs/vine";
-import {BunRequest} from "bun";
 import {DateTime} from "luxon";
 import ValidatorException from "@/exceptions/ValidatorException";
 import Response from "@/facades/Response";

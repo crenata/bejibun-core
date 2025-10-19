@@ -1,5 +1,7 @@
+import type {EnumItem} from "@bejibun/utils/facades/Enum";
 import {isEmpty} from "@bejibun/utils";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
+import Enum from "@bejibun/utils/facades/Enum";
 import path from "path";
 import type {IMiddleware} from "@/types/middleware";
 import type {HandlerType, ResourceAction, RouterGroup} from "@/types/router";
@@ -13,6 +15,7 @@ export interface ResourceOptions {
 export default class RouterBuilder {
     private basePath: string = "";
     private middlewares: Array<IMiddleware> = [];
+    private baseNamespace: string = "app/controllers";
 
     public prefix(basePath: string): RouterBuilder {
         this.basePath = basePath;
@@ -22,6 +25,12 @@ export default class RouterBuilder {
 
     public middleware(...middlewares: Array<IMiddleware>): RouterBuilder {
         this.middlewares.push(...middlewares);
+
+        return this;
+    }
+
+    public namespace(baseNamespace: string): RouterBuilder {
+        this.baseNamespace = baseNamespace;
 
         return this;
     }
@@ -109,11 +118,31 @@ export default class RouterBuilder {
         };
     }
 
+    public match(methods: Array<HttpMethodEnum>, path: string, handler: string | HandlerType): RouterGroup {
+        const routeMap: RouterGroup = {};
+
+        for (const method of methods) {
+            const single = this.buildSingle(method, path, handler);
+            const fullPath = Object.keys(single)[0];
+            const handlers = single[fullPath];
+
+            if (isEmpty(routeMap[fullPath])) routeMap[fullPath] = {};
+
+            Object.assign(routeMap[fullPath], handlers);
+        }
+
+        return routeMap;
+    }
+
+    public any(path: string, handler: string | HandlerType): RouterGroup {
+        return this.match(Enum.setEnums(HttpMethodEnum).toArray().map((value: EnumItem) => value.value), path, handler);
+    }
+
     private joinPaths(base: string, path: string): string {
         base = base.replace(/\/+$/, "");
         path = path.replace(/^\/+/, "");
 
-        return "/" + [base, path].filter(Boolean).join("/");
+        return `/${[base, path].filter(Boolean).join("/")}`;
     }
 
     private resolveControllerString(definition: string): HandlerType {
@@ -123,7 +152,7 @@ export default class RouterBuilder {
             throw new RouterInvalidException(`[RouterInvalidException]: Invalid router controller definition: ${definition}.`);
         }
 
-        const controllerPath = path.resolve(process.cwd(), "app/controllers");
+        const controllerPath = path.resolve(process.cwd(), this.baseNamespace);
         const location = `${controllerPath}/${controllerName}`;
 
         let ControllerClass: any;

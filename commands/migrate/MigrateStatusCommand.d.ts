@@ -1,4 +1,4 @@
-export default class MigrateFreshCommand {
+export default class MigrateStatusCommand {
     /**
      * The name and signature of the console command.
      *
@@ -14,9 +14,9 @@ export default class MigrateFreshCommand {
     /**
      * The options or optional flag of the console command.
      *
-     * @var $options Array<Array<string>>
+     * @var $options Array<Array<any>>
      */
-    protected $options: Array<Array<string>>;
+    protected $options: Array<Array<any>>;
     /**
      * The arguments of the console command.
      *

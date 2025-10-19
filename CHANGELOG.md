@@ -3,6 +3,25 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.40](https://github.com/crenata/bejibun-core/compare/v0.1.39...v0.1.40) - 2025-10-19
+
+### 🩹 Fixes
+- Fix router any invalid route structure
+
+### 📖 Changes
+What's New :
+- Support commands from your root bejibun framework
+- Support nested directory commands
+- Adding router namespace
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+- Ghulje ([@ghulje](https://github.com/ghulje))
+
+**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.39](https://github.com/crenata/bejibun-core/compare/v0.1.38...v0.1.39) - 2025-10-17
 
 ### 🩹 Fixes

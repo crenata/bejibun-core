@@ -1,4 +1,4 @@
-import {BunRequest} from "bun";
+import type {BunRequest} from "bun";
 
 export type HandlerType = (request: BunRequest) => Promise<Response>;
 export type RouterGroup = Record<string, Record<string, HandlerType>>;

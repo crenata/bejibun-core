@@ -1,8 +1,6 @@
 import type {IMiddleware} from "@/types/middleware";
 import type {HandlerType, RouterGroup} from "@/types/router";
-import {isEmpty} from "@bejibun/utils";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
-import Enum from "@bejibun/utils/facades/Enum";
 import RouterBuilder, {ResourceOptions} from "@/builders/RouterBuilder";
 
 export default class Router {
@@ -12,6 +10,10 @@ export default class Router {
 
     public static middleware(...middlewares: Array<IMiddleware>): RouterBuilder {
         return new RouterBuilder().middleware(...middlewares);
+    }
+
+    public static namespace(baseNamespace: string): RouterBuilder {
+        return new RouterBuilder().namespace(baseNamespace);
     }
 
     public static resources(
@@ -67,23 +69,10 @@ export default class Router {
     }
 
     public static match(methods: Array<HttpMethodEnum>, path: string, handler: string | HandlerType): RouterGroup {
-        const builder = new RouterBuilder();
-        const routeMap: RouterGroup = {};
-
-        for (const method of methods) {
-            const single = builder.buildSingle(method, path, handler);
-            const fullPath = Object.keys(single)[0];
-            const handlers = single[fullPath];
-
-            if (isEmpty(routeMap[fullPath])) routeMap[fullPath] = {};
-
-            Object.assign(routeMap[fullPath], handlers);
-        }
-
-        return routeMap;
+        return new RouterBuilder().match(methods, path, handler);
     }
 
     public static any(path: string, handler: string | HandlerType): RouterGroup {
-        return this.match(Enum.setEnums(HttpMethodEnum).toArray(), path, handler);
+        return new RouterBuilder().any(path, handler);
     }
 }

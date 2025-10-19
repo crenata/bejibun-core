@@ -1,6 +1,6 @@
+import App from "@bejibun/app";
 import fs from "fs";
 import knex from "knex";
-import path from "path";
 const config = {
     client: "pg",
     connection: {
@@ -25,7 +25,7 @@ const config = {
     }
 };
 export const initDatabase = () => {
-    const configPath = path.resolve(process.cwd(), "config/database.ts");
+    const configPath = App.configPath("database.ts");
     let _config;
     if (fs.existsSync(configPath))
         _config = require(configPath).default;

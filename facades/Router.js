@@ -1,6 +1,4 @@
-import { isEmpty } from "@bejibun/utils";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
-import Enum from "@bejibun/utils/facades/Enum";
 import RouterBuilder from "../builders/RouterBuilder";
 export default class Router {
     static prefix(basePath) {
@@ -8,6 +6,9 @@ export default class Router {
     }
     static middleware(...middlewares) {
         return new RouterBuilder().middleware(...middlewares);
+    }
+    static namespace(baseNamespace) {
+        return new RouterBuilder().namespace(baseNamespace);
     }
     static resources(controller, options) {
         return new RouterBuilder().resources(controller, options);
@@ -48,19 +49,9 @@ export default class Router {
         return new RouterBuilder().buildSingle(HttpMethodEnum.Trace, path, handler);
     }
     static match(methods, path, handler) {
-        const builder = new RouterBuilder();
-        const routeMap = {};
-        for (const method of methods) {
-            const single = builder.buildSingle(method, path, handler);
-            const fullPath = Object.keys(single)[0];
-            const handlers = single[fullPath];
-            if (isEmpty(routeMap[fullPath]))
-                routeMap[fullPath] = {};
-            Object.assign(routeMap[fullPath], handlers);
-        }
-        return routeMap;
+        return new RouterBuilder().match(methods, path, handler);
     }
     static any(path, handler) {
-        return this.match(Enum.setEnums(HttpMethodEnum).toArray(), path, handler);
+        return new RouterBuilder().any(path, handler);
     }
 }

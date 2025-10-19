@@ -1,6 +1,7 @@
+import Logger from "@bejibun/logger";
 import Chalk from "@bejibun/logger/facades/Chalk";
 import ora from "ora";
-import { initDatabase } from "../config/database";
+import { initDatabase } from "../../config/database";
 export default class MigrateStatusCommand {
     /**
      * The name and signature of the console command.
@@ -17,10 +18,10 @@ export default class MigrateStatusCommand {
     /**
      * The options or optional flag of the console command.
      *
-     * @var $options Array<Array<string>>
+     * @var $options Array<Array<any>>
      */
     $options = [
-        ["-f, --force", "Skip command confirmation."]
+        ["-f, --force", "Skip command confirmation"]
     ];
     /**
      * The arguments of the console command.
@@ -40,7 +41,7 @@ export default class MigrateStatusCommand {
                 completed.forEach((migration) => spinner.succeed(migration.name));
             else
                 spinner.succeed("No migrations were completed.");
-            console.log();
+            Logger.empty();
             spinner.succeed("Pending Migrations :");
             if (pending.length > 0)
                 pending.forEach((migration) => spinner.succeed(migration.file));

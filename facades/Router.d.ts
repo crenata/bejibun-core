@@ -5,6 +5,7 @@ import RouterBuilder, { ResourceOptions } from "../builders/RouterBuilder";
 export default class Router {
     static prefix(basePath: string): RouterBuilder;
     static middleware(...middlewares: Array<IMiddleware>): RouterBuilder;
+    static namespace(baseNamespace: string): RouterBuilder;
     static resources(controller: Record<string, HandlerType>, options?: ResourceOptions): RouterGroup;
     static group(routes: RouterGroup, prefix?: string, middlewares?: Array<IMiddleware>): RouterGroup;
     static connect(path: string, handler: string | HandlerType): RouterGroup;

@@ -1,7 +1,7 @@
 import type {Knex} from "knex";
+import App from "@bejibun/app";
 import fs from "fs";
 import knex from "knex";
-import path from "path";
 
 const config: Knex.Config = {
     client: "pg",
@@ -28,7 +28,7 @@ const config: Knex.Config = {
 };
 
 export const initDatabase = (): Knex => {
-    const configPath = path.resolve(process.cwd(), "config/database.ts");
+    const configPath = App.configPath("database.ts");
 
     let _config: any;
 

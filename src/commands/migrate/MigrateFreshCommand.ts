@@ -1,30 +1,31 @@
+import Logger from "@bejibun/logger";
 import Chalk from "@bejibun/logger/facades/Chalk";
 import {ask, isNotEmpty} from "@bejibun/utils";
 import ora from "ora";
 import {initDatabase} from "@/config/database";
 
-export default class MigrateRollbackCommand {
+export default class MigrateFreshCommand {
     /**
      * The name and signature of the console command.
      *
      * @var $signature string
      */
-    protected $signature: string = "migrate:rollback";
+    protected $signature: string = "migrate:fresh";
 
     /**
      * The console command description.
      *
      * @var $description string
      */
-    protected $description: string = "Rollback the latest migrations";
+    protected $description: string = "Rollback all migrations and re-run migrations";
 
     /**
      * The options or optional flag of the console command.
      *
-     * @var $options Array<Array<string>>
+     * @var $options Array<Array<any>>
      */
-    protected $options: Array<Array<string>> = [
-        ["-f, --force", "Skip command confirmation."]
+    protected $options: Array<Array<any>> = [
+        ["-f, --force", "Skip command confirmation"]
     ];
 
     /**
@@ -41,28 +42,32 @@ export default class MigrateRollbackCommand {
 
         let confirm = "Y";
         if (!bypass) confirm = await ask(
-            Chalk.setValue("This will ROLLBACK latest migrations. Are you want to continue? (Y/N): ")
+            Chalk.setValue("This will DROP ALL tables and re-run ALL migrations. Are you want to continue? (Y/N): ")
                 .inline()
                 .error()
                 .show()
         );
 
         if (confirm.toUpperCase() === "Y") {
-            if (!bypass) console.log();
+            if (!bypass) Logger.empty();
 
             const spinner = ora(
                 Chalk.setValue("Rollback...")
                     .info()
                     .show()
             ).start();
+
             try {
-                const [batchNo, logs] = await database.migrate.rollback();
+                await database.migrate.rollback({}, true);
+                spinner.succeed("Rolled back all migrations");
+
+                const [batchNo, logs] = await database.migrate.latest();
                 spinner.succeed(`Batch ${batchNo} finished`);
 
                 if (logs.length > 0) logs.forEach((migration: string) => spinner.succeed(migration));
-                else spinner.succeed("No migrations were rolled back.");
+                else spinner.succeed("No migrations were run.");
             } catch (error: any) {
-                spinner.fail(`Rollback failed : ${error.message}`);
+                spinner.fail(`Migration failed : ${error.message}`);
             } finally {
                 await database.destroy();
                 spinner.stop();

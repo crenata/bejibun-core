@@ -1,15 +1,22 @@
 import { isEmpty } from "@bejibun/utils";
+import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
+import Enum from "@bejibun/utils/facades/Enum";
 import path from "path";
 import RouterInvalidException from "../exceptions/RouterInvalidException";
 export default class RouterBuilder {
     basePath = "";
     middlewares = [];
+    baseNamespace = "app/controllers";
     prefix(basePath) {
         this.basePath = basePath;
         return this;
     }
     middleware(...middlewares) {
         this.middlewares.push(...middlewares);
+        return this;
+    }
+    namespace(baseNamespace) {
+        this.baseNamespace = baseNamespace;
         return this;
     }
     group(routes) {
@@ -77,17 +84,32 @@ export default class RouterBuilder {
             }
         };
     }
+    match(methods, path, handler) {
+        const routeMap = {};
+        for (const method of methods) {
+            const single = this.buildSingle(method, path, handler);
+            const fullPath = Object.keys(single)[0];
+            const handlers = single[fullPath];
+            if (isEmpty(routeMap[fullPath]))
+                routeMap[fullPath] = {};
+            Object.assign(routeMap[fullPath], handlers);
+        }
+        return routeMap;
+    }
+    any(path, handler) {
+        return this.match(Enum.setEnums(HttpMethodEnum).toArray().map((value) => value.value), path, handler);
+    }
     joinPaths(base, path) {
         base = base.replace(/\/+$/, "");
         path = path.replace(/^\/+/, "");
-        return "/" + [base, path].filter(Boolean).join("/");
+        return `/${[base, path].filter(Boolean).join("/")}`;
     }
     resolveControllerString(definition) {
         const [controllerName, methodName] = definition.split("@");
         if (isEmpty(controllerName) || isEmpty(methodName)) {
             throw new RouterInvalidException(`[RouterInvalidException]: Invalid router controller definition: ${definition}.`);
         }
-        const controllerPath = path.resolve(process.cwd(), "app/controllers");
+        const controllerPath = path.resolve(process.cwd(), this.baseNamespace);
         const location = `${controllerPath}/${controllerName}`;
         let ControllerClass;
         try {

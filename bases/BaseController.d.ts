@@ -1,5 +1,5 @@
+import type { BunRequest } from "bun";
 import { VineValidator } from "@vinejs/vine";
-import { BunRequest } from "bun";
 import Response from "../facades/Response";
 export default class BaseController {
     parse(request: BunRequest): Promise<Record<string, any>>;

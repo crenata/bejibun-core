@@ -1,23 +1,24 @@
 import Chalk from "@bejibun/logger/facades/Chalk";
 import ora from "ora";
-import { initDatabase } from "../config/database";
-export default class MigrateLatestCommand {
+import path from "path";
+import { initDatabase } from "../../config/database";
+export default class DbSeedCommand {
     /**
      * The name and signature of the console command.
      *
      * @var $signature string
      */
-    $signature = "migrate:latest";
+    $signature = "db:seed";
     /**
      * The console command description.
      *
      * @var $description string
      */
-    $description = "Run latest migration";
+    $description = "Run database seeders";
     /**
      * The options or optional flag of the console command.
      *
-     * @var $options Array<Array<string>>
+     * @var $options Array<Array<any>>
      */
     $options = [];
     /**
@@ -28,19 +29,19 @@ export default class MigrateLatestCommand {
     $arguments = [];
     async handle(options, args) {
         const database = initDatabase();
-        const spinner = ora(Chalk.setValue("Migrating...")
+        const spinner = ora(Chalk.setValue("Seeding...")
             .info()
             .show()).start();
         try {
-            const [batchNo, logs] = await database.migrate.latest();
-            spinner.succeed(`Batch ${batchNo} finished`);
+            const logs = (await database.seed.run()).flat();
+            spinner.succeed("Seeding finished");
             if (logs.length > 0)
-                logs.forEach((migration) => spinner.succeed(migration));
+                logs.forEach((seeder) => spinner.succeed(path.basename(seeder)));
             else
-                spinner.succeed("No migrations were run.");
+                spinner.succeed("No seeders were run.");
         }
         catch (error) {
-            spinner.fail(`Migration failed : ${error.message}`);
+            spinner.fail(`Seeding failed : ${error.message}`);
         }
         finally {
             await database.destroy();
