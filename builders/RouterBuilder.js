@@ -111,7 +111,7 @@ export default class RouterBuilder {
             throw new RouterInvalidException(`Invalid router controller definition: ${definition}.`);
         }
         const controllerPath = path.resolve(App.rootPath(), this.baseNamespace);
-        const location = Bun.resolveSync(`${controllerName}.ts`, controllerPath);
+        const location = Bun.resolveSync(`./${controllerName}.ts`, controllerPath);
         let ControllerClass;
         try {
             ControllerClass = require(location).default;

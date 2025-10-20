@@ -154,7 +154,7 @@ export default class RouterBuilder {
         }
 
         const controllerPath = path.resolve(App.rootPath(), this.baseNamespace);
-        const location = Bun.resolveSync(`${controllerName}.ts`, controllerPath);
+        const location = Bun.resolveSync(`./${controllerName}.ts`, controllerPath);
 
         let ControllerClass: any;
 
