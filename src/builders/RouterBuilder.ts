@@ -1,4 +1,5 @@
 import type {EnumItem} from "@bejibun/utils/facades/Enum";
+import App from "@bejibun/app";
 import {isEmpty} from "@bejibun/utils";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import Enum from "@bejibun/utils/facades/Enum";
@@ -149,11 +150,11 @@ export default class RouterBuilder {
         const [controllerName, methodName] = definition.split("@");
 
         if (isEmpty(controllerName) || isEmpty(methodName)) {
-            throw new RouterInvalidException(`[RouterInvalidException]: Invalid router controller definition: ${definition}.`);
+            throw new RouterInvalidException(`Invalid router controller definition: ${definition}.`);
         }
 
-        const controllerPath = path.resolve(process.cwd(), this.baseNamespace);
-        const location = `${controllerPath}/${controllerName}`;
+        const controllerPath = path.resolve(App.rootPath(), this.baseNamespace);
+        const location = Bun.resolveSync(`${controllerName}.ts`, controllerPath);
 
         let ControllerClass: any;
 
@@ -166,7 +167,7 @@ export default class RouterBuilder {
                 const instance = new ESMController();
 
                 if (typeof instance[methodName] !== "function") {
-                    throw new RouterInvalidException(`[RouterInvalidException]: Method "${methodName}" not found in ${controllerName}.`);
+                    throw new RouterInvalidException(`Method "${methodName}" not found in ${controllerName}.`);
                 }
 
                 return instance[methodName](...args);
@@ -174,13 +175,13 @@ export default class RouterBuilder {
         }
 
         if (isEmpty(ControllerClass)) {
-            throw new RouterInvalidException(`[RouterInvalidException]: Controller not found: ${controllerName}.`);
+            throw new RouterInvalidException(`Controller not found: ${controllerName}.`);
         }
 
         const instance = new ControllerClass();
 
         if (typeof instance[methodName] !== "function") {
-            throw new RouterInvalidException(`[RouterInvalidException]: Method "${methodName}" not found in ${controllerName}.`);
+            throw new RouterInvalidException(`Method "${methodName}" not found in ${controllerName}.`);
         }
 
         return instance[methodName].bind(instance);

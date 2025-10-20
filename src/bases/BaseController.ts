@@ -1,4 +1,3 @@
-import type {BunRequest} from "bun";
 import {defineValue, isEmpty, isNotEmpty} from "@bejibun/utils";
 import {errors, VineValidator} from "@vinejs/vine";
 import {DateTime} from "luxon";
@@ -6,7 +5,7 @@ import ValidatorException from "@/exceptions/ValidatorException";
 import Response from "@/facades/Response";
 
 export default class BaseController {
-    public async parse(request: BunRequest): Promise<Record<string, any>> {
+    public async parse(request: Bun.BunRequest): Promise<Record<string, any>> {
         const contentType = defineValue(request.headers.get("content-type"), "");
         const formData = new FormData();
 

@@ -1,4 +1,4 @@
-import type {Knex} from "knex";
+import App from "@bejibun/app";
 import {defineValue, isEmpty} from "@bejibun/utils";
 import Str from "@bejibun/utils/facades/Str";
 import {DateTime} from "luxon";
@@ -54,8 +54,7 @@ export default class BaseModel extends Model implements BaseColumns {
 
     public static get namespace(): string {
         const filePath = fileURLToPath(import.meta.url);
-        const appRoot = process.cwd();
-        const rel = relative(appRoot, filePath);
+        const rel = relative(App.rootPath(), filePath);
         const withoutExt = rel.replace(/\.[tj]s$/, "");
         const namespaces = withoutExt.split(sep);
         namespaces.pop();
@@ -101,7 +100,7 @@ export default class BaseModel extends Model implements BaseColumns {
     public static async findOrFail<T extends Model>(this: T, id: bigint | number | string): Promise<T> {
         const result = await (this as any).find(id);
 
-        if (isEmpty(result)) throw new ModelNotFoundException(`[ModelNotFoundException]: No query results for model [${(this as any).namespace}] [${id}].`);
+        if (isEmpty(result)) throw new ModelNotFoundException(`No query results for model [${(this as any).namespace}] [${id}].`);
 
         return result;
     }

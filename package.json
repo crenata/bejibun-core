@@ -1,6 +1,6 @@
 {
     "name": "@bejibun/core",
-    "version": "0.1.40",
+    "version": "0.1.41",
     "author": "Havea Crenata <havea.crenata@gmail.com>",
     "repository": {
         "type": "git",
@@ -9,10 +9,10 @@
     "main": "index.js",
     "module": "index.js",
     "dependencies": {
-        "@bejibun/app": "^0.1.11",
+        "@bejibun/app": "^0.1.12",
         "@bejibun/cors": "^0.1.11",
-        "@bejibun/logger": "^0.1.16",
-        "@bejibun/utils": "^0.1.13",
+        "@bejibun/logger": "^0.1.18",
+        "@bejibun/utils": "^0.1.14",
         "@vinejs/vine": "^3.0.1",
         "commander": "^14.0.1",
         "knex": "^3.1.0",
@@ -45,7 +45,7 @@
         "rsync": "rsync -a dist/ ./",
         "clean": "rm -rf dist",
         "build": "bunx tsc -p tsconfig.json && bun run copy && bun run alias && bun run rsync && bun run clean",
-        "deploy": "bun run build && npm publish --access public"
+        "deploy": "bun run build && bun publish --access public"
     },
     "type": "module",
     "types": "index.d.ts"

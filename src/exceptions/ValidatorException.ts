@@ -1,3 +1,4 @@
+import Logger from "@bejibun/logger";
 import {defineValue} from "@bejibun/utils";
 
 export default class ValidatorException extends Error {
@@ -7,6 +8,8 @@ export default class ValidatorException extends Error {
         super(message);
         this.name = "ValidatorException";
         this.code = defineValue(code, 422);
+
+        Logger.setContext(this.name).error(this.message).trace(this.stack);
 
         if (Error.captureStackTrace) {
             Error.captureStackTrace(this, ValidatorException);

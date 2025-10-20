@@ -3,6 +3,23 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.41](https://github.com/crenata/bejibun-core/compare/v0.1.40...v0.1.41) - 2025-10-20
+
+### 🩹 Fixes
+
+### 📖 Changes
+Chore :
+- Refactor some codes to bun native
+- Adding log when throwing exceptions
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+- Ghulje ([@ghulje](https://github.com/ghulje))
+
+**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.40](https://github.com/crenata/bejibun-core/compare/v0.1.39...v0.1.40) - 2025-10-19
 
 ### 🩹 Fixes

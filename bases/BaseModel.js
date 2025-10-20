@@ -1,3 +1,4 @@
+import App from "@bejibun/app";
 import { defineValue, isEmpty } from "@bejibun/utils";
 import Str from "@bejibun/utils/facades/Str";
 import { DateTime } from "luxon";
@@ -25,8 +26,7 @@ export default class BaseModel extends Model {
     static QueryBuilder = BunQueryBuilder;
     static get namespace() {
         const filePath = fileURLToPath(import.meta.url);
-        const appRoot = process.cwd();
-        const rel = relative(appRoot, filePath);
+        const rel = relative(App.rootPath(), filePath);
         const withoutExt = rel.replace(/\.[tj]s$/, "");
         const namespaces = withoutExt.split(sep);
         namespaces.pop();
@@ -63,7 +63,7 @@ export default class BaseModel extends Model {
     static async findOrFail(id) {
         const result = await this.find(id);
         if (isEmpty(result))
-            throw new ModelNotFoundException(`[ModelNotFoundException]: No query results for model [${this.namespace}] [${id}].`);
+            throw new ModelNotFoundException(`No query results for model [${this.namespace}] [${id}].`);
         return result;
     }
 }
