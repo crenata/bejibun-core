@@ -2,8 +2,9 @@ import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
 import RuntimeException from "./exceptions/RuntimeException";
 import Router from "./facades/Router";
-import "./bootstrap";
-const exceptionHandlerPath = App.appPath("exceptions/handler.ts");
+import MaintenanceMiddleware from "./middlewares/MaintenanceMiddleware";
+import(App.Path.rootPath("bootstrap.ts"));
+const exceptionHandlerPath = App.Path.appPath("exceptions/handler.ts");
 let ExceptionHandler;
 try {
     ExceptionHandler = require(exceptionHandlerPath).default;
@@ -11,7 +12,7 @@ try {
 catch {
     throw new RuntimeException(`Missing exception handler class [${exceptionHandlerPath}].`);
 }
-const apiRoutesPath = App.routesPath("api.ts");
+const apiRoutesPath = App.Path.routesPath("api.ts");
 let ApiRoutes;
 try {
     ApiRoutes = require(apiRoutesPath).default;
@@ -19,7 +20,7 @@ try {
 catch {
     throw new RuntimeException(`Missing api file on routes directory [${apiRoutesPath}].`);
 }
-const webRoutesPath = App.routesPath("web.ts");
+const webRoutesPath = App.Path.routesPath("web.ts");
 let WebRoutes;
 try {
     WebRoutes = require(webRoutesPath).default;
@@ -37,10 +38,12 @@ const server = Bun.serve({
     error: new ExceptionHandler().handle,
     port: Bun.env.APP_PORT,
     routes: {
-        ...Router.namespace("app/exceptions").any("/*", "Handler@route"),
-        "/": require(App.publicPath("index.html")),
-        ...ApiRoutes,
-        ...WebRoutes
+        "/": require(App.Path.publicPath("index.html")),
+        ...Router.middleware(new MaintenanceMiddleware()).group([
+            Router.namespace("app/exceptions").any("/*", "Handler@route"),
+            ApiRoutes,
+            WebRoutes
+        ])
     }
 });
 Logger.setContext("APP").info(`🚀 Server running at ${server.url.origin}`);

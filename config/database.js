@@ -25,7 +25,7 @@ const config = {
     }
 };
 export const initDatabase = () => {
-    const configPath = App.configPath("database.ts");
+    const configPath = App.Path.configPath("database.ts");
     let _config;
     if (fs.existsSync(configPath))
         _config = require(configPath).default;

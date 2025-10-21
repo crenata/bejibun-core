@@ -26,7 +26,7 @@ export default class BaseModel extends Model {
     static QueryBuilder = BunQueryBuilder;
     static get namespace() {
         const filePath = fileURLToPath(import.meta.url);
-        const rel = relative(App.rootPath(), filePath);
+        const rel = relative(App.Path.rootPath(), filePath);
         const withoutExt = rel.replace(/\.[tj]s$/, "");
         const namespaces = withoutExt.split(sep);
         namespaces.pop();

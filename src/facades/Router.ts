@@ -23,7 +23,7 @@ export default class Router {
         return new RouterBuilder().resources(controller, options);
     }
 
-    public static group(routes: RouterGroup, prefix?: string, middlewares?: Array<IMiddleware>) {
+    public static group(routes: RouterGroup, prefix?: string, middlewares?: Array<IMiddleware>): RouterGroup {
         const builder = new RouterBuilder();
 
         if (prefix) builder.prefix(prefix);

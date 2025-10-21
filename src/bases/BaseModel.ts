@@ -54,7 +54,7 @@ export default class BaseModel extends Model implements BaseColumns {
 
     public static get namespace(): string {
         const filePath = fileURLToPath(import.meta.url);
-        const rel = relative(App.rootPath(), filePath);
+        const rel = relative(App.Path.rootPath(), filePath);
         const withoutExt = rel.replace(/\.[tj]s$/, "");
         const namespaces = withoutExt.split(sep);
         namespaces.pop();

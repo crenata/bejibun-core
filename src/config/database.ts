@@ -28,7 +28,7 @@ const config: Knex.Config = {
 };
 
 export const initDatabase = (): Knex => {
-    const configPath = App.configPath("database.ts");
+    const configPath = App.Path.configPath("database.ts");
 
     let _config: any;
 

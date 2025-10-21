@@ -1,12 +1,18 @@
 import App from "@bejibun/app";
 import { defineValue, isEmpty } from "@bejibun/utils";
-import { readdirSync } from "fs";
-import path from "path";
 export default class Kernel {
     static registerCommands(program) {
-        const commandsDirectoryCore = path.resolve(__dirname);
-        const files = this.commands(commandsDirectoryCore)
-            .concat(this.commands(App.commandsPath()));
+        const rootCommands = Array.from(new Bun.Glob("**/*.ts").scanSync({
+            absolute: true,
+            cwd: App.Path.commandsPath()
+        }));
+        const internalCommands = Array.from(new Bun.Glob("**/*").scanSync({
+            absolute: true,
+            cwd: __dirname
+        }));
+        const files = internalCommands.concat(rootCommands).filter(value => (/\.(m?js|ts)$/.test(value) &&
+            !value.endsWith(".d.ts") &&
+            !value.includes("Kernel"))).reverse();
         for (const file of files) {
             const { default: CommandClass } = require(file);
             const instance = new CommandClass();
@@ -32,23 +38,5 @@ export default class Kernel {
                 await instance.handle(options, positionalArgs);
             });
         }
-    }
-    static commands(directory) {
-        const entries = readdirSync(directory, {
-            withFileTypes: true
-        });
-        const files = [];
-        for (const entry of entries) {
-            const fullPath = path.join(directory, entry.name);
-            if (entry.isDirectory()) {
-                files.push(...this.commands(fullPath));
-            }
-            else if (/\.(m?js|ts)$/.test(entry.name) &&
-                !entry.name.endsWith(".d.ts") &&
-                !entry.name.includes("Kernel")) {
-                files.push(fullPath);
-            }
-        }
-        return files;
     }
 }

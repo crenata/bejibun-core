@@ -4,8 +4,8 @@
     "": {
       "name": "@bejibun/core",
       "dependencies": {
-        "@bejibun/app": "^0.1.13",
-        "@bejibun/cors": "^0.1.11",
+        "@bejibun/app": "^0.1.19",
+        "@bejibun/cors": "^0.1.12",
         "@bejibun/logger": "^0.1.18",
         "@bejibun/utils": "^0.1.14",
         "@vinejs/vine": "^3.0.1",
@@ -24,9 +24,9 @@
     },
   },
   "packages": {
-    "@bejibun/app": ["@bejibun/app@0.1.13", "", { "dependencies": { "@bejibun/utils": "^0.1.1" } }, "sha512-+nBYZS8I+RMhXjbV2e0xSJvQ/dGdKGL3q2mSQoqkUjcNMdnjn+FZ62jK+FRAKBcdDToFfqL1z2J8tdyriRzWXQ=="],
+    "@bejibun/app": ["@bejibun/app@0.1.19", "", { "dependencies": { "@bejibun/utils": "^0.1.1" } }, "sha512-OBuXtH6X84CE0bpbSlpKFQ5rULQ9LdGO7/HGrf4Gc08dFwFq8fl6NF5iIiHEpYwd/y4Pldc+BrFzseH6k+Mtdw=="],
 
-    "@bejibun/cors": ["@bejibun/cors@0.1.11", "", { "dependencies": { "@bejibun/app": "^0.1.11", "@bejibun/utils": "^0.1.1" } }, "sha512-XVSBJDlJMAxw51pqN3olOus/PNjfvkKjeG34C0bmLJuHeWE0nHMnk7PVIcwecAB8RjRB0DvAPR9ZytrUtB//3w=="],
+    "@bejibun/cors": ["@bejibun/cors@0.1.12", "", { "dependencies": { "@bejibun/app": "^0.1.19", "@bejibun/utils": "^0.1.14" } }, "sha512-fRn9pkMtYDBgmA0jaHSK0ZuX5Ci80c0IyXmMdMzrjwF15dNatIOftP5rhKxAn++egtWeKUIKjVKJvDL0G5lRJw=="],
 
     "@bejibun/logger": ["@bejibun/logger@0.1.18", "", { "dependencies": { "@bejibun/utils": "^0.1.1", "chalk": "^5.6.2", "luxon": "^3.7.2" } }, "sha512-UP0SU+x/sfNtIC9+HWgToS53bGSK5Ot+oRdbAfzgl9AXfqTOhRP9lCJvaMhifl4w0Rwuye/69NNMX+GWPFkR1A=="],
 
@@ -259,10 +259,6 @@
     "xtend": ["xtend@4.0.2", "", {}, "sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ=="],
 
     "yoctocolors": ["yoctocolors@2.1.2", "", {}, "sha512-CzhO+pFNo8ajLM2d2IW/R93ipy99LWjtwblvC1RsoSUMZgyLbYFr221TnSNT7GjGdYui6P459mw9JH/g/zW2ug=="],
-
-    "@bejibun/cors/@bejibun/app": ["@bejibun/app@0.1.11", "", { "dependencies": { "@bejibun/utils": "^0.1.1" } }, "sha512-UjhG3KuBhswCXK46vnw+oNDdeAbA9CcC5h3MMBPEC5E+lBkoep82NrGbwUqQTC6uCVZUfeCfnMWteAsiQJXYDQ=="],
-
-    "@bejibun/cors/@bejibun/utils": ["@bejibun/utils@0.1.13", "", {}, "sha512-dB8jo6sxeiGBEFd9NVZQKWC76yNCg0GYvWGKYhnjznuJdmGCQYS2g7U8SeB2pkGZkT06N+klSkiFbXp7XTKeeQ=="],
 
     "knex/commander": ["commander@10.0.1", "", {}, "sha512-y4Mg2tXshplEbSGzx7amzPwKKOCGuoSRP/CjEdwwk0FOGlUbq6lKuoyDZTNZkmxHdJtp54hdfY/JUrdL7Xfdug=="],
 

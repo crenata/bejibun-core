@@ -1,4 +1,4 @@
-import App from "@bejibun/app";
+import AppConfig from "@bejibun/app/config/app";
 import Logger from "@bejibun/logger";
 import { DateTime } from "luxon";
 export default class MaintenanceDownCommand {
@@ -29,7 +29,7 @@ export default class MaintenanceDownCommand {
      */
     $arguments = [];
     async handle(options, args) {
-        await Bun.write(App.storagePath("framework/maintenance.down.json"), JSON.stringify({
+        await Bun.write(AppConfig.maintenance.file, JSON.stringify({
             message: "🚧 We're doing maintenance. Please check back soon.",
             status: 503,
             allows: options.allows,

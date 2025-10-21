@@ -110,7 +110,7 @@ export default class RouterBuilder {
         if (isEmpty(controllerName) || isEmpty(methodName)) {
             throw new RouterInvalidException(`Invalid router controller definition: ${definition}.`);
         }
-        const controllerPath = path.resolve(App.rootPath(), this.baseNamespace);
+        const controllerPath = path.resolve(App.Path.rootPath(), this.baseNamespace);
         const location = Bun.resolveSync(`./${controllerName}.ts`, controllerPath);
         let ControllerClass;
         try {

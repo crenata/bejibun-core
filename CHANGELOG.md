@@ -3,6 +3,24 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.43](https://github.com/crenata/bejibun-core/compare/v0.1.42...v0.1.43) - 2025-10-21
+
+### 🩹 Fixes
+
+### 📖 Changes
+What's New :
+- Adding `maintenance:down` to turn app into maintenance mode
+- Adding `maintenance:up` to turn app into live mode
+- Adding maintenance middleware
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+- Ghulje ([@ghulje](https://github.com/ghulje))
+
+**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.42](https://github.com/crenata/bejibun-core/compare/v0.1.41...v0.1.42) - 2025-10-21
 
 ### 🩹 Fixes
