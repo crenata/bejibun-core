@@ -1,3 +1,4 @@
+import App from "@bejibun/app";
 import AppConfig from "@bejibun/app/config/app";
 import Logger from "@bejibun/logger";
 export default class MaintenanceUpCommand {
@@ -22,11 +23,11 @@ export default class MaintenanceUpCommand {
     /**
      * The arguments of the console command.
      *
-     * @var $arguments Array<Array<string>>
+     * @var $arguments Array<Array<any>>
      */
     $arguments = [];
     async handle(options, args) {
-        if (await Bun.file(AppConfig.maintenance.file).exists())
+        if (await App.Maintenance.isMaintenanceMode())
             await Bun.file(AppConfig.maintenance.file).delete();
         Logger.setContext("APP").info("Application turned into live mode.");
     }

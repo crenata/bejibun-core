@@ -25,7 +25,7 @@ export default class MaintenanceDownCommand {
     /**
      * The arguments of the console command.
      *
-     * @var $arguments Array<Array<string>>
+     * @var $arguments Array<Array<any>>
      */
     $arguments = [];
     async handle(options, args) {

@@ -4,19 +4,33 @@ import {defineValue, isEmpty} from "@bejibun/utils";
 
 export default class Kernel {
     public static registerCommands(program: Command): void {
-        const rootCommands = Array.from(new Bun.Glob("**/*.ts").scanSync({
-            absolute: true,
-            cwd: App.Path.commandsPath()
-        }));
-        const internalCommands = Array.from(new Bun.Glob("**/*").scanSync({
-            absolute: true,
-            cwd: __dirname
-        }));
-        const files = internalCommands.concat(rootCommands).filter(value => (
-            /\.(m?js|ts)$/.test(value) &&
-            !value.endsWith(".d.ts") &&
-            !value.includes("Kernel")
-        )).reverse();
+        const paths: Array<Record<string, any>> = [
+            {
+                absolute: true,
+                cwd: App.Path.commandsPath()
+            },
+            {
+                absolute: true,
+                cwd: __dirname
+            },
+            {
+                absolute: true,
+                cwd: "node_modules/@bejibun/database/commands"
+            }
+        ];
+        const files: Array<string> = paths
+            .map(value => Array.from(new Bun.Glob("**/*").scanSync({
+                absolute: value.absolute,
+                cwd: value.cwd
+            })))
+            .flat()
+            .filter(value => (
+                /\.(m?js|ts)$/.test(value) &&
+                !value.endsWith(".d.ts") &&
+                !value.includes("Kernel")
+            ));
+
+        const instances: Array<any> = [];
 
         for (const file of files) {
             const {default: CommandClass} = require(file);
@@ -25,6 +39,10 @@ export default class Kernel {
 
             if (isEmpty(instance.$signature) || typeof instance.handle !== "function") continue;
 
+            instances.push(instance);
+        }
+
+        for (const instance of instances.sort((a, b) => a.$signature.localeCompare(b.$signature))) {
             const cmd = program
                 .command(instance.$signature)
                 .description(defineValue(instance.$description, ""));
@@ -44,7 +62,7 @@ export default class Kernel {
             cmd.action(async (...args: Array<any>) => {
                 const commandObj = args[args.length - 1];
                 const options = typeof commandObj.opts === "function" ? commandObj.opts() : commandObj;
-                const positionalArgs = args.slice(0, -1);
+                const positionalArgs = args[0];
                 await instance.handle(options, positionalArgs);
             });
         }

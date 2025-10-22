@@ -20,8 +20,8 @@ export default class MaintenanceUpCommand {
     /**
      * The arguments of the console command.
      *
-     * @var $arguments Array<Array<string>>
+     * @var $arguments Array<Array<any>>
      */
-    protected $arguments: Array<Array<string>>;
+    protected $arguments: Array<Array<any>>;
     handle(options: any, args: Array<string>): Promise<void>;
 }

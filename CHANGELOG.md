@@ -3,6 +3,25 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.44](https://github.com/crenata/bejibun-core/compare/v0.1.43...v0.1.44) - 2025-10-22
+
+### 🩹 Fixes
+
+### 📖 Changes
+What's New :
+- Move related database into `@bejibun/database`
+- Adding `install <packages...>` to install package dependencies
+- Adding `package:configure` to run package configuration file
+- Now, everyone can build their own package for Bejibun framework
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+- Ghulje ([@ghulje](https://github.com/ghulje))
+
+**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.43](https://github.com/crenata/bejibun-core/compare/v0.1.42...v0.1.43) - 2025-10-21
 
 ### 🩹 Fixes

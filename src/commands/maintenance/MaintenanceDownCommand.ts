@@ -29,9 +29,9 @@ export default class MaintenanceDownCommand {
     /**
      * The arguments of the console command.
      *
-     * @var $arguments Array<Array<string>>
+     * @var $arguments Array<Array<any>>
      */
-    protected $arguments: Array<Array<string>> = [];
+    protected $arguments: Array<Array<any>> = [];
 
     public async handle(options: any, args: Array<string>): Promise<void> {
         await Bun.write(AppConfig.maintenance.file, JSON.stringify({

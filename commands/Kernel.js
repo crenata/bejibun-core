@@ -2,22 +2,38 @@ import App from "@bejibun/app";
 import { defineValue, isEmpty } from "@bejibun/utils";
 export default class Kernel {
     static registerCommands(program) {
-        const rootCommands = Array.from(new Bun.Glob("**/*.ts").scanSync({
-            absolute: true,
-            cwd: App.Path.commandsPath()
-        }));
-        const internalCommands = Array.from(new Bun.Glob("**/*").scanSync({
-            absolute: true,
-            cwd: __dirname
-        }));
-        const files = internalCommands.concat(rootCommands).filter(value => (/\.(m?js|ts)$/.test(value) &&
+        const paths = [
+            {
+                absolute: true,
+                cwd: App.Path.commandsPath()
+            },
+            {
+                absolute: true,
+                cwd: __dirname
+            },
+            {
+                absolute: true,
+                cwd: "node_modules/@bejibun/database/commands"
+            }
+        ];
+        const files = paths
+            .map(value => Array.from(new Bun.Glob("**/*").scanSync({
+            absolute: value.absolute,
+            cwd: value.cwd
+        })))
+            .flat()
+            .filter(value => (/\.(m?js|ts)$/.test(value) &&
             !value.endsWith(".d.ts") &&
-            !value.includes("Kernel"))).reverse();
+            !value.includes("Kernel")));
+        const instances = [];
         for (const file of files) {
             const { default: CommandClass } = require(file);
             const instance = new CommandClass();
             if (isEmpty(instance.$signature) || typeof instance.handle !== "function")
                 continue;
+            instances.push(instance);
+        }
+        for (const instance of instances.sort((a, b) => a.$signature.localeCompare(b.$signature))) {
             const cmd = program
                 .command(instance.$signature)
                 .description(defineValue(instance.$description, ""));
@@ -34,7 +50,7 @@ export default class Kernel {
             cmd.action(async (...args) => {
                 const commandObj = args[args.length - 1];
                 const options = typeof commandObj.opts === "function" ? commandObj.opts() : commandObj;
-                const positionalArgs = args.slice(0, -1);
+                const positionalArgs = args[0];
                 await instance.handle(options, positionalArgs);
             });
         }

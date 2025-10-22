@@ -17,11 +17,7 @@ Core of Bejibun Framework.
 Install the package.
 
 ```bash
-# Using Bun
 bun add @bejibun/core
-
-# Using Bejibun
-bun ace install @bejibun/core
 ```
 
 ### Ace
@@ -34,16 +30,20 @@ Ace for your commander
 Author: Havea Crenata <havea.crenata@gmail.com>
 
 Options:
-  -v, --version            Show the current version
-  -h, --help               display help for command
+  -v, --version                Show the current version
+  -h, --help                   display help for command
 
 Commands:
-  db:seed                  Run database seeders
-  migrate:fresh [options]  Rollback all migrations and re-run migrations
-  migrate:latest           Run latest migration
-  migrate:rollback         Rollback the latest migrations
-  migrate:status           List migrations status
-  help [command]           display help for command
+  db:seed                      Run database seeders
+  install <packages...>        Install package dependencies
+  maintenance:down [options]   Turn app into maintenance mode
+  maintenance:up               Turn app into live mode
+  migrate:fresh [options]      Rollback all migrations and re-run migrations
+  migrate:latest               Run latest migration
+  migrate:rollback [options]   Rollback the latest migrations
+  migrate:status [options]     List migrations status
+  package:configure [options]  Configure package after installation
+  help [command]               display help for command
 
 Examples:
   $ bun ace --help

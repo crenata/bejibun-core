@@ -1,4 +1,4 @@
-export default class MigrateStatusCommand {
+export default class PackageConfigureCommand {
     /**
      * The name and signature of the console command.
      *
@@ -20,8 +20,8 @@ export default class MigrateStatusCommand {
     /**
      * The arguments of the console command.
      *
-     * @var $arguments Array<Array<string>>
+     * @var $arguments Array<Array<any>>
      */
-    protected $arguments: Array<Array<string>>;
+    protected $arguments: Array<Array<any>>;
     handle(options: any, args: Array<string>): Promise<void>;
 }
