@@ -1,6 +1,6 @@
 {
     "name": "@bejibun/core",
-    "version": "0.1.44",
+    "version": "0.1.45",
     "author": "Havea Crenata <havea.crenata@gmail.com>",
     "repository": {
         "type": "git",
@@ -10,10 +10,10 @@
     "module": "index.js",
     "dependencies": {
         "@bejibun/app": "^0.1.19",
-        "@bejibun/cors": "^0.1.12",
-        "@bejibun/database": "^0.1.1",
-        "@bejibun/logger": "^0.1.18",
-        "@bejibun/utils": "^0.1.14",
+        "@bejibun/cors": "^0.1.14",
+        "@bejibun/database": "^0.1.11",
+        "@bejibun/logger": "^0.1.19",
+        "@bejibun/utils": "^0.1.16",
         "@vinejs/vine": "^3.0.1",
         "commander": "^14.0.1",
         "luxon": "^3.7.2",

@@ -1,4 +1,6 @@
 import App from "@bejibun/app";
+import Logger from "@bejibun/logger";
+import {isEmpty} from "@bejibun/utils";
 
 export default class InstallCommand {
     /**
@@ -32,6 +34,11 @@ export default class InstallCommand {
     ];
 
     public async handle(options: any, args: Array<string>): Promise<void> {
+        if (isEmpty(args)) {
+            Logger.setContext("APP").error("There is no packages provided.");
+            return;
+        }
+
         for (const pack of args) {
             Bun.spawnSync(["bun", "add", pack], {
                 cwd: App.Path.rootPath(),

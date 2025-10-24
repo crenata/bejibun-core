@@ -1,4 +1,6 @@
 import App from "@bejibun/app";
+import Logger from "@bejibun/logger";
+import { isEmpty } from "@bejibun/utils";
 export default class InstallCommand {
     /**
      * The name and signature of the console command.
@@ -27,6 +29,10 @@ export default class InstallCommand {
         ["<packages...>", "Install package dependencies"]
     ];
     async handle(options, args) {
+        if (isEmpty(args)) {
+            Logger.setContext("APP").error("There is no packages provided.");
+            return;
+        }
         for (const pack of args) {
             Bun.spawnSync(["bun", "add", pack], {
                 cwd: App.Path.rootPath(),
