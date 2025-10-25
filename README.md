@@ -37,9 +37,12 @@ Options:
 
 Commands:
   db:seed                      Run database seeders
+  hello:world                  Run hello world
   install <packages...>        Install package dependencies
   maintenance:down [options]   Turn app into maintenance mode
   maintenance:up               Turn app into live mode
+  make:migration <file>        Create a new migration file
+  make:seeder <file>           Create a new seeder file
   migrate:fresh [options]      Rollback all migrations and re-run migrations
   migrate:latest               Run latest migration
   migrate:rollback [options]   Rollback the latest migrations
