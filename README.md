@@ -41,6 +41,9 @@ Commands:
   install <packages...>        Install package dependencies
   maintenance:down [options]   Turn app into maintenance mode
   maintenance:up               Turn app into live mode
+  make:command <file>          Create a new command file
+  make:controller <file>       Create a new controller file
+  make:middleware <file>       Create a new middleware file
   make:migration <file>        Create a new migration file
   make:seeder <file>           Create a new seeder file
   migrate:fresh [options]      Rollback all migrations and re-run migrations

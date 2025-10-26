@@ -1,6 +1,6 @@
 {
     "name": "@bejibun/core",
-    "version": "0.1.46",
+    "version": "0.1.47",
     "author": "Havea Crenata <havea.crenata@gmail.com>",
     "repository": {
         "type": "git",
@@ -9,9 +9,9 @@
     "main": "index.js",
     "module": "index.js",
     "dependencies": {
-        "@bejibun/app": "^0.1.19",
+        "@bejibun/app": "^0.1.20",
         "@bejibun/cors": "^0.1.14",
-        "@bejibun/database": "^0.1.14",
+        "@bejibun/database": "^0.1.16",
         "@bejibun/logger": "^0.1.19",
         "@bejibun/utils": "^0.1.17",
         "@vinejs/vine": "^3.0.1",
@@ -39,10 +39,12 @@
     "license": "MIT",
     "scripts": {
         "alias": "bunx tsc-alias -p tsconfig.json",
-        "copy": "cp -rf src/types dist",
+        "clean-stubs": "rm -rf stubs",
+        "stubs": "cp -rf src/stubs dist",
+        "types": "cp -rf src/types dist",
         "rsync": "rsync -a dist/ ./",
         "clean": "rm -rf dist",
-        "build": "bunx tsc -p tsconfig.json && bun run copy && bun run alias && bun run rsync && bun run clean",
+        "build": "bun run clean-stubs && bunx tsc -p tsconfig.json && bun run types && bun run alias && bun run stubs && bun run rsync && bun run clean",
         "deploy": "bun run build && bun publish --access public"
     },
     "type": "module",
