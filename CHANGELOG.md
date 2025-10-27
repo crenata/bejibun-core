@@ -3,6 +3,23 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.49](https://github.com/crenata/bejibun-core/compare/v0.1.47...v0.1.49) - 2025-10-27
+
+### 🩹 Fixes
+
+### 📖 Changes
+What's New :
+- Adding `make:model <file>` to create a new model file
+- Adding `make:validator <file>` to create a new validator file
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+- Ghulje ([@ghulje](https://github.com/ghulje))
+
+**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.47](https://github.com/crenata/bejibun-core/compare/v0.1.44...v0.1.47) - 2025-10-26
 
 ### 🩹 Fixes

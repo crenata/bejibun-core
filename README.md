@@ -45,7 +45,9 @@ Commands:
   make:controller <file>       Create a new controller file
   make:middleware <file>       Create a new middleware file
   make:migration <file>        Create a new migration file
+  make:model <file>            Create a new model file
   make:seeder <file>           Create a new seeder file
+  make:validator <file>        Create a new validator file
   migrate:fresh [options]      Rollback all migrations and re-run migrations
   migrate:latest               Run latest migration
   migrate:rollback [options]   Rollback the latest migrations
