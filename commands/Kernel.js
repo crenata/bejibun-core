@@ -12,6 +12,10 @@ export default class Kernel {
                 absolute: true,
                 cwd: __dirname
             },
+            {
+                absolute: true,
+                cwd: "node_modules/@bejibun/database/commands"
+            }
         ].concat(rootCommands.map(value => ({
             absolute: true,
             cwd: `node_modules/${value.path}`
