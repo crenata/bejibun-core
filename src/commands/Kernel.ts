@@ -4,6 +4,7 @@ import {defineValue, isEmpty} from "@bejibun/utils";
 
 export default class Kernel {
     public static registerCommands(program: Command): void {
+        const rootCommands: Array<{path: string}> = require(App.Path.configPath("command.ts")).default;
         const paths: Array<Record<string, any>> = [
             {
                 absolute: true,
@@ -17,7 +18,10 @@ export default class Kernel {
                 absolute: true,
                 cwd: "node_modules/@bejibun/database/commands"
             }
-        ];
+        ].concat(rootCommands.map(value => ({
+            absolute: true,
+            cwd: `node_modules/${value.path}`
+        })));
         const files: Array<string> = paths
             .map(value => Array.from(new Bun.Glob("**/*").scanSync({
                 absolute: value.absolute,

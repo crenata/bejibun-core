@@ -3,6 +3,44 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.51](https://github.com/crenata/bejibun-core/compare/v0.1.49...v0.1.51) - 2025-11-04
+
+### 🩹 Fixes
+
+### 📖 Changes
+What's New :
+
+Everyone can create their own packages,
+and now `Bejibun` support for commands from external packages
+and can be added to `config/command.ts`.
+
+```ts
+const config: Array<Record<string, any>> = [
+    /*
+    {
+        path: "your-dependencies/your-directory-commands",
+        path: "@bejibun/database/commands" // Example
+    }
+    */
+];
+
+export default config;
+```
+
+Or the external package itself can automatically add them to `config/command.ts`
+using the configuration package by creating `configure.ts` in your package root.
+
+When the user runs `bun ace install your-package` it will automatically run the configuration package.
+
+So when user runs `bun ace` your command will appear in the list.
+
+### ❤️Contributors
+- Ghulje ([@ghulje](https://github.com/ghulje))
+
+**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.49](https://github.com/crenata/bejibun-core/compare/v0.1.47...v0.1.49) - 2025-10-27
 
 ### 🩹 Fixes

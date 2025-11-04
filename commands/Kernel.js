@@ -2,6 +2,7 @@ import App from "@bejibun/app";
 import { defineValue, isEmpty } from "@bejibun/utils";
 export default class Kernel {
     static registerCommands(program) {
+        const rootCommands = require(App.Path.configPath("command.ts")).default;
         const paths = [
             {
                 absolute: true,
@@ -11,11 +12,10 @@ export default class Kernel {
                 absolute: true,
                 cwd: __dirname
             },
-            {
-                absolute: true,
-                cwd: "node_modules/@bejibun/database/commands"
-            }
-        ];
+        ].concat(rootCommands.map(value => ({
+            absolute: true,
+            cwd: `node_modules/${value.path}`
+        })));
         const files = paths
             .map(value => Array.from(new Bun.Glob("**/*").scanSync({
             absolute: value.absolute,
