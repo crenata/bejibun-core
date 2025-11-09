@@ -4,11 +4,11 @@
     "": {
       "name": "@bejibun/core",
       "dependencies": {
-        "@bejibun/app": "^0.1.20",
-        "@bejibun/cors": "^0.1.14",
-        "@bejibun/database": "^0.1.17",
-        "@bejibun/logger": "^0.1.20",
-        "@bejibun/utils": "^0.1.18",
+        "@bejibun/app": "^0.1.22",
+        "@bejibun/cors": "^0.1.16",
+        "@bejibun/database": "^0.1.19",
+        "@bejibun/logger": "^0.1.22",
+        "@bejibun/utils": "^0.1.20",
         "@vinejs/vine": "^3.0.1",
         "commander": "^14.0.2",
         "luxon": "^3.7.2",
