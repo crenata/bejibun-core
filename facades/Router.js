@@ -10,6 +10,9 @@ export default class Router {
     static namespace(baseNamespace) {
         return new RouterBuilder().namespace(baseNamespace);
     }
+    static x402() {
+        return new RouterBuilder().x402();
+    }
     static resources(controller, options) {
         return new RouterBuilder().resources(controller, options);
     }

@@ -1,9 +1,10 @@
 import App from "@bejibun/app";
-import { isEmpty } from "@bejibun/utils";
+import { isEmpty, isModuleExists } from "@bejibun/utils";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import Enum from "@bejibun/utils/facades/Enum";
 import path from "path";
 import RouterInvalidException from "../exceptions/RouterInvalidException";
+import X402Middleware from "../middlewares/X402Middleware";
 export default class RouterBuilder {
     basePath = "";
     middlewares = [];
@@ -18,6 +19,12 @@ export default class RouterBuilder {
     }
     namespace(baseNamespace) {
         this.baseNamespace = baseNamespace;
+        return this;
+    }
+    x402() {
+        if (!isModuleExists("@bejibun/x402"))
+            throw new RouterInvalidException("@bejibun/x402 is not installed.");
+        this.middlewares.push(new X402Middleware());
         return this;
     }
     group(routes) {

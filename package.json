@@ -13,13 +13,14 @@
         "@bejibun/cors": "^0.1.16",
         "@bejibun/database": "^0.1.19",
         "@bejibun/logger": "^0.1.22",
-        "@bejibun/utils": "^0.1.20",
+        "@bejibun/utils": "^0.1.21",
         "@vinejs/vine": "^3.0.1",
         "commander": "^14.0.2",
         "luxon": "^3.7.2",
         "objection": "^3.1.5"
     },
     "devDependencies": {
+        "@bejibun/x402": "^0.1.0",
         "@types/bun": "latest",
         "@types/luxon": "^3.7.1",
         "tsc-alias": "^1.8.16"

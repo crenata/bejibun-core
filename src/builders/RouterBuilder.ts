@@ -1,12 +1,13 @@
 import type {EnumItem} from "@bejibun/utils/facades/Enum";
+import type {IMiddleware} from "@/types/middleware";
+import type {HandlerType, ResourceAction, RouterGroup} from "@/types/router";
 import App from "@bejibun/app";
-import {isEmpty} from "@bejibun/utils";
+import {isEmpty, isModuleExists} from "@bejibun/utils";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import Enum from "@bejibun/utils/facades/Enum";
 import path from "path";
-import type {IMiddleware} from "@/types/middleware";
-import type {HandlerType, ResourceAction, RouterGroup} from "@/types/router";
 import RouterInvalidException from "@/exceptions/RouterInvalidException";
+import X402Middleware from "@/middlewares/X402Middleware";
 
 export interface ResourceOptions {
     only?: Array<ResourceAction>;
@@ -32,6 +33,14 @@ export default class RouterBuilder {
 
     public namespace(baseNamespace: string): RouterBuilder {
         this.baseNamespace = baseNamespace;
+
+        return this;
+    }
+
+    public x402(): RouterBuilder {
+        if (!isModuleExists("@bejibun/x402")) throw new RouterInvalidException("@bejibun/x402 is not installed.");
+
+        this.middlewares.push(new X402Middleware());
 
         return this;
     }

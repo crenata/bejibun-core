@@ -16,6 +16,10 @@ export default class Router {
         return new RouterBuilder().namespace(baseNamespace);
     }
 
+    public static x402(): RouterBuilder {
+        return new RouterBuilder().x402();
+    }
+
     public static resources(
         controller: Record<string, HandlerType>,
         options?: ResourceOptions
