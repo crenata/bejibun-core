@@ -3,6 +3,34 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.52](https://github.com/crenata/bejibun-core/compare/v0.1.51...v0.1.52) - 2025-11-17
+
+### 🩹 Fixes
+
+### 📖 Changes
+What's New :
+
+Adding support for x402 protocol. You can secure your paid endpoint by adding `.x402()` chaining on router.
+
+How to use it :
+
+First, you need to install the package by running `bun ace install @bejibun/x402`.
+
+Customize your `config/x402.ts` with your own configuration.
+
+Add `.x402()` chain into router you want to add for payment middleware.
+```ts
+Router.x402()
+```
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+- Ghulje ([@ghulje](https://github.com/ghulje))
+
+**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.51](https://github.com/crenata/bejibun-core/compare/v0.1.49...v0.1.51) - 2025-11-04
 
 ### 🩹 Fixes

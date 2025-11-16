@@ -39,7 +39,7 @@
 
     "@bejibun/utils": ["@bejibun/utils@0.1.21", "", { "dependencies": { "@bejibun/logger": "^0.1.18", "luxon": "^3.7.2" } }, "sha512-MKP5qJtNyznY1oETGt0yaINFCNzWso2sfORgYjSbc/egLGySS2fuJnVPq9xfXRpnXQfDdSYdbb2QAFbXp7FGaA=="],
 
-    "@bejibun/x402": ["@bejibun/x402@0.1.0", "", { "dependencies": { "@bejibun/app": "^0.1.22", "@bejibun/logger": "^0.1.22", "@bejibun/utils": "^0.1.21", "x402": "^0.7.2" } }, "sha512-FEy7jYdceIKd1jD2n8c4TXNRBrkI1A7J8eUS7kOBNJNp+KtymkEMrudBNAXM+QwokjAUbklTTsj6Rt9vOzHTQg=="],
+    "@bejibun/x402": ["@bejibun/x402@0.1.1", "", { "dependencies": { "@bejibun/app": "^0.1.22", "@bejibun/logger": "^0.1.22", "@bejibun/utils": "^0.1.21", "x402": "^0.7.2" } }, "sha512-OVirFGtycGtpJ31GnHYjremkEtpkuTb0eBKglnLFa51Nv7mrNhEAC5CtvEwWJNgZjtGTIyonz1wyeq8cZ+T+Yg=="],
 
     "@coinbase/cdp-sdk": ["@coinbase/cdp-sdk@1.38.6", "", { "dependencies": { "@solana-program/system": "^0.8.0", "@solana-program/token": "^0.6.0", "@solana/kit": "^3.0.3", "@solana/web3.js": "^1.98.1", "abitype": "1.0.6", "axios": "^1.12.2", "axios-retry": "^4.5.0", "jose": "^6.0.8", "md5": "^2.3.0", "uncrypto": "^0.1.3", "viem": "^2.21.26", "zod": "^3.24.4" } }, "sha512-l9gGGZqhCryuD3nfqB4Y+i8kfBtsnPJoKB5jxx5lKgXhVJw7/BPhgscKkVhP81115Srq3bFegD1IBwUkJ0JFMw=="],
 
