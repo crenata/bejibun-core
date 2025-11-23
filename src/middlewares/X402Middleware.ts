@@ -14,14 +14,14 @@ export default class X402Middleware {
     }
 
     public handle(handler: HandlerType): HandlerType {
-        return async (request: Bun.BunRequest) => {
+        return async (request: Bun.BunRequest, server: Bun.Server<any>) => {
             return X402
                 .setConfig(this.config)
                 .setFacilitator(this.facilitatorConfig)
                 .setPaywall(this.paywallConfig)
                 .setRequest(request)
                 .middleware(() => {
-                    return handler(request);
+                    return handler(request, server);
                 });
         };
     }

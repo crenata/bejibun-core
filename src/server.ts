@@ -4,6 +4,7 @@ import RuntimeException from "@/exceptions/RuntimeException";
 import Router from "@/facades/Router";
 import {RouterGroup} from "@/types";
 import MaintenanceMiddleware from "@/middlewares/MaintenanceMiddleware";
+import RateLimiterMiddleware from "@/middlewares/RateLimiterMiddleware";
 import (App.Path.rootPath("bootstrap.ts"));
 
 const exceptionHandlerPath = App.Path.appPath("exceptions/handler.ts");
@@ -46,7 +47,10 @@ const server = Bun.serve({
     routes: {
         "/": require(App.Path.publicPath("index.html")),
 
-        ...Router.middleware(new MaintenanceMiddleware()).group([
+        ...Router.middleware(
+            new MaintenanceMiddleware(),
+            new RateLimiterMiddleware()
+        ).group([
             Router.namespace("app/exceptions").any("/*", "Handler@route"),
 
             ApiRoutes,

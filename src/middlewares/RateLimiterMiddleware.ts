@@ -1,20 +1,13 @@
 import type {HandlerType} from "@/types/router";
-import App from "@bejibun/app";
-import Response from "@/facades/Response";
+import {defineValue} from "@bejibun/utils";
+import RateLimiter from "@/facades/RateLimiter";
 
 export default class RateLimiterMiddleware {
     public handle(handler: HandlerType): HandlerType {
-        return async (request: Bun.BunRequest) => {
-            if (await App.Maintenance.isMaintenanceMode()) {
-                const maintenance = await App.Maintenance.getData();
-
-                return Response
-                    .setMessage(maintenance.message)
-                    .setStatus(maintenance.status)
-                    .send();
-            }
-
-            return handler(request);
+        return async (request: Bun.BunRequest, server: Bun.Server<any>) => {
+            return await RateLimiter.attempt(`rate-limiter/${defineValue(server.requestIP(request)?.address, "")}`, 10, () => {
+                return handler(request, server);
+            });
         };
     }
 }

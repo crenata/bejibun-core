@@ -3,12 +3,18 @@ import { defineValue } from "@bejibun/utils";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import { ValidationError } from "objection";
 import ModelNotFoundException from "../exceptions/ModelNotFoundException";
+import RateLimiterException from "../exceptions/RateLimiterException";
+import RouterInvalidException from "../exceptions/RouterInvalidException";
+import RuntimeException from "../exceptions/RuntimeException";
 import ValidatorException from "../exceptions/ValidatorException";
 import Response from "../facades/Response";
 export default class ExceptionHandler {
     handle(error) {
         Logger.setContext("APP").error(error.message).trace(error.stack);
         if (error instanceof ModelNotFoundException ||
+            error instanceof RateLimiterException ||
+            error instanceof RouterInvalidException ||
+            error instanceof RuntimeException ||
             error instanceof ValidatorException)
             return Response
                 .setMessage(error.message)

@@ -10,7 +10,7 @@
     "module": "index.js",
     "dependencies": {
         "@bejibun/app": "^0.1.22",
-        "@bejibun/cache": "^0.1.0",
+        "@bejibun/cache": "^0.1.11",
         "@bejibun/cors": "^0.1.16",
         "@bejibun/database": "^0.1.19",
         "@bejibun/logger": "^0.1.22",

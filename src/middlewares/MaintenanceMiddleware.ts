@@ -4,7 +4,7 @@ import Response from "@/facades/Response";
 
 export default class MaintenanceMiddleware {
     public handle(handler: HandlerType): HandlerType {
-        return async (request: Bun.BunRequest) => {
+        return async (request: Bun.BunRequest, server: Bun.Server<any>) => {
             if (await App.Maintenance.isMaintenanceMode()) {
                 const maintenance = await App.Maintenance.getData();
 
@@ -14,7 +14,7 @@ export default class MaintenanceMiddleware {
                     .send();
             }
 
-            return handler(request);
+            return handler(request, server);
         };
     }
 }

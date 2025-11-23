@@ -3,6 +3,9 @@ import {defineValue} from "@bejibun/utils";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import {ValidationError} from "objection";
 import ModelNotFoundException from "@/exceptions/ModelNotFoundException";
+import RateLimiterException from "@/exceptions/RateLimiterException";
+import RouterInvalidException from "@/exceptions/RouterInvalidException";
+import RuntimeException from "@/exceptions/RuntimeException";
 import ValidatorException from "@/exceptions/ValidatorException";
 import Response from "@/facades/Response";
 
@@ -10,6 +13,9 @@ export default class ExceptionHandler {
     public handle(
         error: Bun.ErrorLike |
             ModelNotFoundException |
+            RateLimiterException |
+            RouterInvalidException |
+            RuntimeException |
             ValidatorException |
             ValidationError
     ): globalThis.Response {
@@ -17,6 +23,9 @@ export default class ExceptionHandler {
 
         if (
             error instanceof ModelNotFoundException ||
+            error instanceof RateLimiterException ||
+            error instanceof RouterInvalidException ||
+            error instanceof RuntimeException ||
             error instanceof ValidatorException
         ) return Response
             .setMessage(error.message)

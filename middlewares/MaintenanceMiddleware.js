@@ -2,7 +2,7 @@ import App from "@bejibun/app";
 import Response from "../facades/Response";
 export default class MaintenanceMiddleware {
     handle(handler) {
-        return async (request) => {
+        return async (request, server) => {
             if (await App.Maintenance.isMaintenanceMode()) {
                 const maintenance = await App.Maintenance.getData();
                 return Response
@@ -10,7 +10,7 @@ export default class MaintenanceMiddleware {
                     .setStatus(maintenance.status)
                     .send();
             }
-            return handler(request);
+            return handler(request, server);
         };
     }
 }
