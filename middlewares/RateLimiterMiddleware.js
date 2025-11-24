@@ -1,9 +1,18 @@
+import App from "@bejibun/app";
 import { defineValue } from "@bejibun/utils";
+import LimiterConfig from "../config/limiter";
 import RateLimiter from "../facades/RateLimiter";
 export default class RateLimiterMiddleware {
     handle(handler) {
         return async (request, server) => {
-            return await RateLimiter.attempt(`rate-limiter/${defineValue(server.requestIP(request)?.address, "")}`, 10, () => {
+            const configPath = App.Path.configPath("limiter.ts");
+            let config;
+            if (await Bun.file(configPath).exists())
+                config = require(configPath).default;
+            else
+                config = LimiterConfig;
+            return await RateLimiter
+                .attempt(`rate-limiter/${defineValue(server.requestIP(request)?.address, "")}`, defineValue(config?.limit, 60), () => {
                 return handler(request, server);
             });
         };
