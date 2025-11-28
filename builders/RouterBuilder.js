@@ -4,7 +4,6 @@ import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import Enum from "@bejibun/utils/facades/Enum";
 import path from "path";
 import RouterInvalidException from "../exceptions/RouterInvalidException";
-import X402Middleware from "../middlewares/X402Middleware";
 export default class RouterBuilder {
     basePath = "";
     middlewares = [];
@@ -24,6 +23,7 @@ export default class RouterBuilder {
     x402(config, facilitatorConfig, paywallConfig) {
         if (!isModuleExists("@bejibun/x402"))
             throw new RouterInvalidException("@bejibun/x402 is not installed.");
+        const X402Middleware = require("../middlewares/X402Middleware").default;
         this.middlewares.push(new X402Middleware(config, facilitatorConfig, paywallConfig));
         return this;
     }

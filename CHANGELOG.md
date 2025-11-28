@@ -3,6 +3,20 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.54](https://github.com/crenata/bejibun-core/compare/v0.1.53...v0.1.54) - 2025-11-28
+
+### 🩹 Fixes
+- Fix x402 middleware for optional
+
+### 📖 Changes
+
+### ❤️Contributors
+- Ghulje ([@ghulje](https://github.com/ghulje))
+
+**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.53](https://github.com/crenata/bejibun-core/compare/v0.1.52...v0.1.53) - 2025-11-24
 
 ### 🩹 Fixes
