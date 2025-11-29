@@ -11,24 +11,24 @@ const exceptionHandlerPath = App.Path.appPath("exceptions/handler.ts");
 let ExceptionHandler: any;
 try {
     ExceptionHandler = require(exceptionHandlerPath).default;
-} catch {
-    throw new RuntimeException(`Missing exception handler class [${exceptionHandlerPath}].`);
+} catch (error: any) {
+    throw new RuntimeException(`Missing exception handler class [${exceptionHandlerPath}].`, null, error.message);
 }
 
 const apiRoutesPath = App.Path.routesPath("api.ts");
 let ApiRoutes: RouterGroup;
 try {
     ApiRoutes = require(apiRoutesPath).default;
-} catch {
-    throw new RuntimeException(`Missing api file on routes directory [${apiRoutesPath}].`);
+} catch (error: any) {
+    throw new RuntimeException(`Missing api file on routes directory [${apiRoutesPath}].`, null, error.message);
 }
 
 const webRoutesPath = App.Path.routesPath("web.ts");
 let WebRoutes: RouterGroup;
 try {
     WebRoutes = require(webRoutesPath).default;
-} catch {
-    throw new RuntimeException(`Missing web file on routes directory [${webRoutesPath}].`);
+} catch (error: any) {
+    throw new RuntimeException(`Missing web file on routes directory [${webRoutesPath}].`, null, error.message);
 }
 
 const server = Bun.serve({

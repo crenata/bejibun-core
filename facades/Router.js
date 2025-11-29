@@ -1,4 +1,3 @@
-import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import RouterBuilder from "../builders/RouterBuilder";
 export default class Router {
     static prefix(basePath) {
@@ -25,31 +24,31 @@ export default class Router {
         return builder.group(routes);
     }
     static connect(path, handler) {
-        return new RouterBuilder().buildSingle(HttpMethodEnum.Connect, path, handler);
+        return new RouterBuilder().connect(path, handler);
     }
     static delete(path, handler) {
-        return new RouterBuilder().buildSingle(HttpMethodEnum.Delete, path, handler);
+        return new RouterBuilder().delete(path, handler);
     }
     static get(path, handler) {
-        return new RouterBuilder().buildSingle(HttpMethodEnum.Get, path, handler);
+        return new RouterBuilder().get(path, handler);
     }
     static head(path, handler) {
-        return new RouterBuilder().buildSingle(HttpMethodEnum.Head, path, handler);
+        return new RouterBuilder().head(path, handler);
     }
     static options(path, handler) {
-        return new RouterBuilder().buildSingle(HttpMethodEnum.Options, path, handler);
+        return new RouterBuilder().options(path, handler);
     }
     static patch(path, handler) {
-        return new RouterBuilder().buildSingle(HttpMethodEnum.Patch, path, handler);
+        return new RouterBuilder().patch(path, handler);
     }
     static post(path, handler) {
-        return new RouterBuilder().buildSingle(HttpMethodEnum.Post, path, handler);
+        return new RouterBuilder().post(path, handler);
     }
     static put(path, handler) {
-        return new RouterBuilder().buildSingle(HttpMethodEnum.Put, path, handler);
+        return new RouterBuilder().put(path, handler);
     }
     static trace(path, handler) {
-        return new RouterBuilder().buildSingle(HttpMethodEnum.Trace, path, handler);
+        return new RouterBuilder().trace(path, handler);
     }
     static match(methods, path, handler) {
         return new RouterBuilder().match(methods, path, handler);

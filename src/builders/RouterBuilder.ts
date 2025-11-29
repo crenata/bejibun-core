@@ -129,6 +129,42 @@ export default class RouterBuilder {
         };
     }
 
+    public connect(path: string, handler: string | HandlerType): RouterGroup {
+        return this.buildSingle(HttpMethodEnum.Connect, path, handler);
+    }
+
+    public delete(path: string, handler: string | HandlerType): RouterGroup {
+        return this.buildSingle(HttpMethodEnum.Delete, path, handler);
+    }
+
+    public get(path: string, handler: string | HandlerType): RouterGroup {
+        return this.buildSingle(HttpMethodEnum.Get, path, handler);
+    }
+
+    public head(path: string, handler: string | HandlerType): RouterGroup {
+        return this.buildSingle(HttpMethodEnum.Head, path, handler);
+    }
+
+    public options(path: string, handler: string | HandlerType): RouterGroup {
+        return this.buildSingle(HttpMethodEnum.Options, path, handler);
+    }
+
+    public patch(path: string, handler: string | HandlerType): RouterGroup {
+        return this.buildSingle(HttpMethodEnum.Patch, path, handler);
+    }
+
+    public post(path: string, handler: string | HandlerType): RouterGroup {
+        return this.buildSingle(HttpMethodEnum.Post, path, handler);
+    }
+
+    public put(path: string, handler: string | HandlerType): RouterGroup {
+        return this.buildSingle(HttpMethodEnum.Put, path, handler);
+    }
+
+    public trace(path: string, handler: string | HandlerType): RouterGroup {
+        return this.buildSingle(HttpMethodEnum.Trace, path, handler);
+    }
+
     public match(methods: Array<HttpMethodEnum>, path: string, handler: string | HandlerType): RouterGroup {
         const routeMap: RouterGroup = {};
 

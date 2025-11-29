@@ -1,6 +1,6 @@
 {
     "name": "@bejibun/core",
-    "version": "0.1.54",
+    "version": "0.1.55",
     "author": "Havea Crenata <havea.crenata@gmail.com>",
     "repository": {
         "type": "git",
@@ -14,7 +14,7 @@
         "@bejibun/cors": "^0.1.16",
         "@bejibun/database": "^0.1.19",
         "@bejibun/logger": "^0.1.22",
-        "@bejibun/utils": "^0.1.21",
+        "@bejibun/utils": "^0.1.22",
         "@vinejs/vine": "^3.0.1",
         "commander": "^14.0.2",
         "luxon": "^3.7.2",

@@ -1,6 +1,7 @@
 import App from "@bejibun/app";
 import { isEmpty } from "@bejibun/utils";
 import Luxon from "@bejibun/utils/facades/Luxon";
+import Str from "@bejibun/utils/facades/Str";
 import path from "path";
 export default class StorageBuilder {
     file;
@@ -8,6 +9,7 @@ export default class StorageBuilder {
     name;
     constructor() {
         this.name = "";
+        this.directory = "general";
     }
     setFile(file) {
         this.file = file;
@@ -23,7 +25,7 @@ export default class StorageBuilder {
     }
     async save() {
         if (isEmpty(this.name))
-            this.name = `${Luxon.DateTime.now().toUnixInteger()}-${Math.random().toString(36).substring(2, 2 + 16)}`;
-        await Bun.write(App.Path.storagePath(`app/public/${this.directory}/${this.name}${path.extname(this.file?.name)}`), this.file);
+            this.name = Str.random();
+        await Bun.write(App.Path.storagePath(`app/public/${this.directory}/${Luxon.DateTime.now().toUnixInteger()}-${this.name}${path.extname(this.file?.name)}`), this.file);
     }
 }

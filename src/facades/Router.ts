@@ -37,39 +37,39 @@ export default class Router {
     }
 
     public static connect(path: string, handler: string | HandlerType): RouterGroup {
-        return new RouterBuilder().buildSingle(HttpMethodEnum.Connect, path, handler);
+        return new RouterBuilder().connect(path, handler);
     }
 
     public static delete(path: string, handler: string | HandlerType): RouterGroup {
-        return new RouterBuilder().buildSingle(HttpMethodEnum.Delete, path, handler);
+        return new RouterBuilder().delete(path, handler);
     }
 
     public static get(path: string, handler: string | HandlerType): RouterGroup {
-        return new RouterBuilder().buildSingle(HttpMethodEnum.Get, path, handler);
+        return new RouterBuilder().get(path, handler);
     }
 
     public static head(path: string, handler: string | HandlerType): RouterGroup {
-        return new RouterBuilder().buildSingle(HttpMethodEnum.Head, path, handler);
+        return new RouterBuilder().head(path, handler);
     }
 
     public static options(path: string, handler: string | HandlerType): RouterGroup {
-        return new RouterBuilder().buildSingle(HttpMethodEnum.Options, path, handler);
+        return new RouterBuilder().options(path, handler);
     }
 
     public static patch(path: string, handler: string | HandlerType): RouterGroup {
-        return new RouterBuilder().buildSingle(HttpMethodEnum.Patch, path, handler);
+        return new RouterBuilder().patch(path, handler);
     }
 
     public static post(path: string, handler: string | HandlerType): RouterGroup {
-        return new RouterBuilder().buildSingle(HttpMethodEnum.Post, path, handler);
+        return new RouterBuilder().post(path, handler);
     }
 
     public static put(path: string, handler: string | HandlerType): RouterGroup {
-        return new RouterBuilder().buildSingle(HttpMethodEnum.Put, path, handler);
+        return new RouterBuilder().put(path, handler);
     }
 
     public static trace(path: string, handler: string | HandlerType): RouterGroup {
-        return new RouterBuilder().buildSingle(HttpMethodEnum.Trace, path, handler);
+        return new RouterBuilder().trace(path, handler);
     }
 
     public static match(methods: Array<HttpMethodEnum>, path: string, handler: string | HandlerType): RouterGroup {

@@ -92,6 +92,33 @@ export default class RouterBuilder {
             }
         };
     }
+    connect(path, handler) {
+        return this.buildSingle(HttpMethodEnum.Connect, path, handler);
+    }
+    delete(path, handler) {
+        return this.buildSingle(HttpMethodEnum.Delete, path, handler);
+    }
+    get(path, handler) {
+        return this.buildSingle(HttpMethodEnum.Get, path, handler);
+    }
+    head(path, handler) {
+        return this.buildSingle(HttpMethodEnum.Head, path, handler);
+    }
+    options(path, handler) {
+        return this.buildSingle(HttpMethodEnum.Options, path, handler);
+    }
+    patch(path, handler) {
+        return this.buildSingle(HttpMethodEnum.Patch, path, handler);
+    }
+    post(path, handler) {
+        return this.buildSingle(HttpMethodEnum.Post, path, handler);
+    }
+    put(path, handler) {
+        return this.buildSingle(HttpMethodEnum.Put, path, handler);
+    }
+    trace(path, handler) {
+        return this.buildSingle(HttpMethodEnum.Trace, path, handler);
+    }
     match(methods, path, handler) {
         const routeMap = {};
         for (const method of methods) {

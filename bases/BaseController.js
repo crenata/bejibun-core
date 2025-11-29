@@ -111,7 +111,7 @@ export default class BaseController {
                     else if (Array.isArray(current[part]))
                         current[part].push(convertedValue);
                     else
-                        current[part] = [current[part], convertedValue];
+                        continue;
                 }
                 else {
                     const isArrayIndex = /^\d+$/.test(nextPart);

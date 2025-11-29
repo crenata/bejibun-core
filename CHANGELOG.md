@@ -3,6 +3,24 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.55](https://github.com/crenata/bejibun-core/compare/v0.1.54...v0.1.55) - 2025-11-29
+
+### 🩹 Fixes
+- Body parser for multiple keys - [#2](https://github.com/crenata/bejibun-core/issues/2)
+- x402 on nester router - [#3](https://github.com/crenata/bejibun-core/issues/3)
+- Storage directory undefined - [#4](https://github.com/crenata/bejibun-core/issues/4)
+- Unknown actual error on runtime exception - [#5](https://github.com/crenata/bejibun-core/issues/5)
+
+### 📖 Changes
+- Storage adjustment: random string filename.
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.54](https://github.com/crenata/bejibun-core/compare/v0.1.53...v0.1.54) - 2025-11-28
 
 ### 🩹 Fixes

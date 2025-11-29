@@ -17,6 +17,15 @@ export default class RouterBuilder {
     group(routes: RouterGroup | Array<RouterGroup>): RouterGroup;
     resources(controller: Record<string, HandlerType>, options?: ResourceOptions): RouterGroup;
     buildSingle(method: HttpMethodEnum, path: string, handler: string | HandlerType): RouterGroup;
+    connect(path: string, handler: string | HandlerType): RouterGroup;
+    delete(path: string, handler: string | HandlerType): RouterGroup;
+    get(path: string, handler: string | HandlerType): RouterGroup;
+    head(path: string, handler: string | HandlerType): RouterGroup;
+    options(path: string, handler: string | HandlerType): RouterGroup;
+    patch(path: string, handler: string | HandlerType): RouterGroup;
+    post(path: string, handler: string | HandlerType): RouterGroup;
+    put(path: string, handler: string | HandlerType): RouterGroup;
+    trace(path: string, handler: string | HandlerType): RouterGroup;
     match(methods: Array<HttpMethodEnum>, path: string, handler: string | HandlerType): RouterGroup;
     any(path: string, handler: string | HandlerType): RouterGroup;
     private joinPaths;
