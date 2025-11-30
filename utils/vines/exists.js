@@ -4,6 +4,8 @@ import BaseModel from "../../bases/BaseModel";
 const exists = async (value, options, field) => {
     if (!field.isValid)
         return;
+    if (options.nullable)
+        return;
     const column = defineValue(options.column, field.name);
     let query = options.table;
     if (options.withTrashed)
@@ -16,10 +18,10 @@ const exists = async (value, options, field) => {
 };
 const existsRule = vine.createRule(exists, { isAsync: true });
 const registerExistsMacro = (Type) => {
-    Type.macro("exists", function (tableOrOptions, column, withTrashed) {
+    Type.macro("exists", function (tableOrOptions, column, withTrashed, nullable) {
         const isModel = typeof tableOrOptions === "function" && Object.prototype.isPrototypeOf.call(BaseModel, tableOrOptions);
         const options = isModel
-            ? { table: tableOrOptions, column, withTrashed }
+            ? { table: tableOrOptions, column, withTrashed, nullable }
             : tableOrOptions;
         return this.use(existsRule(options));
     });

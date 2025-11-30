@@ -4,6 +4,8 @@ import BaseModel from "../../bases/BaseModel";
 const unique = async (value, options, field) => {
     if (!field.isValid)
         return;
+    if (options.nullable)
+        return;
     const column = defineValue(options.column, field.name);
     let query = options.table;
     if (options.withTrashed)
@@ -16,10 +18,10 @@ const unique = async (value, options, field) => {
 };
 const uniqueRule = vine.createRule(unique, { isAsync: true });
 const registerUniqueMacro = (Type) => {
-    Type.macro("unique", function (tableOrOptions, column, withTrashed) {
+    Type.macro("unique", function (tableOrOptions, column, withTrashed, nullable) {
         const isModel = typeof tableOrOptions === "function" && Object.prototype.isPrototypeOf.call(BaseModel, tableOrOptions);
         const options = isModel
-            ? { table: tableOrOptions, column, withTrashed }
+            ? { table: tableOrOptions, column, withTrashed, nullable }
             : tableOrOptions;
         return this.use(uniqueRule(options));
     });
