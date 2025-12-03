@@ -53,42 +53,6 @@ export default class BaseController {
         }
     }
 
-    private serialize(data: any): any {
-        if (Array.isArray(data)) return data.map((value: any) => this.serialize(value));
-
-        if (data === null || data === undefined) return null;
-
-        if (data instanceof DateTime) return data.isValid ? data.toISO() : null;
-
-        if (data instanceof Date) return Number.isNaN(data.getTime()) ? null : data.toISOString();
-
-        if (typeof data === "object" && !(data instanceof File)) {
-            if (Object.keys(data).length === 0) return null;
-
-            const nested: Record<string, any> = {};
-            Object.keys(data).forEach((key: string) => {
-                nested[key] = this.serialize(data[key]);
-            });
-
-            return nested;
-        }
-
-        if (typeof data === "string") {
-            const trimmed: string = data.trim();
-
-            if (trimmed === "") return null;
-            if (trimmed === "true") return true;
-            if (trimmed === "false") return false;
-
-            const numeric = Number(trimmed);
-            if (!Number.isNaN(numeric) && trimmed === numeric.toString()) return numeric;
-
-            return trimmed;
-        }
-
-        return data;
-    }
-
     private parseForm(formData: FormData): Record<string, any> {
         const result: Record<string, any> = {};
 
@@ -106,7 +70,7 @@ export default class BaseController {
 
                     if (value as unknown instanceof File) {
                         convertedValue = value;
-                    } else if (value.trim() === "") {
+                    } else if (value.trim() === "" || value === "null" || value === "undefined") {
                         convertedValue = null;
                     } else if (Number.isNaN(value)) {
                         convertedValue = Number(value);

@@ -1,5 +1,4 @@
 import { defineValue, isEmpty, isNotEmpty } from "@bejibun/utils";
-import { DateTime } from "luxon";
 import ValidatorException from "../exceptions/ValidatorException";
 import Response from "../facades/Response";
 export default class BaseController {
@@ -43,39 +42,6 @@ export default class BaseController {
             throw new ValidatorException(error.messages[0].message);
         }
     }
-    serialize(data) {
-        if (Array.isArray(data))
-            return data.map((value) => this.serialize(value));
-        if (data === null || data === undefined)
-            return null;
-        if (data instanceof DateTime)
-            return data.isValid ? data.toISO() : null;
-        if (data instanceof Date)
-            return Number.isNaN(data.getTime()) ? null : data.toISOString();
-        if (typeof data === "object" && !(data instanceof File)) {
-            if (Object.keys(data).length === 0)
-                return null;
-            const nested = {};
-            Object.keys(data).forEach((key) => {
-                nested[key] = this.serialize(data[key]);
-            });
-            return nested;
-        }
-        if (typeof data === "string") {
-            const trimmed = data.trim();
-            if (trimmed === "")
-                return null;
-            if (trimmed === "true")
-                return true;
-            if (trimmed === "false")
-                return false;
-            const numeric = Number(trimmed);
-            if (!Number.isNaN(numeric) && trimmed === numeric.toString())
-                return numeric;
-            return trimmed;
-        }
-        return data;
-    }
     parseForm(formData) {
         const result = {};
         for (const [key, value] of formData.entries()) {
@@ -89,7 +55,7 @@ export default class BaseController {
                     if (value instanceof File) {
                         convertedValue = value;
                     }
-                    else if (value.trim() === "") {
+                    else if (value.trim() === "" || value === "null" || value === "undefined") {
                         convertedValue = null;
                     }
                     else if (Number.isNaN(value)) {
