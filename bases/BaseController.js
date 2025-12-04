@@ -39,7 +39,13 @@ export default class BaseController {
             return await validator.validate(body);
         }
         catch (error) {
-            throw new ValidatorException(error.messages[0].message);
+            const defaultMessage = "Invalid syntax validation.";
+            let message = defaultMessage;
+            if (isNotEmpty(error?.messages))
+                message = defineValue(error?.messages[0]?.message, defaultMessage);
+            else
+                message = defineValue(error?.message, defaultMessage);
+            throw new ValidatorException(message);
         }
     }
     parseForm(formData) {

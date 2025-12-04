@@ -49,7 +49,13 @@ export default class BaseController {
         try {
             return await validator.validate(body);
         } catch (error: typeof errors.E_VALIDATION_ERROR | any) {
-            throw new ValidatorException(error.messages[0].message);
+            const defaultMessage: string = "Invalid syntax validation.";
+            let message: string = defaultMessage;
+
+            if (isNotEmpty(error?.messages)) message = defineValue(error?.messages[0]?.message, defaultMessage);
+            else message = defineValue(error?.message, defaultMessage);
+
+            throw new ValidatorException(message);
         }
     }
 
