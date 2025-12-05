@@ -3,7 +3,7 @@ import { isEmpty, isModuleExists } from "@bejibun/utils";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import Enum from "@bejibun/utils/facades/Enum";
 import path from "path";
-import RouterInvalidException from "../exceptions/RouterInvalidException";
+import RouterException from "../exceptions/RouterException";
 export default class RouterBuilder {
     basePath = "";
     middlewares = [];
@@ -22,7 +22,7 @@ export default class RouterBuilder {
     }
     x402(config, facilitatorConfig, paywallConfig) {
         if (!isModuleExists("@bejibun/x402"))
-            throw new RouterInvalidException("@bejibun/x402 is not installed.");
+            throw new RouterException("@bejibun/x402 is not installed.");
         const X402Middleware = require("../middlewares/X402Middleware").default;
         this.middlewares.push(new X402Middleware(config, facilitatorConfig, paywallConfig));
         return this;
@@ -32,7 +32,7 @@ export default class RouterBuilder {
         const newRoutes = {};
         for (const route of routeList) {
             for (const path in route) {
-                const fullPath = this.joinPaths(this.basePath, path);
+                const cleanPath = this.joinPaths(this.basePath, path);
                 const routeHandlers = route[path];
                 const wrappedHandlers = {};
                 for (const method in routeHandlers) {
@@ -42,9 +42,9 @@ export default class RouterBuilder {
                     }
                     wrappedHandlers[method] = handler;
                 }
-                if (isEmpty(newRoutes[fullPath]))
-                    newRoutes[fullPath] = {};
-                Object.assign(newRoutes[fullPath], wrappedHandlers);
+                if (isEmpty(newRoutes[cleanPath]))
+                    newRoutes[cleanPath] = {};
+                Object.assign(newRoutes[cleanPath], wrappedHandlers);
             }
         }
         return newRoutes;
@@ -142,7 +142,7 @@ export default class RouterBuilder {
     resolveControllerString(definition) {
         const [controllerName, methodName] = definition.split("@");
         if (isEmpty(controllerName) || isEmpty(methodName)) {
-            throw new RouterInvalidException(`Invalid router controller definition: ${definition}.`);
+            throw new RouterException(`Invalid router controller definition: ${definition}.`);
         }
         const controllerPath = path.resolve(App.Path.rootPath(), this.baseNamespace);
         const location = Bun.resolveSync(`./${controllerName}.ts`, controllerPath);
@@ -156,17 +156,17 @@ export default class RouterBuilder {
                 const ESMController = module.default;
                 const instance = new ESMController();
                 if (typeof instance[methodName] !== "function") {
-                    throw new RouterInvalidException(`Method "${methodName}" not found in ${controllerName}.`);
+                    throw new RouterException(`Method "${methodName}" not found in ${controllerName}.`);
                 }
                 return instance[methodName](...args);
             };
         }
         if (isEmpty(ControllerClass)) {
-            throw new RouterInvalidException(`Controller not found: ${controllerName}.`);
+            throw new RouterException(`Controller not found: ${controllerName}.`);
         }
         const instance = new ControllerClass();
         if (typeof instance[methodName] !== "function") {
-            throw new RouterInvalidException(`Method "${methodName}" not found in ${controllerName}.`);
+            throw new RouterException(`Method "${methodName}" not found in ${controllerName}.`);
         }
         return instance[methodName].bind(instance);
     }
