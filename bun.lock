@@ -9,7 +9,7 @@
         "@bejibun/cors": "^0.1.16",
         "@bejibun/database": "^0.1.19",
         "@bejibun/logger": "^0.1.22",
-        "@bejibun/utils": "^0.1.22",
+        "@bejibun/utils": "^0.1.23",
         "@vinejs/vine": "^3.0.1",
         "commander": "^14.0.2",
         "luxon": "^3.7.2",
@@ -32,7 +32,7 @@
 
     "@bejibun/app": ["@bejibun/app@0.1.22", "", { "dependencies": { "@bejibun/utils": "^0.1.1" } }, "sha512-z8es89IdxPm9DVrhpkp9X/XtulQo7oV2BTYLx5jqkj65peBrKR7zdPDj58edPDgj+zO4Fv76VMhUqGO9LjO5DA=="],
 
-    "@bejibun/cache": ["@bejibun/cache@0.1.11", "", { "dependencies": { "@bejibun/app": "^0.1.22", "@bejibun/logger": "^0.1.22", "@bejibun/redis": "^0.1.34", "@bejibun/utils": "^0.1.21" } }, "sha512-5mZVEmGi3BRonkRtBWjY9si15gdHl42+e2CVW2pvYGIabhqI0ofNldatVxwtZgPHPSnNhsM48KScQ6fiMxOlnQ=="],
+    "@bejibun/cache": ["@bejibun/cache@0.1.12", "", { "dependencies": { "@bejibun/app": "^0.1.22", "@bejibun/logger": "^0.1.22", "@bejibun/redis": "^0.1.34", "@bejibun/utils": "^0.1.23" } }, "sha512-Ub1uF9kcJMFgBL2EVNn4JEgG9VbGnev/aPTVt3BqH31mLkIw/RD67F2DvDbTeaGSos5P3JLQb89eeWoHnpCQiA=="],
 
     "@bejibun/cors": ["@bejibun/cors@0.1.16", "", { "dependencies": { "@bejibun/app": "^0.1.19", "@bejibun/utils": "^0.1.14" } }, "sha512-kzlrExbhbowVWyVibe78uOp46lTXxu15r3GjK6IN9mT1aIE0l098Bek93wuJPDColIruLeucfXHjOaFplpUlwA=="],
 
@@ -963,8 +963,6 @@
     "@base-org/account/zustand": ["zustand@5.0.3", "", { "peerDependencies": { "@types/react": ">=18.0.0", "immer": ">=9.0.6", "react": ">=18.0.0", "use-sync-external-store": ">=1.2.0" }, "optionalPeers": ["@types/react", "immer", "react", "use-sync-external-store"] }, "sha512-14fwWQtU3pH4dE0dOpdMiWjddcH+QzKIgk1cl8epwSE7yag43k/AD/m4L6+K7DytAOr9gGBe3/EXj9g7cdostg=="],
 
     "@bejibun/app/@bejibun/utils": ["@bejibun/utils@0.1.20", "", { "dependencies": { "@bejibun/logger": "^0.1.18", "luxon": "^3.7.2" } }, "sha512-BKPlaAMjsR01FKsVcCf8eRvFAQEBiHJ1NVPQLTieNYsVpMaG5Liht9egNCjKi3vdrRn9sjbXbvUQv2NgDrKvaQ=="],
-
-    "@bejibun/cache/@bejibun/utils": ["@bejibun/utils@0.1.21", "", { "dependencies": { "@bejibun/logger": "^0.1.18", "luxon": "^3.7.2" } }, "sha512-MKP5qJtNyznY1oETGt0yaINFCNzWso2sfORgYjSbc/egLGySS2fuJnVPq9xfXRpnXQfDdSYdbb2QAFbXp7FGaA=="],
 
     "@bejibun/cors/@bejibun/utils": ["@bejibun/utils@0.1.20", "", { "dependencies": { "@bejibun/logger": "^0.1.18", "luxon": "^3.7.2" } }, "sha512-BKPlaAMjsR01FKsVcCf8eRvFAQEBiHJ1NVPQLTieNYsVpMaG5Liht9egNCjKi3vdrRn9sjbXbvUQv2NgDrKvaQ=="],
 

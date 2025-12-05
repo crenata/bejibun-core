@@ -3,6 +3,33 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.57](https://github.com/crenata/bejibun-core/compare/v0.1.55...v0.1.57) - 2025-12-05
+
+### 🩹 Fixes
+- Hang, when redis not connected - [#7](https://github.com/crenata/bejibun-core/issues/7)
+- Handling for invalid syntax validation - [#8](https://github.com/crenata/bejibun-core/issues/8)
+- Body serialize for empty form data field - [#9](https://github.com/crenata/bejibun-core/issues/9)
+
+#### [@bejibun/utils](https://github.com/crenata/bejibun-utils)
+- Empty validation for file - [#1](https://github.com/crenata/bejibun-utils/issues/1)
+
+### 📖 Changes
+#### Upgrade [@bejibun/utils](https://github.com/crenata/bejibun-utils) to v0.1.23
+- Empty validation for file
+
+#### Upgrade [@bejibun/cache](https://github.com/crenata/bejibun-cache) to v0.1.12
+- Adding `local` connection for file schema.
+
+Now, [@bejibun/cache](https://github.com/crenata/bejibun-cache) has local and redis for cache system.
+If the connection use local, this will cache data as file on storage/cache.
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.55](https://github.com/crenata/bejibun-core/compare/v0.1.54...v0.1.55) - 2025-11-29
 
 ### 🩹 Fixes
