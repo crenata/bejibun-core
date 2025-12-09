@@ -3,6 +3,21 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.58](https://github.com/crenata/bejibun-core/compare/v0.1.57...v0.1.58) - 2025-12-09
+
+### 🩹 Fixes
+
+### 📖 Changes
+#### Upgrade [@bejibun/utils](https://github.com/crenata/bejibun-utils) to v0.1.25
+- Implement `serialize` and `parseFormData` to `BaseController` for cleaner data and more actual data validation.
+
+### ❤️Contributors
+- Ghulje ([@ghulje](https://github.com/ghulje))
+
+**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.57](https://github.com/crenata/bejibun-core/compare/v0.1.55...v0.1.57) - 2025-12-05
 
 ### 🩹 Fixes

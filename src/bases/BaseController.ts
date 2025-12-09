@@ -1,6 +1,6 @@
 import {defineValue, isEmpty, isNotEmpty} from "@bejibun/utils";
+import {default as Bobject} from "@bejibun/utils/facades/Object";
 import {errors, VineValidator} from "@vinejs/vine";
-import {DateTime} from "luxon";
 import ValidatorException from "@/exceptions/ValidatorException";
 import Response from "@/facades/Response";
 
@@ -10,7 +10,7 @@ export default class BaseController {
         const formData = new FormData();
 
         try {
-            if (contentType.includes("application/json")) return await request.json();
+            if (contentType.includes("application/json")) return Bobject.serialize(await request.json());
 
             for (const [key, value] of Object.entries(request.params)) {
                 formData.append(key, value as string);
@@ -38,7 +38,7 @@ export default class BaseController {
             // do nothing
         }
 
-        return this.parseForm(formData);
+        return Bobject.parseFormData(formData);
     }
 
     public get response(): typeof Response {
@@ -57,52 +57,5 @@ export default class BaseController {
 
             throw new ValidatorException(message);
         }
-    }
-
-    private parseForm(formData: FormData): Record<string, any> {
-        const result: Record<string, any> = {};
-
-        for (const [key, value] of formData.entries()) {
-            const keys = key.replace(/]/g, "").split("[");
-
-            let current: any = result;
-
-            for (let i = 0; i < keys.length; i++) {
-                const part = keys[i];
-                const nextPart = keys[i + 1];
-
-                if (i === keys.length - 1) {
-                    let convertedValue: any;
-
-                    if (value as unknown instanceof File) {
-                        convertedValue = value;
-                    } else if (value.trim() === "" || value === "null" || value === "undefined") {
-                        convertedValue = null;
-                    } else if (Number.isNaN(value)) {
-                        convertedValue = Number(value);
-                    } else if (value === "true" || value === "false") {
-                        convertedValue = value === "true";
-                    } else {
-                        try {
-                            convertedValue = JSON.parse(value);
-                        } catch {
-                            convertedValue = value;
-                        }
-                    }
-
-                    if (current[part] === undefined) current[part] = convertedValue;
-                    else if (Array.isArray(current[part])) current[part].push(convertedValue);
-                    else continue;
-                } else {
-                    const isArrayIndex = /^\d+$/.test(nextPart);
-
-                    if (isEmpty(current[part])) current[part] = isArrayIndex ? [] : {};
-
-                    current = current[part];
-                }
-            }
-        }
-
-        return result;
     }
 }
