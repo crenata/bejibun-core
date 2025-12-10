@@ -33,7 +33,7 @@ export default class StorageBuilder {
     }
 
     public async save(): Promise<any> {
-        if (isEmpty(this.name)) this.name = Str.random();
+        if (isEmpty(this.name)) this.name = Str.random() as string;
 
         await Bun.write(App.Path.storagePath(`app/public/${this.directory}/${Luxon.DateTime.now().toUnixInteger()}-${this.name}${path.extname(this.file?.name)}`), this.file);
     }

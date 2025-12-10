@@ -3,6 +3,20 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.60](https://github.com/crenata/bejibun-core/compare/v0.1.58...v0.1.60) - 2025-12-10
+
+### 🩹 Fixes
+- [@bejibun/cache](https://github.com/crenata/bejibun-cache) local with Rate Limiter - [#10](https://github.com/crenata/bejibun-core/issues/10)
+
+### 📖 Changes
+
+### ❤️Contributors
+- Ghulje ([@ghulje](https://github.com/ghulje))
+
+**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.58](https://github.com/crenata/bejibun-core/compare/v0.1.57...v0.1.58) - 2025-12-09
 
 ### 🩹 Fixes

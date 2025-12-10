@@ -1,5 +1,6 @@
 import App from "@bejibun/app";
 import { defineValue } from "@bejibun/utils";
+import Str from "@bejibun/utils/facades/Str";
 import LimiterConfig from "../config/limiter";
 import RateLimiter from "../facades/RateLimiter";
 export default class RateLimiterMiddleware {
@@ -12,7 +13,7 @@ export default class RateLimiterMiddleware {
             else
                 config = LimiterConfig;
             return await RateLimiter
-                .attempt(`rate-limiter/${defineValue(server.requestIP(request)?.address, "")}`, defineValue(config?.limit, 60), () => {
+                .attempt(`rate-limiter/${Str.ipToFileName(defineValue(server.requestIP(request)?.address, ""))}`, defineValue(config?.limit, 60), () => {
                 return handler(request, server);
             });
         };

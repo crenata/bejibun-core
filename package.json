@@ -1,6 +1,6 @@
 {
     "name": "@bejibun/core",
-    "version": "0.1.59",
+    "version": "0.1.60",
     "author": "Havea Crenata <havea.crenata@gmail.com>",
     "repository": {
         "type": "git",
@@ -14,7 +14,7 @@
         "@bejibun/cors": "^0.1.16",
         "@bejibun/database": "^0.1.19",
         "@bejibun/logger": "^0.1.22",
-        "@bejibun/utils": "^0.1.25",
+        "@bejibun/utils": "^0.1.27",
         "@vinejs/vine": "^3.0.1",
         "commander": "^14.0.2",
         "luxon": "^3.7.2",
@@ -41,12 +41,13 @@
     "license": "MIT",
     "scripts": {
         "alias": "bunx tsc-alias -p tsconfig.json",
+        "clean-dist": "rm -rf dist",
         "clean-stubs": "rm -rf stubs",
         "stubs": "cp -rf src/stubs dist",
         "types": "cp -rf src/types dist",
         "rsync": "rsync -a dist/ ./",
         "clean": "rm -rf dist",
-        "build": "bun run clean-stubs && bunx tsc -p tsconfig.json && bun run types && bun run alias && bun run stubs && bun run rsync && bun run clean",
+        "build": "bun run clean-dist && bun run clean-stubs && bunx tsc -p tsconfig.json && bun run types && bun run alias && bun run stubs && bun run rsync && bun run clean",
         "deploy": "bun run build && bun publish --access public"
     },
     "type": "module",
