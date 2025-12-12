@@ -3,6 +3,33 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.61](https://github.com/crenata/bejibun-core/compare/v0.1.58...v0.1.61) - 2025-12-12
+
+### 🩹 Fixes
+- [@bejibun/cache](https://github.com/crenata/bejibun-cache) Redis connection with Cache own configuration - [#1](https://github.com/crenata/bejibun-core/issues/1)
+
+### 📖 Changes
+What's New :
+#### Upgrade [@bejibun/cache](https://github.com/crenata/bejibun-cache) to v0.1.14
+- Adding `ttl` supports for file scheme.
+
+#### How does it work?
+When you use a cache and include a `ttl`, the system generates a `unix timestamp` and adds it with specified `ttl`.
+Then system will write it to a file in the format `ttl|file`, separated by the `|` symbol.
+
+When you call data from the cache, the system creates metadata consisting of the `ttl` and `data` by splitting them with `|`.
+The system then checks if the `ttl` is empty and returns the data.
+
+Or if the `ttl` is present, the system checks whether the `current timestamp` <= `ttl`?
+If so, the data is returned. Otherwise, the cache file will be deleted and returned null.
+
+### ❤️Contributors
+- Ghulje ([@ghulje](https://github.com/ghulje))
+
+**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.60](https://github.com/crenata/bejibun-core/compare/v0.1.58...v0.1.60) - 2025-12-10
 
 ### 🩹 Fixes
