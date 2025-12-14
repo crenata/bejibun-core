@@ -10,11 +10,11 @@
     "module": "index.js",
     "dependencies": {
         "@bejibun/app": "^0.1.22",
-        "@bejibun/cache": "^0.1.14",
+        "@bejibun/cache": "^0.1.15",
         "@bejibun/cors": "^0.1.16",
         "@bejibun/database": "^0.1.19",
         "@bejibun/logger": "^0.1.22",
-        "@bejibun/utils": "^0.1.27",
+        "@bejibun/utils": "^0.1.28",
         "@vinejs/vine": "^3.0.1",
         "commander": "^14.0.2",
         "luxon": "^3.7.2",
