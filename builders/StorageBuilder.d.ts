@@ -1,10 +1,14 @@
+import { StorageDisk } from "../types/storage";
 export default class StorageBuilder {
-    protected file: any;
-    protected directory?: string;
-    protected name?: string;
+    protected conf: Record<string, any>;
+    protected overrideDisk?: StorageDisk;
+    protected drive?: string;
     constructor();
-    setFile(file: any): StorageBuilder;
-    setDirectory(directory: string): StorageBuilder;
-    setName(name: string): StorageBuilder;
-    save(): Promise<any>;
+    private get config();
+    private get currentDisk();
+    private get driver();
+    build(overrideDisk: StorageDisk): StorageBuilder;
+    disk(drive: string): StorageBuilder;
+    get(filepath: string): Promise<any>;
+    put(filepath: string, content: any): Promise<void>;
 }

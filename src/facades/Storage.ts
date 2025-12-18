@@ -1,13 +1,20 @@
-import {isNotEmpty} from "@bejibun/utils";
 import StorageBuilder from "@/builders/StorageBuilder";
+import {StorageDisk} from "@/types/storage";
 
 export default class Storage {
-    public static async save(file: any, directory?: string, name?: string): Promise<any> {
-        const builder = new StorageBuilder().setFile(file);
+    public static build(disk: StorageDisk): StorageBuilder {
+        return new StorageBuilder().build(disk);
+    }
 
-        if (isNotEmpty(directory)) builder.setDirectory(directory as string);
-        if (isNotEmpty(name)) builder.setName(name as string);
+    public static disk(disk: string): StorageBuilder {
+        return new StorageBuilder().disk(disk);
+    }
 
-        return await builder.save();
+    public static async get(path: string): Promise<any> {
+        return await new StorageBuilder().get(path);
+    }
+
+    public static async put(path: string, content: any): Promise<void> {
+        return await new StorageBuilder().put(path, content);
     }
 }
