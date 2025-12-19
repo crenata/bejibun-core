@@ -6,6 +6,12 @@ export default class Storage {
     static disk(disk) {
         return new StorageBuilder().disk(disk);
     }
+    static async exists(path) {
+        return await new StorageBuilder().exists(path);
+    }
+    static async missing(path) {
+        return await new StorageBuilder().missing(path);
+    }
     static async get(path) {
         return await new StorageBuilder().get(path);
     }

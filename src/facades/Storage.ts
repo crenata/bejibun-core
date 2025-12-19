@@ -10,6 +10,14 @@ export default class Storage {
         return new StorageBuilder().disk(disk);
     }
 
+    public static async exists(path: string): Promise<boolean> {
+        return await new StorageBuilder().exists(path);
+    }
+
+    public static async missing(path: string): Promise<boolean> {
+        return await new StorageBuilder().missing(path);
+    }
+
     public static async get(path: string): Promise<any> {
         return await new StorageBuilder().get(path);
     }

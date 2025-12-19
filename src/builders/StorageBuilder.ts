@@ -65,6 +65,23 @@ export default class StorageBuilder {
         return this;
     }
 
+    public async exists(filepath: string): Promise<boolean> {
+        if (isEmpty(filepath)) throw new DiskException("The file path is required.");
+
+        switch (this.driver) {
+            case DiskDriverEnum.Local:
+                return await Bun.file(path.resolve(this.currentDisk.root, filepath)).exists();
+            default:
+                return false;
+        }
+    }
+
+    public async missing(filepath: string): Promise<boolean> {
+        if (isEmpty(filepath)) throw new DiskException("The file path is required.");
+
+        return !await this.exists(filepath);
+    }
+
     public async get(filepath: string): Promise<any> {
         if (isEmpty(filepath)) throw new DiskException("The file path is required.");
 

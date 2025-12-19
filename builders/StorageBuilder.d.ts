@@ -9,6 +9,8 @@ export default class StorageBuilder {
     private get driver();
     build(overrideDisk: StorageDisk): StorageBuilder;
     disk(drive: string): StorageBuilder;
+    exists(filepath: string): Promise<boolean>;
+    missing(filepath: string): Promise<boolean>;
     get(filepath: string): Promise<any>;
     put(filepath: string, content: any): Promise<void>;
 }
