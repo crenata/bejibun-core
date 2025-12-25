@@ -13,4 +13,5 @@ export default class StorageBuilder {
     missing(filepath: string): Promise<boolean>;
     get(filepath: string): Promise<any>;
     put(filepath: string, content: any): Promise<void>;
+    delete(filepath: string): Promise<void>;
 }

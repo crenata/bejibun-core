@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [v0.1.64](https://github.com/crenata/bejibun-core/compare/v0.1.61...v0.1.64) - 2025-12-22
+## [v0.1.64](https://github.com/crenata/bejibun-core/compare/v0.1.61...v0.1.64) - 2025-12-25
 
 ### 🩹 Fixes
 

@@ -7,4 +7,5 @@ export default class Storage {
     static missing(path: string): Promise<boolean>;
     static get(path: string): Promise<any>;
     static put(path: string, content: any): Promise<void>;
+    static delete(path: string): Promise<any>;
 }

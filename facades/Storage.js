@@ -18,4 +18,7 @@ export default class Storage {
     static async put(path, content) {
         return await new StorageBuilder().put(path, content);
     }
+    static async delete(path) {
+        return await new StorageBuilder().delete(path);
+    }
 }

@@ -98,4 +98,15 @@ export default class StorageBuilder {
             Logger.setContext("Storage").error("Something went wrong when saving file.").trace(error);
         }
     }
+    async delete(filepath) {
+        if (isEmpty(filepath))
+            throw new DiskException("The file path is required.");
+        switch (this.driver) {
+            case DiskDriverEnum.Local:
+                await Bun.file(path.resolve(this.currentDisk.root, filepath)).delete();
+                break;
+            default:
+                break;
+        }
+    }
 }
