@@ -3,6 +3,70 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.64](https://github.com/crenata/bejibun-core/compare/v0.1.61...v0.1.64) - 2025-12-22
+
+### 🩹 Fixes
+
+### 📖 Changes
+#### What's New :
+#### Storage
+A filesystem facade, with built-in disk management including disks configuration and build disk at runtime.
+
+- Standard Use
+```ts
+import Storage from "@bejibun/core/facades/Storage";
+
+await Storage.exists("path/to/your/file.ext"); // Check if the file exists
+await Storage.missing("path/to/your/file.ext"); // Check if the file doesn't exists
+await Storage.get("path/to/your/file.ext"); // Get data content
+await Storage.put("path/to/your/file.ext", "content"); // Store content to file
+await Storage.delete("path/to/your/file.ext"); // Delete file
+```
+
+- With Specified Disk
+```ts
+import Storage from "@bejibun/core/facades/Storage";
+
+await Storage.disk("public").exists("path/to/your/file.ext");
+await Storage.disk("public").missing("path/to/your/file.ext");
+await Storage.disk("public").get("path/to/your/file.ext");
+await Storage.disk("public").put("path/to/your/file.ext", "content");
+await Storage.disk("public").delete("path/to/your/file.ext");
+```
+
+- New Disk at Runtime
+```ts
+import Storage from "@bejibun/core/facades/Storage";
+
+await Storage.build({
+    driver: "local", // "local" | DiskDriverEnum.Local
+    root: App.Path.storagePath("custom")
+}).exists("path/to/your/file.ext");
+await Storage.build({
+    driver: "local",
+    root: App.Path.storagePath("custom")
+}).missing("path/to/your/file.ext");
+await Storage.build({
+    driver: "local",
+    root: App.Path.storagePath("custom")
+}).get("path/to/your/file.ext");
+await Storage.build({
+    driver: "local",
+    root: App.Path.storagePath("custom")
+}).put("path/to/your/file.ext", "content");
+await Storage.build({
+    driver: "local",
+    root: App.Path.storagePath("custom")
+}).delete("path/to/your/file.ext");
+```
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.61](https://github.com/crenata/bejibun-core/compare/v0.1.58...v0.1.61) - 2025-12-12
 
 ### 🩹 Fixes

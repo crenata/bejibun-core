@@ -517,8 +517,9 @@ import BaseModel from "@/bases/BaseModel";
 ```
 
 ### Storage
-A facade for filesystem.
+A filesystem facade, with built-in disk management including disks configuration and build disk at runtime.
 
+- Standard Use
 ```ts
 import Storage from "@bejibun/core/facades/Storage";
 
@@ -526,30 +527,44 @@ await Storage.exists("path/to/your/file.ext"); // Check if the file exists
 await Storage.missing("path/to/your/file.ext"); // Check if the file doesn't exists
 await Storage.get("path/to/your/file.ext"); // Get data content
 await Storage.put("path/to/your/file.ext", "content"); // Store content to file
+await Storage.delete("path/to/your/file.ext"); // Delete file
+```
 
-/* Process file with specified disk */
+- With Specified Disk
+```ts
+import Storage from "@bejibun/core/facades/Storage";
+
 await Storage.disk("public").exists("path/to/your/file.ext");
 await Storage.disk("public").missing("path/to/your/file.ext");
 await Storage.disk("public").get("path/to/your/file.ext");
 await Storage.disk("public").put("path/to/your/file.ext", "content");
+await Storage.disk("public").delete("path/to/your/file.ext");
+```
 
-/* Create a new disk at runtime */
+- New Disk at Runtime
+```ts
+import Storage from "@bejibun/core/facades/Storage";
+
 await Storage.build({
     driver: "local", // "local" | DiskDriverEnum.Local
     root: App.Path.storagePath("custom")
 }).exists("path/to/your/file.ext");
 await Storage.build({
-    driver: "local", // "local" | DiskDriverEnum.Local
+    driver: "local",
     root: App.Path.storagePath("custom")
 }).missing("path/to/your/file.ext");
 await Storage.build({
-    driver: "local", // "local" | DiskDriverEnum.Local
+    driver: "local",
     root: App.Path.storagePath("custom")
 }).get("path/to/your/file.ext");
 await Storage.build({
-    driver: "local", // "local" | DiskDriverEnum.Local
+    driver: "local",
     root: App.Path.storagePath("custom")
 }).put("path/to/your/file.ext", "content");
+await Storage.build({
+    driver: "local",
+    root: App.Path.storagePath("custom")
+}).delete("path/to/your/file.ext");
 ```
 
 ### Cors

@@ -25,4 +25,8 @@ export default class Storage {
     public static async put(path: string, content: any): Promise<void> {
         return await new StorageBuilder().put(path, content);
     }
+
+    public static async delete(path: string): Promise<any> {
+        return await new StorageBuilder().delete(path);
+    }
 }
