@@ -1,5 +1,5 @@
 import App from "@bejibun/app";
-import { isEmpty, isModuleExists } from "@bejibun/utils";
+import { defineValue, isEmpty, isModuleExists, isNotEmpty } from "@bejibun/utils";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import Enum from "@bejibun/utils/facades/Enum";
 import path from "path";
@@ -28,26 +28,29 @@ export default class RouterBuilder {
         return this;
     }
     group(routes) {
-        const routeList = Array.isArray(routes) ? routes : [routes];
-        const newRoutes = {};
-        for (const route of routeList) {
-            for (const path in route) {
-                const cleanPath = this.joinPaths(this.basePath, path);
-                const routeHandlers = route[path];
-                const wrappedHandlers = {};
-                for (const method in routeHandlers) {
-                    let handler = routeHandlers[method];
-                    for (const middleware of this.middlewares) {
-                        handler = middleware.handle(handler);
-                    }
-                    wrappedHandlers[method] = handler;
+        console.log(routes)
+        if (this.hasRaw(routes)) {
+            const routeList = (Array.isArray(routes) ? routes.flat().map(value => value.raw) : [routes.raw]).filter(value => isNotEmpty(value));
+            const newRoutes = {};
+            for (const route of routeList) {
+                const cleanPath = this.joinPaths(defineValue(route.prefix, this.basePath), route.path);
+                let resolvedHandler = typeof route.handler === "string" ?
+                    this.resolveControllerString(route.handler, route.namespace) :
+                    route.handler;
+                for (const middleware of this.middlewares.concat(defineValue(route.middlewares, []))) {
+                    resolvedHandler = middleware.handle(resolvedHandler);
                 }
                 if (isEmpty(newRoutes[cleanPath]))
                     newRoutes[cleanPath] = {};
-                Object.assign(newRoutes[cleanPath], wrappedHandlers);
+                Object.assign(newRoutes[cleanPath], {
+                    [route.method]: resolvedHandler
+                });
             }
+            return newRoutes;
         }
-        return newRoutes;
+        if (isEmpty(routes))
+            return {};
+        return routes;
     }
     resources(controller, options) {
         const allRoutes = {
@@ -76,7 +79,8 @@ export default class RouterBuilder {
                 filteredRoutes[path] = methodHandlers;
             }
         }
-        return this.group(filteredRoutes);
+        return filteredRoutes;
+        // return this.group(filteredRoutes);
     }
     buildSingle(method, path, handler) {
         const cleanPath = this.joinPaths(this.basePath, path);
@@ -87,8 +91,18 @@ export default class RouterBuilder {
             resolvedHandler = middleware.handle(resolvedHandler);
         }
         return {
-            [cleanPath]: {
-                [method]: resolvedHandler
+            raw: {
+                prefix: this.basePath,
+                middlewares: this.middlewares,
+                namespace: this.baseNamespace,
+                method,
+                path,
+                handler
+            },
+            route: {
+                [cleanPath]: {
+                    [method]: resolvedHandler
+                }
             }
         };
     }
@@ -122,7 +136,7 @@ export default class RouterBuilder {
     match(methods, path, handler) {
         const routeMap = {};
         for (const method of methods) {
-            const single = this.buildSingle(method, path, handler);
+            const single = this.buildSingle(method, path, handler).route;
             const fullPath = Object.keys(single)[0];
             const handlers = single[fullPath];
             if (isEmpty(routeMap[fullPath]))
@@ -139,12 +153,12 @@ export default class RouterBuilder {
         path = path.replace(/^\/+/, "");
         return `/${[base, path].filter(Boolean).join("/")}`;
     }
-    resolveControllerString(definition) {
+    resolveControllerString(definition, overrideNamespace) {
         const [controllerName, methodName] = definition.split("@");
         if (isEmpty(controllerName) || isEmpty(methodName)) {
             throw new RouterException(`Invalid router controller definition: ${definition}.`);
         }
-        const controllerPath = path.resolve(App.Path.rootPath(), this.baseNamespace);
+        const controllerPath = path.resolve(App.Path.rootPath(), defineValue(overrideNamespace, this.baseNamespace));
         const location = Bun.resolveSync(`./${controllerName}.ts`, controllerPath);
         let ControllerClass;
         try {
@@ -179,5 +193,10 @@ export default class RouterBuilder {
             return new Set(all.filter(action => !options.except.includes(action)));
         }
         return new Set(all);
+    }
+    hasRaw(routes) {
+        if (Array.isArray(routes))
+            return routes.flat().some(route => isNotEmpty(route) && "raw" in route);
+        return isNotEmpty(routes) && typeof routes === "object" && "raw" in routes;
     }
 }

@@ -1,9 +1,9 @@
 import type {TFacilitator, TPaywall, TX402Config} from "@bejibun/x402";
 import type {EnumItem} from "@bejibun/utils/facades/Enum";
 import type {IMiddleware} from "@/types/middleware";
-import type {HandlerType, ResourceAction, RouterGroup} from "@/types/router";
+import type {HandlerType, RawRoute, ResourceAction, Route, RouterGroup} from "@/types/router";
 import App from "@bejibun/app";
-import {isEmpty, isModuleExists} from "@bejibun/utils";
+import {defineValue, isEmpty, isModuleExists, isNotEmpty} from "@bejibun/utils";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import Enum from "@bejibun/utils/facades/Enum";
 import path from "path";
@@ -46,33 +46,35 @@ export default class RouterBuilder {
         return this;
     }
 
-    public group(routes: RouterGroup | Array<RouterGroup>): RouterGroup {
-        const routeList = Array.isArray(routes) ? routes : [routes];
-        const newRoutes: RouterGroup = {};
+    public group(routes: Route | Array<Route> | RouterGroup): RouterGroup | Array<RouterGroup> {
+        if (this.hasRaw(routes)) {
+            const routeList: Array<RawRoute> = (Array.isArray(routes) ? routes.flat().map(value => value.raw) : [routes.raw]).filter(value => isNotEmpty(value));
+            const newRoutes: any = {};
 
-        for (const route of routeList) {
-            for (const path in route) {
-                const cleanPath = this.joinPaths(this.basePath, path);
-                const routeHandlers = route[path];
-                const wrappedHandlers: Record<string, HandlerType> = {};
+            for (const route of routeList) {
+                const cleanPath: string = this.joinPaths(defineValue(route.prefix, this.basePath), route.path);
 
-                for (const method in routeHandlers) {
-                    let handler = routeHandlers[method];
+                let resolvedHandler: HandlerType = typeof route.handler === "string" ?
+                    this.resolveControllerString(route.handler, route.namespace) :
+                    route.handler;
 
-                    for (const middleware of this.middlewares) {
-                        handler = middleware.handle(handler);
-                    }
-
-                    wrappedHandlers[method] = handler;
+                for (const middleware of this.middlewares.concat(defineValue(route.middlewares, []))) {
+                    resolvedHandler = middleware.handle(resolvedHandler);
                 }
 
                 if (isEmpty(newRoutes[cleanPath])) newRoutes[cleanPath] = {};
 
-                Object.assign(newRoutes[cleanPath], wrappedHandlers);
+                Object.assign(newRoutes[cleanPath], {
+                    [route.method]: resolvedHandler
+                });
             }
+
+            return newRoutes;
         }
 
-        return newRoutes;
+        if (isEmpty(routes)) return {};
+
+        return routes;
     }
 
     public resources(controller: Record<string, HandlerType>, options?: ResourceOptions): RouterGroup {
@@ -88,7 +90,7 @@ export default class RouterBuilder {
             }
         };
 
-        const includedActions = this.resolveIncludedActions(options);
+        const includedActions: Set<ResourceAction> = this.resolveIncludedActions(options);
 
         const filteredRoutes: RouterGroup = {};
 
@@ -108,11 +110,12 @@ export default class RouterBuilder {
             }
         }
 
-        return this.group(filteredRoutes);
+        return filteredRoutes
+        // return this.group(filteredRoutes);
     }
 
-    public buildSingle(method: HttpMethodEnum, path: string, handler: string | HandlerType): RouterGroup {
-        const cleanPath = this.joinPaths(this.basePath, path);
+    public buildSingle(method: HttpMethodEnum, path: string, handler: string | HandlerType): Route {
+        const cleanPath: string = this.joinPaths(this.basePath, path);
 
         let resolvedHandler: HandlerType = typeof handler === "string" ?
             this.resolveControllerString(handler) :
@@ -123,45 +126,55 @@ export default class RouterBuilder {
         }
 
         return {
-            [cleanPath]: {
-                [method]: resolvedHandler
+            raw: {
+                prefix: this.basePath,
+                middlewares: this.middlewares,
+                namespace: this.baseNamespace,
+                method,
+                path,
+                handler
+            },
+            route: {
+                [cleanPath]: {
+                    [method]: resolvedHandler
+                }
             }
         };
     }
 
-    public connect(path: string, handler: string | HandlerType): RouterGroup {
+    public connect(path: string, handler: string | HandlerType): Route {
         return this.buildSingle(HttpMethodEnum.Connect, path, handler);
     }
 
-    public delete(path: string, handler: string | HandlerType): RouterGroup {
+    public delete(path: string, handler: string | HandlerType): Route {
         return this.buildSingle(HttpMethodEnum.Delete, path, handler);
     }
 
-    public get(path: string, handler: string | HandlerType): RouterGroup {
+    public get(path: string, handler: string | HandlerType): Route {
         return this.buildSingle(HttpMethodEnum.Get, path, handler);
     }
 
-    public head(path: string, handler: string | HandlerType): RouterGroup {
+    public head(path: string, handler: string | HandlerType): Route {
         return this.buildSingle(HttpMethodEnum.Head, path, handler);
     }
 
-    public options(path: string, handler: string | HandlerType): RouterGroup {
+    public options(path: string, handler: string | HandlerType): Route {
         return this.buildSingle(HttpMethodEnum.Options, path, handler);
     }
 
-    public patch(path: string, handler: string | HandlerType): RouterGroup {
+    public patch(path: string, handler: string | HandlerType): Route {
         return this.buildSingle(HttpMethodEnum.Patch, path, handler);
     }
 
-    public post(path: string, handler: string | HandlerType): RouterGroup {
+    public post(path: string, handler: string | HandlerType): Route {
         return this.buildSingle(HttpMethodEnum.Post, path, handler);
     }
 
-    public put(path: string, handler: string | HandlerType): RouterGroup {
+    public put(path: string, handler: string | HandlerType): Route {
         return this.buildSingle(HttpMethodEnum.Put, path, handler);
     }
 
-    public trace(path: string, handler: string | HandlerType): RouterGroup {
+    public trace(path: string, handler: string | HandlerType): Route {
         return this.buildSingle(HttpMethodEnum.Trace, path, handler);
     }
 
@@ -169,7 +182,7 @@ export default class RouterBuilder {
         const routeMap: RouterGroup = {};
 
         for (const method of methods) {
-            const single = this.buildSingle(method, path, handler);
+            const single = this.buildSingle(method, path, handler).route;
             const fullPath = Object.keys(single)[0];
             const handlers = single[fullPath];
 
@@ -192,14 +205,14 @@ export default class RouterBuilder {
         return `/${[base, path].filter(Boolean).join("/")}`;
     }
 
-    private resolveControllerString(definition: string): HandlerType {
+    private resolveControllerString(definition: string, overrideNamespace?: string): HandlerType {
         const [controllerName, methodName] = definition.split("@");
 
         if (isEmpty(controllerName) || isEmpty(methodName)) {
             throw new RouterException(`Invalid router controller definition: ${definition}.`);
         }
 
-        const controllerPath = path.resolve(App.Path.rootPath(), this.baseNamespace);
+        const controllerPath = path.resolve(App.Path.rootPath(), defineValue(overrideNamespace, this.baseNamespace));
         const location = Bun.resolveSync(`./${controllerName}.ts`, controllerPath);
 
         let ControllerClass: any;
@@ -245,5 +258,11 @@ export default class RouterBuilder {
         }
 
         return new Set(all);
+    }
+
+    private hasRaw(routes: Route | Array<Route> | RouterGroup): routes is Route | Array<Route> {
+        if (Array.isArray(routes)) return routes.flat().some(route => isNotEmpty(route) && "raw" in route);
+
+        return isNotEmpty(routes) && typeof routes === "object" && "raw" in routes;
     }
 }

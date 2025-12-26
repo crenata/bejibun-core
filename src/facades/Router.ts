@@ -1,7 +1,9 @@
+import type {ResourceOptions} from "@/builders/RouterBuilder";
 import type {IMiddleware} from "@/types/middleware";
 import type {HandlerType, RouterGroup} from "@/types/router";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
-import RouterBuilder, {ResourceOptions} from "@/builders/RouterBuilder";
+import RouterBuilder from "@/builders/RouterBuilder";
+import {Route} from "@/types/router";
 
 export default class Router {
     public static prefix(basePath: string): RouterBuilder {
@@ -27,7 +29,7 @@ export default class Router {
         return new RouterBuilder().resources(controller, options);
     }
 
-    public static group(routes: RouterGroup, prefix?: string, middlewares?: Array<IMiddleware>): RouterGroup {
+    public static group(routes: Route | Array<Route>, prefix?: string, middlewares?: Array<IMiddleware>): RouterGroup | Array<RouterGroup> {
         const builder = new RouterBuilder();
 
         if (prefix) builder.prefix(prefix);
@@ -36,39 +38,39 @@ export default class Router {
         return builder.group(routes);
     }
 
-    public static connect(path: string, handler: string | HandlerType): RouterGroup {
+    public static connect(path: string, handler: string | HandlerType): Route {
         return new RouterBuilder().connect(path, handler);
     }
 
-    public static delete(path: string, handler: string | HandlerType): RouterGroup {
+    public static delete(path: string, handler: string | HandlerType): Route {
         return new RouterBuilder().delete(path, handler);
     }
 
-    public static get(path: string, handler: string | HandlerType): RouterGroup {
+    public static get(path: string, handler: string | HandlerType): Route {
         return new RouterBuilder().get(path, handler);
     }
 
-    public static head(path: string, handler: string | HandlerType): RouterGroup {
+    public static head(path: string, handler: string | HandlerType): Route {
         return new RouterBuilder().head(path, handler);
     }
 
-    public static options(path: string, handler: string | HandlerType): RouterGroup {
+    public static options(path: string, handler: string | HandlerType): Route {
         return new RouterBuilder().options(path, handler);
     }
 
-    public static patch(path: string, handler: string | HandlerType): RouterGroup {
+    public static patch(path: string, handler: string | HandlerType): Route {
         return new RouterBuilder().patch(path, handler);
     }
 
-    public static post(path: string, handler: string | HandlerType): RouterGroup {
+    public static post(path: string, handler: string | HandlerType): Route {
         return new RouterBuilder().post(path, handler);
     }
 
-    public static put(path: string, handler: string | HandlerType): RouterGroup {
+    public static put(path: string, handler: string | HandlerType): Route {
         return new RouterBuilder().put(path, handler);
     }
 
-    public static trace(path: string, handler: string | HandlerType): RouterGroup {
+    public static trace(path: string, handler: string | HandlerType): Route {
         return new RouterBuilder().trace(path, handler);
     }
 
