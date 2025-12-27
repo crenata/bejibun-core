@@ -43,8 +43,8 @@ const server = Bun.serve({
         "/": require(App.Path.publicPath("index.html")),
         ...Object.assign({}, ...defineValue(Router.middleware(new MaintenanceMiddleware(), new RateLimiterMiddleware()).group([
             Router.namespace("app/exceptions").any("/*", "Handler@route"),
-            Object.assign({}, ...defineValue(ApiRoutes, [])),
-            Object.assign({}, ...defineValue(WebRoutes, []))
+            ApiRoutes,
+            WebRoutes
         ]), []))
     }
 });

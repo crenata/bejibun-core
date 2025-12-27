@@ -28,14 +28,15 @@ export default class RouterBuilder {
         return this;
     }
     group(routes) {
-        console.log(routes)
         if (this.hasRaw(routes)) {
-            const routeList = (Array.isArray(routes) ? routes.flat().map(value => value.raw) : [routes.raw]).filter(value => isNotEmpty(value));
+            const routeList = Array.isArray(routes) ? routes.flat() : [routes];
+            const routerGroups = routeList.filter((value) => !this.hasRaw(value));
+            const rawRoutes = routeList.filter((value) => this.hasRaw(value)).map((value) => value.raw);
             const newRoutes = {};
-            for (const route of routeList) {
+            for (const route of rawRoutes) {
                 const cleanPath = this.joinPaths(defineValue(route.prefix, this.basePath), route.path);
                 let resolvedHandler = typeof route.handler === "string" ?
-                    this.resolveControllerString(route.handler, route.namespace) :
+                    this.resolveControllerString(route.handler, defineValue(this.baseNamespace, route.namespace)) :
                     route.handler;
                 for (const middleware of this.middlewares.concat(defineValue(route.middlewares, []))) {
                     resolvedHandler = middleware.handle(resolvedHandler);
@@ -46,11 +47,13 @@ export default class RouterBuilder {
                     [route.method]: resolvedHandler
                 });
             }
-            return newRoutes;
+            return Object.assign({}, ...routerGroups.map((value) => this.applyGroup(value)), newRoutes);
         }
         if (isEmpty(routes))
             return {};
-        return routes;
+        if (Array.isArray(routes))
+            return routes.map((route) => this.applyGroup(route));
+        return this.applyGroup(routes);
     }
     resources(controller, options) {
         const allRoutes = {
@@ -159,7 +162,15 @@ export default class RouterBuilder {
             throw new RouterException(`Invalid router controller definition: ${definition}.`);
         }
         const controllerPath = path.resolve(App.Path.rootPath(), defineValue(overrideNamespace, this.baseNamespace));
-        const location = Bun.resolveSync(`./${controllerName}.ts`, controllerPath);
+        let location = null;
+        try {
+            location = Bun.resolveSync(`./${controllerName}.ts`, controllerPath);
+        }
+        catch {
+            return async () => {
+                throw new RouterException(`Invalid router for controller location [${controllerPath}]`);
+            };
+        }
         let ControllerClass;
         try {
             ControllerClass = require(location).default;
@@ -197,6 +208,37 @@ export default class RouterBuilder {
     hasRaw(routes) {
         if (Array.isArray(routes))
             return routes.flat().some(route => isNotEmpty(route) && "raw" in route);
-        return isNotEmpty(routes) && typeof routes === "object" && "raw" in routes;
+        return (isNotEmpty(routes) &&
+            typeof routes === "object" &&
+            "raw" in routes);
+    }
+    isMethodMap(value) {
+        return (isNotEmpty(value) &&
+            typeof value === "object" &&
+            Object.values(value).every(v => typeof v === "function"));
+    }
+    applyGroup(route) {
+        const result = {};
+        for (const [key, value] of Object.entries(route)) {
+            const newKey = key.startsWith("/") ? this.joinPaths(this.basePath, key) : key;
+            if (this.isMethodMap(value)) {
+                const wrappedMethods = {};
+                for (const [method, handler] of Object.entries(value)) {
+                    let resolvedHandler = handler;
+                    for (const middleware of this.middlewares) {
+                        resolvedHandler = middleware.handle(resolvedHandler);
+                    }
+                    wrappedMethods[method] = resolvedHandler;
+                }
+                result[newKey] = wrappedMethods;
+                continue;
+            }
+            if (isNotEmpty(value) && typeof value === "object") {
+                result[newKey] = this.applyGroup(value);
+                continue;
+            }
+            result[newKey] = value;
+        }
+        return result;
     }
 }

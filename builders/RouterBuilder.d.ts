@@ -32,4 +32,6 @@ export default class RouterBuilder {
     private resolveControllerString;
     private resolveIncludedActions;
     private hasRaw;
+    private isMethodMap;
+    private applyGroup;
 }

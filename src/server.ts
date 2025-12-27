@@ -55,9 +55,9 @@ const server = Bun.serve({
         ).group([
             Router.namespace("app/exceptions").any("/*", "Handler@route"),
 
-            Object.assign({}, ...defineValue(ApiRoutes, [])),
+            ApiRoutes,
 
-            Object.assign({}, ...defineValue(WebRoutes, []))
+            WebRoutes
         ]), []))
     }
 });
