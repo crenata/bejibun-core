@@ -10,7 +10,7 @@ export default class Router {
     static namespace(baseNamespace: string): RouterBuilder;
     static x402(): RouterBuilder;
     static resources(controller: Record<string, HandlerType>, options?: ResourceOptions): RouterGroup;
-    static group(routes: Route | Array<Route>, prefix?: string, middlewares?: Array<IMiddleware>): RouterGroup | Array<RouterGroup>;
+    static group(routes: Route | Array<Route> | RouterGroup): RouterGroup | Array<RouterGroup>;
     static connect(path: string, handler: string | HandlerType): Route;
     static delete(path: string, handler: string | HandlerType): Route;
     static get(path: string, handler: string | HandlerType): Route;
@@ -22,4 +22,5 @@ export default class Router {
     static trace(path: string, handler: string | HandlerType): Route;
     static match(methods: Array<HttpMethodEnum>, path: string, handler: string | HandlerType): RouterGroup;
     static any(path: string, handler: string | HandlerType): RouterGroup;
+    static serialize(routes: Route | Array<Route> | RouterGroup | Array<RouterGroup>): RouterGroup | Array<RouterGroup>;
 }

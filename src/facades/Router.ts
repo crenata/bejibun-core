@@ -29,13 +29,8 @@ export default class Router {
         return new RouterBuilder().resources(controller, options);
     }
 
-    public static group(routes: Route | Array<Route>, prefix?: string, middlewares?: Array<IMiddleware>): RouterGroup | Array<RouterGroup> {
-        const builder = new RouterBuilder();
-
-        if (prefix) builder.prefix(prefix);
-        if (middlewares?.length) builder.middleware(...middlewares);
-
-        return builder.group(routes);
+    public static group(routes: Route | Array<Route> | RouterGroup): RouterGroup | Array<RouterGroup> {
+        return new RouterBuilder().group(routes);
     }
 
     public static connect(path: string, handler: string | HandlerType): Route {
@@ -80,5 +75,9 @@ export default class Router {
 
     public static any(path: string, handler: string | HandlerType): RouterGroup {
         return new RouterBuilder().any(path, handler);
+    }
+
+    public static serialize(routes: Route | Array<Route> | RouterGroup | Array<RouterGroup>): RouterGroup | Array<RouterGroup> {
+        return new RouterBuilder().serialize(routes);
     }
 }

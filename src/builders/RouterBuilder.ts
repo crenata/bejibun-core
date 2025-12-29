@@ -8,7 +8,6 @@ import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import Enum from "@bejibun/utils/facades/Enum";
 import path from "path";
 import RouterException from "@/exceptions/RouterException";
-import Response from "@/facades/Response";
 
 export interface ResourceOptions {
     only?: Array<ResourceAction>;
@@ -201,6 +200,16 @@ export default class RouterBuilder {
 
     public any(path: string, handler: string | HandlerType): RouterGroup {
         return this.match(Enum.setEnums(HttpMethodEnum).toArray().map((value: EnumItem) => value.value), path, handler);
+    }
+
+    public serialize(routes: Route | Array<Route> | RouterGroup | Array<RouterGroup>): RouterGroup | Array<RouterGroup> {
+        if (Array.isArray(routes)) {
+            if (this.hasRaw(routes)) return routes.map((value: Route) => value.route);
+        } else {
+            if (this.hasRaw(routes)) return routes.route;
+        }
+
+        return routes;
     }
 
     private joinPaths(base: string, path: string): string {

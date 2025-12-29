@@ -15,13 +15,8 @@ export default class Router {
     static resources(controller, options) {
         return new RouterBuilder().resources(controller, options);
     }
-    static group(routes, prefix, middlewares) {
-        const builder = new RouterBuilder();
-        if (prefix)
-            builder.prefix(prefix);
-        if (middlewares?.length)
-            builder.middleware(...middlewares);
-        return builder.group(routes);
+    static group(routes) {
+        return new RouterBuilder().group(routes);
     }
     static connect(path, handler) {
         return new RouterBuilder().connect(path, handler);
@@ -55,5 +50,8 @@ export default class Router {
     }
     static any(path, handler) {
         return new RouterBuilder().any(path, handler);
+    }
+    static serialize(routes) {
+        return new RouterBuilder().serialize(routes);
     }
 }

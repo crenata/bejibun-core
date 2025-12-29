@@ -28,6 +28,7 @@ export default class RouterBuilder {
     trace(path: string, handler: string | HandlerType): Route;
     match(methods: Array<HttpMethodEnum>, path: string, handler: string | HandlerType): RouterGroup;
     any(path: string, handler: string | HandlerType): RouterGroup;
+    serialize(routes: Route | Array<Route> | RouterGroup | Array<RouterGroup>): RouterGroup | Array<RouterGroup>;
     private joinPaths;
     private resolveControllerString;
     private resolveIncludedActions;

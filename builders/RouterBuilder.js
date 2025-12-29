@@ -151,6 +151,17 @@ export default class RouterBuilder {
     any(path, handler) {
         return this.match(Enum.setEnums(HttpMethodEnum).toArray().map((value) => value.value), path, handler);
     }
+    serialize(routes) {
+        if (Array.isArray(routes)) {
+            if (this.hasRaw(routes))
+                return routes.map((value) => value.route);
+        }
+        else {
+            if (this.hasRaw(routes))
+                return routes.route;
+        }
+        return routes;
+    }
     joinPaths(base, path) {
         base = base.replace(/\/+$/, "");
         path = path.replace(/^\/+/, "");
