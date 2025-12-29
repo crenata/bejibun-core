@@ -28,31 +28,49 @@ export default class RouterBuilder {
         return this;
     }
     group(routes) {
+        const rawGroups = [];
+        let routeGroups = {};
         if (this.hasRaw(routes)) {
             const routeList = Array.isArray(routes) ? routes.flat() : [routes];
             const routerGroups = routeList.filter((value) => !this.hasRaw(value));
-            const rawRoutes = routeList.filter((value) => this.hasRaw(value)).map((value) => value.raw);
+            const rawRoutes = routeList.filter((value) => this.hasRaw(value));
             const newRoutes = {};
             for (const route of rawRoutes) {
-                const cleanPath = this.joinPaths(defineValue(route.prefix, this.basePath), route.path);
-                let resolvedHandler = typeof route.handler === "string" ?
-                    this.resolveControllerString(route.handler, defineValue(this.baseNamespace, route.namespace)) :
-                    route.handler;
-                for (const middleware of this.middlewares.concat(defineValue(route.middlewares, []))) {
+                const middlewares = this.middlewares.concat(defineValue(route.raw.middlewares, []));
+                const effectiveNamespace = defineValue(this.baseNamespace, route.raw.namespace);
+                const cleanPath = this.joinPaths(defineValue(route.raw.prefix, this.basePath), route.raw.path);
+                let resolvedHandler = typeof route.raw.handler === "string" ?
+                    this.resolveControllerString(route.raw.handler, effectiveNamespace) :
+                    route.raw.handler;
+                for (const middleware of [...middlewares].reverse()) {
                     resolvedHandler = middleware.handle(resolvedHandler);
                 }
                 if (isEmpty(newRoutes[cleanPath]))
                     newRoutes[cleanPath] = {};
                 Object.assign(newRoutes[cleanPath], {
-                    [route.method]: resolvedHandler
+                    [route.raw.method]: resolvedHandler
                 });
+                route.raw.middlewares = middlewares;
+                route.raw.namespace = effectiveNamespace;
+                route.raw.path = cleanPath;
+                rawGroups.push(route);
             }
-            return Object.assign({}, ...routerGroups.map((value) => this.applyGroup(value)), newRoutes);
+            routeGroups = Object.assign({}, ...routerGroups.map((value) => this.applyGroup(value)), newRoutes);
         }
+        if (isNotEmpty(routeGroups))
+            return {
+                raws: rawGroups,
+                routes: routeGroups
+            };
         if (isEmpty(routes))
             return {};
-        if (Array.isArray(routes))
+        if (Array.isArray(routes)) {
+            if (routes.some(value => isNotEmpty(value.raws)))
+                return routes.map(value => value.raws)
+                    .flat()
+                    .map((route) => this.applyGroup(route));
             return routes.map((route) => this.applyGroup(route));
+        }
         return this.applyGroup(routes);
     }
     resources(controller, options) {
@@ -90,7 +108,7 @@ export default class RouterBuilder {
         let resolvedHandler = typeof handler === "string" ?
             this.resolveControllerString(handler) :
             handler;
-        for (const middleware of this.middlewares) {
+        for (const middleware of [...this.middlewares].reverse()) {
             resolvedHandler = middleware.handle(resolvedHandler);
         }
         return {
@@ -229,6 +247,32 @@ export default class RouterBuilder {
             Object.values(value).every(v => typeof v === "function"));
     }
     applyGroup(route) {
+        if (isEmpty(route))
+            return route;
+        if (this.hasRaw(route)) {
+            const routeList = Array.isArray(route) ? route.flat() : [route];
+            const rawRoutes = routeList.filter((value) => this.hasRaw(value));
+            const newRoutes = {};
+            for (const route of rawRoutes) {
+                const middlewares = route.raw.middlewares.concat(defineValue(this.middlewares, []));
+                const cleanPath = this.joinPaths(defineValue(route.raw.prefix, this.basePath), route.raw.path);
+                const effectiveNamespace = defineValue(this.baseNamespace === "app/controllers" ?
+                    null :
+                    this.baseNamespace, route.raw.namespace);
+                let resolvedHandler = typeof route.raw.handler === "string" ?
+                    this.resolveControllerString(route.raw.handler, effectiveNamespace) :
+                    route.raw.handler;
+                for (const middleware of [...middlewares].reverse()) {
+                    resolvedHandler = middleware.handle(resolvedHandler);
+                }
+                if (isEmpty(newRoutes[cleanPath]))
+                    newRoutes[cleanPath] = {};
+                Object.assign(newRoutes[cleanPath], {
+                    [route.raw.method]: resolvedHandler
+                });
+            }
+            return newRoutes;
+        }
         const result = {};
         for (const [key, value] of Object.entries(route)) {
             const newKey = key.startsWith("/") ? this.joinPaths(this.basePath, key) : key;
@@ -236,7 +280,7 @@ export default class RouterBuilder {
                 const wrappedMethods = {};
                 for (const [method, handler] of Object.entries(value)) {
                     let resolvedHandler = handler;
-                    for (const middleware of this.middlewares) {
+                    for (const middleware of [...this.middlewares].reverse()) {
                         resolvedHandler = middleware.handle(resolvedHandler);
                     }
                     wrappedMethods[method] = resolvedHandler;
