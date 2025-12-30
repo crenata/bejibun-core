@@ -1,12 +1,14 @@
 import type {TFacilitator, TPaywall, TX402Config} from "@bejibun/x402";
 import type {EnumItem} from "@bejibun/utils/facades/Enum";
 import type {IMiddleware} from "@/types/middleware";
-import type {HandlerType, RawRoute, ResourceAction, Route, RouterGroup, RouterMethodMap} from "@/types/router";
+import type {HandlerType, ResourceAction, Route, RouterGroup, RouterMethodMap} from "@/types/router";
 import App from "@bejibun/app";
+import Logger from "@bejibun/logger";
 import {defineValue, isEmpty, isModuleExists, isNotEmpty} from "@bejibun/utils";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import Enum from "@bejibun/utils/facades/Enum";
 import path from "path";
+import BaseController from "@/bases/BaseController";
 import RouterException from "@/exceptions/RouterException";
 
 export interface ResourceOptions {
@@ -97,23 +99,28 @@ export default class RouterBuilder {
         if (isEmpty(routes)) return {};
 
         if (Array.isArray(routes)) {
-            if (routes.some(value => isNotEmpty(value.raws))) return routes.map(value => value.raws)
-                .flat()
-                .map((route: RouterGroup) => this.applyGroup(route));
+            return routes.map((value: any) => {
+                if (isNotEmpty(value.raws)) return value.raws;
 
-            return routes.map((route: RouterGroup) => this.applyGroup(route));
+                return value;
+            })
+                .flat()
+                .map((route: RouterGroup | Route) => this.applyGroup(route));
         }
 
         return this.applyGroup(routes);
     }
 
-    public resources(controller: Record<string, HandlerType>, options?: ResourceOptions): RouterGroup {
+    public resource(path: string, controller: typeof BaseController, options?: ResourceOptions): RouterGroup {
+        const ClassController: any = new controller();
+        const cleanPath: string = this.joinPaths(this.basePath, path);
+
         const allRoutes: Record<string, Record<string, ResourceAction>> = {
-            "": {
+            [cleanPath]: {
                 GET: "index",
                 POST: "store"
             },
-            ":id": {
+            [`${cleanPath}/:id`]: {
                 GET: "show",
                 PUT: "update",
                 DELETE: "destroy"
@@ -122,26 +129,51 @@ export default class RouterBuilder {
 
         const includedActions: Set<ResourceAction> = this.resolveIncludedActions(options);
 
-        const filteredRoutes: RouterGroup = {};
+        const raws: Array<Route> = [];
+        const routes: RouterGroup = {};
 
         for (const path in allRoutes) {
-            const methods = allRoutes[path];
-            const methodHandlers: Record<string, HandlerType> = {};
+            const methods: Record<string, string> = allRoutes[path];
+            const methodHandlers: RouterMethodMap = {};
 
             for (const method in methods) {
-                const action = methods[method];
-                if (includedActions.has(action) && controller[action]) {
-                    methodHandlers[method] = controller[action];
+                const action: string = methods[method];
+                let resolvedHandler: any = ClassController[action];
+
+                if (includedActions.has(action as ResourceAction) && isNotEmpty(resolvedHandler)) {
+                    for (const middleware of [...this.middlewares].reverse()) {
+                        resolvedHandler = middleware.handle(resolvedHandler);
+                    }
+
+                    methodHandlers[method] = resolvedHandler;
+
+                    raws.push({
+                        raw: {
+                            prefix: this.basePath,
+                            middlewares: this.middlewares,
+                            namespace: this.baseNamespace,
+                            method,
+                            path,
+                            handler: resolvedHandler
+                        },
+                        route: {
+                            [path]: {
+                                [method]: resolvedHandler
+                            }
+                        }
+                    });
                 }
             }
 
             if (Object.keys(methodHandlers).length > 0) {
-                filteredRoutes[path] = methodHandlers;
+                routes[path] = methodHandlers;
             }
         }
 
-        return filteredRoutes
-        // return this.group(filteredRoutes);
+        return {
+            raws,
+            routes
+        };
     }
 
     public buildSingle(method: HttpMethodEnum, path: string, handler: string | HandlerType): Route {
@@ -228,14 +260,42 @@ export default class RouterBuilder {
         return this.match(Enum.setEnums(HttpMethodEnum).toArray().map((value: EnumItem) => value.value), path, handler);
     }
 
-    public serialize(routes: Route | Array<Route> | RouterGroup | Array<RouterGroup>): RouterGroup | Array<RouterGroup> {
+    public serialize(routes: Route | Array<Route> | RouterGroup | Array<RouterGroup>): RouterGroup {
         if (Array.isArray(routes)) {
-            if (this.hasRaw(routes)) return routes.map((value: Route) => value.route);
+            if (this.hasRaw(routes)) routes = routes.map((value: Route) => value.route);
         } else {
-            if (this.hasRaw(routes)) return routes.route;
+            if (this.hasRaw(routes)) routes = routes.route;
         }
 
-        return routes;
+        const mergedRoutes = this.mergeRoutes(routes);
+
+        if (Array.isArray(mergedRoutes)) return Object.assign({}, ...mergedRoutes);
+
+        return mergedRoutes;
+    }
+
+    private mergeRoutes(routes: RouterGroup | Array<RouterGroup>): RouterGroup {
+        const merged: RouterGroup = {};
+
+        const routeEntries = Array.isArray(routes) ?
+            routes :
+            Object.entries(routes).map(([path, methods]) => ({
+                [path]: methods
+            }));
+
+        for (const route of routeEntries) {
+            for (const [path, methods] of Object.entries(route)) {
+                if (isEmpty(merged[path])) merged[path] = {};
+
+                for (const [method, handler] of Object.entries(methods as RouterMethodMap)) {
+                    if (isNotEmpty(merged[path][method])) Logger.setContext("Router").warn(`Duplicate route: ${method} ${path} - overwriting.`);
+
+                    merged[path][method] = handler;
+                }
+            }
+        }
+
+        return merged;
     }
 
     private joinPaths(base: string, path: string): string {
@@ -326,7 +386,7 @@ export default class RouterBuilder {
         );
     }
 
-    private applyGroup(route: RouterGroup): RouterGroup {
+    private applyGroup(route: RouterGroup | Route): RouterGroup {
         if (isEmpty(route)) return route;
 
         if (this.hasRaw(route)) {

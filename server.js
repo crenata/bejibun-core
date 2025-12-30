@@ -34,12 +34,6 @@ export default class Server {
             throw new RuntimeException(`Missing web file on routes directory [${webRoutesPath}].`, null, error.message);
         }
     }
-    routeWrapper(routes) {
-        routes = Router.serialize(routes);
-        if (Array.isArray(routes))
-            return Object.assign({}, ...routes);
-        return routes;
-    }
     run() {
         const server = Bun.serve({
             development: Bun.env.NODE_ENV !== "production" && {
@@ -54,8 +48,8 @@ export default class Server {
                 "/": require(App.Path.publicPath("index.html")),
                 ...Object.assign({}, ...defineValue(Router.middleware(new MaintenanceMiddleware(), new RateLimiterMiddleware()).group([
                     Router.namespace("app/exceptions").any("/*", "Handler@route"),
-                    this.routeWrapper(this.apiRoutes),
-                    this.routeWrapper(this.webRoutes)
+                    Router.serialize(this.apiRoutes),
+                    Router.serialize(this.webRoutes)
                 ]), []))
             }
         });

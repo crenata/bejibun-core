@@ -1,4 +1,5 @@
 import App from "@bejibun/app";
+import Logger from "@bejibun/logger";
 import { defineValue, isEmpty, isModuleExists, isNotEmpty } from "@bejibun/utils";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import Enum from "@bejibun/utils/facades/Enum";
@@ -65,43 +66,69 @@ export default class RouterBuilder {
         if (isEmpty(routes))
             return {};
         if (Array.isArray(routes)) {
-            if (routes.some(value => isNotEmpty(value.raws)))
-                return routes.map(value => value.raws)
-                    .flat()
-                    .map((route) => this.applyGroup(route));
-            return routes.map((route) => this.applyGroup(route));
+            return routes.map((value) => {
+                if (isNotEmpty(value.raws))
+                    return value.raws;
+                return value;
+            })
+                .flat()
+                .map((route) => this.applyGroup(route));
         }
         return this.applyGroup(routes);
     }
-    resources(controller, options) {
+    resource(path, controller, options) {
+        const ClassController = new controller();
+        const cleanPath = this.joinPaths(this.basePath, path);
         const allRoutes = {
-            "": {
+            [cleanPath]: {
                 GET: "index",
                 POST: "store"
             },
-            ":id": {
+            [`${cleanPath}/:id`]: {
                 GET: "show",
                 PUT: "update",
                 DELETE: "destroy"
             }
         };
         const includedActions = this.resolveIncludedActions(options);
-        const filteredRoutes = {};
+        const raws = [];
+        const routes = {};
         for (const path in allRoutes) {
             const methods = allRoutes[path];
             const methodHandlers = {};
             for (const method in methods) {
                 const action = methods[method];
-                if (includedActions.has(action) && controller[action]) {
-                    methodHandlers[method] = controller[action];
+                let resolvedHandler = ClassController[action];
+                if (includedActions.has(action) && isNotEmpty(resolvedHandler)) {
+                    for (const middleware of [...this.middlewares].reverse()) {
+                        resolvedHandler = middleware.handle(resolvedHandler);
+                    }
+                    methodHandlers[method] = resolvedHandler;
+                    raws.push({
+                        raw: {
+                            prefix: this.basePath,
+                            middlewares: this.middlewares,
+                            namespace: this.baseNamespace,
+                            method,
+                            path,
+                            handler: resolvedHandler
+                        },
+                        route: {
+                            [path]: {
+                                [method]: resolvedHandler
+                            }
+                        }
+                    });
                 }
             }
             if (Object.keys(methodHandlers).length > 0) {
-                filteredRoutes[path] = methodHandlers;
+                routes[path] = methodHandlers;
             }
         }
-        return filteredRoutes;
-        // return this.group(filteredRoutes);
+        return {
+            raws,
+            routes
+        };
     }
     buildSingle(method, path, handler) {
         const cleanPath = this.joinPaths(this.basePath, path);
@@ -172,13 +199,36 @@ export default class RouterBuilder {
     serialize(routes) {
         if (Array.isArray(routes)) {
             if (this.hasRaw(routes))
-                return routes.map((value) => value.route);
+                routes = routes.map((value) => value.route);
         }
         else {
             if (this.hasRaw(routes))
-                return routes.route;
+                routes = routes.route;
         }
-        return routes;
+        const mergedRoutes = this.mergeRoutes(routes);
+        if (Array.isArray(mergedRoutes))
+            return Object.assign({}, ...mergedRoutes);
+        return mergedRoutes;
+    }
+    mergeRoutes(routes) {
+        const merged = {};
+        const routeEntries = Array.isArray(routes) ?
+            routes :
+            Object.entries(routes).map(([path, methods]) => ({
+                [path]: methods
+            }));
+        for (const route of routeEntries) {
+            for (const [path, methods] of Object.entries(route)) {
+                if (isEmpty(merged[path]))
+                    merged[path] = {};
+                for (const [method, handler] of Object.entries(methods)) {
+                    if (isNotEmpty(merged[path][method]))
+                        Logger.setContext("Router").warn(`Duplicate route: ${method} ${path} - overwriting.`);
+                    merged[path][method] = handler;
+                }
+            }
+        }
+        return merged;
     }
     joinPaths(base, path) {
         base = base.replace(/\/+$/, "");

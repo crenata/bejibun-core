@@ -12,8 +12,8 @@ export default class Router {
     static x402() {
         return new RouterBuilder().x402();
     }
-    static resources(controller, options) {
-        return new RouterBuilder().resources(controller, options);
+    static resource(path, controller, options) {
+        return new RouterBuilder().resource(path, controller, options);
     }
     static group(routes) {
         return new RouterBuilder().group(routes);

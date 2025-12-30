@@ -40,14 +40,6 @@ export default class Server {
         }
     }
 
-    private routeWrapper(routes: RouterGroup | Array<RouterGroup>): Object {
-        routes = Router.serialize(routes);
-
-        if (Array.isArray(routes)) return Object.assign({}, ...routes);
-
-        return routes;
-    }
-
     public run(): void {
         const server = Bun.serve({
             development: Bun.env.NODE_ENV !== "production" && {
@@ -71,9 +63,9 @@ export default class Server {
                 ).group([
                     Router.namespace("app/exceptions").any("/*", "Handler@route"),
 
-                    this.routeWrapper(this.apiRoutes),
+                    Router.serialize(this.apiRoutes),
 
-                    this.routeWrapper(this.webRoutes)
+                    Router.serialize(this.webRoutes)
                 ]), []))
             }
         });

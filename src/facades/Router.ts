@@ -2,6 +2,7 @@ import type {ResourceOptions} from "@/builders/RouterBuilder";
 import type {IMiddleware} from "@/types/middleware";
 import type {HandlerType, RouterGroup} from "@/types/router";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
+import BaseController from "@/bases/BaseController";
 import RouterBuilder from "@/builders/RouterBuilder";
 import {Route} from "@/types/router";
 
@@ -22,11 +23,12 @@ export default class Router {
         return new RouterBuilder().x402();
     }
 
-    public static resources(
-        controller: Record<string, HandlerType>,
+    public static resource(
+        path: string,
+        controller: typeof BaseController,
         options?: ResourceOptions
     ): RouterGroup {
-        return new RouterBuilder().resources(controller, options);
+        return new RouterBuilder().resource(path, controller, options);
     }
 
     public static group(routes: Route | Array<Route> | RouterGroup): RouterGroup | Array<RouterGroup> {
@@ -77,7 +79,7 @@ export default class Router {
         return new RouterBuilder().any(path, handler);
     }
 
-    public static serialize(routes: Route | Array<Route> | RouterGroup | Array<RouterGroup>): RouterGroup | Array<RouterGroup> {
+    public static serialize(routes: Route | Array<Route> | RouterGroup | Array<RouterGroup>): RouterGroup {
         return new RouterBuilder().serialize(routes);
     }
 }
