@@ -95,40 +95,36 @@ export default class RouterBuilder {
         const routes = {};
         for (const path in allRoutes) {
             const methods = allRoutes[path];
-            const methodHandlers = {};
+            const methodMap = {};
             for (const method in methods) {
                 const action = methods[method];
-                let resolvedHandler = ClassController[action];
-                if (includedActions.has(action) && isNotEmpty(resolvedHandler)) {
-                    for (const middleware of [...this.middlewares].reverse()) {
-                        resolvedHandler = middleware.handle(resolvedHandler);
-                    }
-                    methodHandlers[method] = resolvedHandler;
+                let handler = ClassController[action];
+                if (includedActions.has(action) && isNotEmpty(handler)) {
                     raws.push({
                         raw: {
                             prefix: this.basePath,
-                            middlewares: this.middlewares,
+                            middlewares: [],
                             namespace: this.baseNamespace,
                             method,
                             path,
-                            handler: resolvedHandler
+                            handler
                         },
                         route: {
                             [path]: {
-                                [method]: resolvedHandler
+                                [method]: handler
                             }
                         }
                     });
                 }
             }
-            if (Object.keys(methodHandlers).length > 0) {
-                routes[path] = methodHandlers;
+            if (Object.keys(methodMap).length > 0) {
+                routes[path] = methodMap;
             }
         }
-        return {
+        return this.applyGroup({
             raws,
             routes
-        };
+        });
     }
     buildSingle(method, path, handler) {
         const cleanPath = this.joinPaths(this.basePath, path);

@@ -134,46 +134,40 @@ export default class RouterBuilder {
 
         for (const path in allRoutes) {
             const methods: Record<string, string> = allRoutes[path];
-            const methodHandlers: RouterMethodMap = {};
+            const methodMap: RouterMethodMap = {};
 
             for (const method in methods) {
                 const action: string = methods[method];
-                let resolvedHandler: any = ClassController[action];
+                let handler: any = ClassController[action];
 
-                if (includedActions.has(action as ResourceAction) && isNotEmpty(resolvedHandler)) {
-                    for (const middleware of [...this.middlewares].reverse()) {
-                        resolvedHandler = middleware.handle(resolvedHandler);
-                    }
-
-                    methodHandlers[method] = resolvedHandler;
-
+                if (includedActions.has(action as ResourceAction) && isNotEmpty(handler)) {
                     raws.push({
                         raw: {
                             prefix: this.basePath,
-                            middlewares: this.middlewares,
+                            middlewares: [],
                             namespace: this.baseNamespace,
                             method,
                             path,
-                            handler: resolvedHandler
+                            handler
                         },
                         route: {
                             [path]: {
-                                [method]: resolvedHandler
+                                [method]: handler
                             }
                         }
                     });
                 }
             }
 
-            if (Object.keys(methodHandlers).length > 0) {
-                routes[path] = methodHandlers;
+            if (Object.keys(methodMap).length > 0) {
+                routes[path] = methodMap;
             }
         }
 
-        return {
+        return this.applyGroup({
             raws,
             routes
-        };
+        });
     }
 
     public buildSingle(method: HttpMethodEnum, path: string, handler: string | HandlerType): Route {
