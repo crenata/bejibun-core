@@ -3,6 +3,37 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.66](https://github.com/crenata/bejibun-core/compare/v0.1.65...v0.1.66) - 2025-12-31
+
+### 🩹 Fixes
+
+### 📖 Changes
+#### What's New :
+- Added `Router.resource()`
+  
+Single line code that automatically generates a full set of CRUD.
+
+#### How to use?
+```ts
+import Router from "@bejibun/core/facades/Router";
+import YourController from "@/app/controllers/YourController";
+
+Router.resource("path", YourController);
+Router.resource("path", YourController, {
+    only: ["index", "store"] // "index" | "store" | "show" | "update" | "destroy"
+});
+Router.resource("path", YourController, {
+    except: ["index", "store"] // "index" | "store" | "show" | "update" | "destroy"
+});
+```
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.65](https://github.com/crenata/bejibun-core/compare/v0.1.64...v0.1.65) - 2025-12-29
 
 ### 🩹 Fixes

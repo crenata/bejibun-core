@@ -177,6 +177,7 @@ Usage :
 
 ```ts
 import Router from "@bejibun/core/facades/Router";
+import YourController from "@/app/controllers/YourController";
 import TestMiddleware from "@/app/middlewares/TestMiddleware";
 import LoggerMiddleware from "@/app/middlewares/LoggerMiddleware";
 
@@ -192,7 +193,15 @@ export default Router.prefix("test")
         Router.post("add", "TestController@add"),
         Router.post("edit", "TestController@edit"),
         Router.delete("delete/:id", "TestController@delete"),
-        Router.get("restore/:id", "TestController@restore")
+        Router.get("restore/:id", "TestController@restore"),
+
+        Router.resource("path", YourController),
+        Router.resource("path", YourController, {
+            only: ["index", "store"] // "index" | "store" | "show" | "update" | "destroy"
+        }),
+        Router.resource("path", YourController, {
+            except: ["index", "store"] // "index" | "store" | "show" | "update" | "destroy"
+        })
     ]);
 ```
 
