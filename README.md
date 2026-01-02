@@ -217,44 +217,34 @@ import TestModel from "@/app/models/TestModel";
 
 export default class TestValidator extends BaseValidator {
     public static get detail(): ValidatorType {
-        return super.validator.compile(
-            super.validator.object({
-                id: super.validator.number().min(1).exists(TestModel, "id")
-            })
-        );
+        return super.validator.create({
+            id: super.validator.number().min(1).exists(TestModel, "id")
+        });
     }
 
     public static get add(): ValidatorType {
-        return super.validator.compile(
-            super.validator.object({
-                name: super.validator.string()
-            })
-        );
+        return super.validator.create({
+            name: super.validator.string()
+        });
     }
 
     public static get edit(): ValidatorType {
-        return super.validator.compile(
-            super.validator.object({
-                id: super.validator.number().min(1).exists(TestModel, "id"),
-                name: super.validator.string()
-            })
-        );
+        return super.validator.create({
+            id: super.validator.number().min(1).exists(TestModel, "id"),
+            name: super.validator.string()
+        });
     }
 
     public static get delete(): ValidatorType {
-        return super.validator.compile(
-            super.validator.object({
-                id: super.validator.number().min(1).exists(TestModel, "id")
-            })
-        );
+        return super.validator.create({
+            id: super.validator.number().min(1).exists(TestModel, "id")
+        });
     }
 
     public static get restore(): ValidatorType {
-        return super.validator.compile(
-            super.validator.object({
-                id: super.validator.number().min(1).exists(TestModel, "id", true)
-            })
-        );
+        return super.validator.create({
+            id: super.validator.number().min(1).exists(TestModel, "id", true)
+        });
     }
 }
 ```
