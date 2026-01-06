@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [v0.1.66](https://github.com/crenata/bejibun-core/compare/v0.1.65...v0.1.66) - 2025-12-31
+## [v0.1.66](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.65...v0.1.66) - 2025-12-31
 
 ### 🩹 Fixes
 
@@ -30,25 +30,25 @@ Router.resource("path", YourController, {
 ### ❤️Contributors
 - Havea Crenata ([@crenata](https://github.com/crenata))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.65](https://github.com/crenata/bejibun-core/compare/v0.1.64...v0.1.65) - 2025-12-29
+## [v0.1.65](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.64...v0.1.65) - 2025-12-29
 
 ### 🩹 Fixes
-- Router namespace on group - [#6](https://github.com/crenata/bejibun-core/issues/6)
+- Router namespace on group - [#6](https://github.com/Bejibun-Framework/bejibun-core/issues/6)
 
 ### 📖 Changes
 
 ### ❤️Contributors
 - Havea Crenata ([@crenata](https://github.com/crenata))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.64](https://github.com/crenata/bejibun-core/compare/v0.1.61...v0.1.64) - 2025-12-25
+## [v0.1.64](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.61...v0.1.64) - 2025-12-25
 
 ### 🩹 Fixes
 
@@ -108,18 +108,18 @@ await Storage.build({
 ### ❤️Contributors
 - Havea Crenata ([@crenata](https://github.com/crenata))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.61](https://github.com/crenata/bejibun-core/compare/v0.1.58...v0.1.61) - 2025-12-12
+## [v0.1.61](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.58...v0.1.61) - 2025-12-12
 
 ### 🩹 Fixes
-- [@bejibun/cache](https://github.com/crenata/bejibun-cache) Redis connection with Cache own configuration - [#1](https://github.com/crenata/bejibun-core/issues/1)
+- [@bejibun/cache](https://github.com/Bejibun-Framework/bejibun-cache) Redis connection with Cache own configuration - [#1](https://github.com/Bejibun-Framework/bejibun-core/issues/1)
 
 ### 📖 Changes
 What's New :
-#### Upgrade [@bejibun/cache](https://github.com/crenata/bejibun-cache) to v0.1.14
+#### Upgrade [@bejibun/cache](https://github.com/Bejibun-Framework/bejibun-cache) to v0.1.14
 - Adding `ttl` supports for file scheme.
 
 #### How does it work?
@@ -135,73 +135,73 @@ If so, the data is returned. Otherwise, the cache file will be deleted and retur
 ### ❤️Contributors
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.60](https://github.com/crenata/bejibun-core/compare/v0.1.58...v0.1.60) - 2025-12-10
+## [v0.1.60](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.58...v0.1.60) - 2025-12-10
 
 ### 🩹 Fixes
-- [@bejibun/cache](https://github.com/crenata/bejibun-cache) local with Rate Limiter - [#10](https://github.com/crenata/bejibun-core/issues/10)
+- [@bejibun/cache](https://github.com/Bejibun-Framework/bejibun-cache) local with Rate Limiter - [#10](https://github.com/Bejibun-Framework/bejibun-core/issues/10)
 
 ### 📖 Changes
 
 ### ❤️Contributors
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.58](https://github.com/crenata/bejibun-core/compare/v0.1.57...v0.1.58) - 2025-12-09
+## [v0.1.58](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.57...v0.1.58) - 2025-12-09
 
 ### 🩹 Fixes
 
 ### 📖 Changes
-#### Upgrade [@bejibun/utils](https://github.com/crenata/bejibun-utils) to v0.1.25
+#### Upgrade [@bejibun/utils](https://github.com/Bejibun-Framework/bejibun-utils) to v0.1.25
 - Implement `serialize` and `parseFormData` to `BaseController` for cleaner data and more actual data validation.
 
 ### ❤️Contributors
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.57](https://github.com/crenata/bejibun-core/compare/v0.1.55...v0.1.57) - 2025-12-05
+## [v0.1.57](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.55...v0.1.57) - 2025-12-05
 
 ### 🩹 Fixes
-- Hang, when redis not connected - [#7](https://github.com/crenata/bejibun-core/issues/7)
-- Handling for invalid syntax validation - [#8](https://github.com/crenata/bejibun-core/issues/8)
-- Body serialize for empty form data field - [#9](https://github.com/crenata/bejibun-core/issues/9)
+- Hang, when redis not connected - [#7](https://github.com/Bejibun-Framework/bejibun-core/issues/7)
+- Handling for invalid syntax validation - [#8](https://github.com/Bejibun-Framework/bejibun-core/issues/8)
+- Body serialize for empty form data field - [#9](https://github.com/Bejibun-Framework/bejibun-core/issues/9)
 
-#### [@bejibun/utils](https://github.com/crenata/bejibun-utils)
-- Empty validation for file - [#1](https://github.com/crenata/bejibun-utils/issues/1)
+#### [@bejibun/utils](https://github.com/Bejibun-Framework/bejibun-utils)
+- Empty validation for file - [#1](https://github.com/Bejibun-Framework/bejibun-utils/issues/1)
 
 ### 📖 Changes
-#### Upgrade [@bejibun/utils](https://github.com/crenata/bejibun-utils) to v0.1.23
+#### Upgrade [@bejibun/utils](https://github.com/Bejibun-Framework/bejibun-utils) to v0.1.23
 - Empty validation for file
 
-#### Upgrade [@bejibun/cache](https://github.com/crenata/bejibun-cache) to v0.1.12
+#### Upgrade [@bejibun/cache](https://github.com/Bejibun-Framework/bejibun-cache) to v0.1.12
 - Adding `local` connection for file schema.
 
-Now, [@bejibun/cache](https://github.com/crenata/bejibun-cache) has local and redis for cache system.
+Now, [@bejibun/cache](https://github.com/Bejibun-Framework/bejibun-cache) has local and redis for cache system.
 If the connection use local, this will cache data as file on storage/cache.
 
 ### ❤️Contributors
 - Havea Crenata ([@crenata](https://github.com/crenata))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.55](https://github.com/crenata/bejibun-core/compare/v0.1.54...v0.1.55) - 2025-11-29
+## [v0.1.55](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.54...v0.1.55) - 2025-11-29
 
 ### 🩹 Fixes
-- Body parser for multiple keys - [#2](https://github.com/crenata/bejibun-core/issues/2)
-- x402 on nester router - [#3](https://github.com/crenata/bejibun-core/issues/3)
-- Storage directory undefined - [#4](https://github.com/crenata/bejibun-core/issues/4)
-- Unknown actual error on runtime exception - [#5](https://github.com/crenata/bejibun-core/issues/5)
+- Body parser for multiple keys - [#2](https://github.com/Bejibun-Framework/bejibun-core/issues/2)
+- x402 on nester router - [#3](https://github.com/Bejibun-Framework/bejibun-core/issues/3)
+- Storage directory undefined - [#4](https://github.com/Bejibun-Framework/bejibun-core/issues/4)
+- Unknown actual error on runtime exception - [#5](https://github.com/Bejibun-Framework/bejibun-core/issues/5)
 
 ### 📖 Changes
 - Storage adjustment: random string filename.
@@ -209,11 +209,11 @@ If the connection use local, this will cache data as file on storage/cache.
 ### ❤️Contributors
 - Havea Crenata ([@crenata](https://github.com/crenata))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.54](https://github.com/crenata/bejibun-core/compare/v0.1.53...v0.1.54) - 2025-11-28
+## [v0.1.54](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.53...v0.1.54) - 2025-11-28
 
 ### 🩹 Fixes
 - Fix x402 middleware for optional
@@ -223,11 +223,11 @@ If the connection use local, this will cache data as file on storage/cache.
 ### ❤️Contributors
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.53](https://github.com/crenata/bejibun-core/compare/v0.1.52...v0.1.53) - 2025-11-24
+## [v0.1.53](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.52...v0.1.53) - 2025-11-24
 
 ### 🩹 Fixes
 
@@ -244,11 +244,11 @@ Available `Rate Limiter` functions :
 - Havea Crenata ([@crenata](https://github.com/crenata))
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.52](https://github.com/crenata/bejibun-core/compare/v0.1.51...v0.1.52) - 2025-11-17
+## [v0.1.52](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.51...v0.1.52) - 2025-11-17
 
 ### 🩹 Fixes
 
@@ -272,11 +272,11 @@ Router.x402()
 - Havea Crenata ([@crenata](https://github.com/crenata))
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.51](https://github.com/crenata/bejibun-core/compare/v0.1.49...v0.1.51) - 2025-11-04
+## [v0.1.51](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.49...v0.1.51) - 2025-11-04
 
 ### 🩹 Fixes
 
@@ -310,11 +310,11 @@ So when user runs `bun ace` your command will appear in the list.
 ### ❤️Contributors
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.49](https://github.com/crenata/bejibun-core/compare/v0.1.47...v0.1.49) - 2025-10-27
+## [v0.1.49](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.47...v0.1.49) - 2025-10-27
 
 ### 🩹 Fixes
 
@@ -327,11 +327,11 @@ What's New :
 - Havea Crenata ([@crenata](https://github.com/crenata))
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.47](https://github.com/crenata/bejibun-core/compare/v0.1.44...v0.1.47) - 2025-10-26
+## [v0.1.47](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.44...v0.1.47) - 2025-10-26
 
 ### 🩹 Fixes
 
@@ -345,11 +345,11 @@ What's New :
 - Havea Crenata ([@crenata](https://github.com/crenata))
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.44](https://github.com/crenata/bejibun-core/compare/v0.1.43...v0.1.44) - 2025-10-22
+## [v0.1.44](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.43...v0.1.44) - 2025-10-22
 
 ### 🩹 Fixes
 
@@ -364,11 +364,11 @@ What's New :
 - Havea Crenata ([@crenata](https://github.com/crenata))
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.43](https://github.com/crenata/bejibun-core/compare/v0.1.42...v0.1.43) - 2025-10-21
+## [v0.1.43](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.42...v0.1.43) - 2025-10-21
 
 ### 🩹 Fixes
 
@@ -382,11 +382,11 @@ What's New :
 - Havea Crenata ([@crenata](https://github.com/crenata))
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.42](https://github.com/crenata/bejibun-core/compare/v0.1.41...v0.1.42) - 2025-10-21
+## [v0.1.42](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.41...v0.1.42) - 2025-10-21
 
 ### 🩹 Fixes
 - Fix controller path on router builder
@@ -401,11 +401,11 @@ What's New :
 - Havea Crenata ([@crenata](https://github.com/crenata))
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.41](https://github.com/crenata/bejibun-core/compare/v0.1.40...v0.1.41) - 2025-10-20
+## [v0.1.41](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.40...v0.1.41) - 2025-10-20
 
 ### 🩹 Fixes
 
@@ -418,11 +418,11 @@ Chore :
 - Havea Crenata ([@crenata](https://github.com/crenata))
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.40](https://github.com/crenata/bejibun-core/compare/v0.1.39...v0.1.40) - 2025-10-19
+## [v0.1.40](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.39...v0.1.40) - 2025-10-19
 
 ### 🩹 Fixes
 - Fix router any invalid route structure
@@ -437,11 +437,11 @@ What's New :
 - Havea Crenata ([@crenata](https://github.com/crenata))
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.39](https://github.com/crenata/bejibun-core/compare/v0.1.38...v0.1.39) - 2025-10-17
+## [v0.1.39](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.38...v0.1.39) - 2025-10-17
 
 ### 🩹 Fixes
 - Fix load database configuration on bootstrap & base model
@@ -452,11 +452,11 @@ What's New :
 - Havea Crenata ([@crenata](https://github.com/crenata))
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.38](https://github.com/crenata/bejibun-core/compare/v0.1.36...v0.1.38) - 2025-10-17
+## [v0.1.38](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.36...v0.1.38) - 2025-10-17
 
 ### 🩹 Fixes
 
@@ -476,11 +476,11 @@ Available Commands :
 - Havea Crenata ([@crenata](https://github.com/crenata))
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.36](https://github.com/crenata/bejibun-core/compare/v0.1.35...v0.1.36) - 2025-10-14
+## [v0.1.36](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.35...v0.1.36) - 2025-10-14
 
 ### 🩹 Fixes
 
@@ -496,11 +496,11 @@ Refactors :
 - Havea Crenata ([@crenata](https://github.com/crenata))
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.35](https://github.com/crenata/bejibun-core/compare/v0.1.23...v0.1.35) - 2025-10-14
+## [v0.1.35](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.23...v0.1.35) - 2025-10-14
 
 ### 🩹 Fixes
 
@@ -512,11 +512,11 @@ Update build indexing
 - Havea Crenata ([@crenata](https://github.com/crenata))
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.23](https://github.com/crenata/bejibun-core/compare/v0.1.18...v0.1.23) - 2025-10-14
+## [v0.1.23](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.18...v0.1.23) - 2025-10-14
 
 ### 🩹 Fixes
 
@@ -533,11 +533,11 @@ What's New :
 - Havea Crenata ([@crenata](https://github.com/crenata))
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
 
 ---
 
-## [v0.1.18](https://github.com/crenata/bejibun-core/compare/v0.1.0...v0.1.18) - 2025-10-12
+## [v0.1.18](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.0...v0.1.18) - 2025-10-12
 
 ### 🩹 Fixes
 
@@ -551,4 +551,4 @@ What's New :
 - Havea Crenata ([@crenata](https://github.com/crenata))
 - Ghulje ([@ghulje](https://github.com/ghulje))
 
-**Full Changelog**: https://github.com/crenata/bejibun-core/blob/master/CHANGELOG.md
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
