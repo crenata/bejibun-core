@@ -1,7 +1,7 @@
 import App from "@bejibun/app";
 import {defineValue, isEmpty} from "@bejibun/utils";
+import Luxon from "@bejibun/utils/facades/Luxon";
 import Str from "@bejibun/utils/facades/Str";
-import {DateTime} from "luxon";
 import {
     Constructor,
     Model,
@@ -19,9 +19,9 @@ import SoftDeletes from "@/facades/SoftDeletes";
 
 export interface BaseColumns {
     id: bigint | number;
-    created_at: DateTime | string;
-    updated_at: DateTime | string;
-    deleted_at: DateTime | string | null;
+    created_at: Luxon.DateTime | string;
+    updated_at: Luxon.DateTime | string;
+    deleted_at: Luxon.DateTime | string | null;
 }
 
 class BunQueryBuilder<M extends Model, R = M[]> extends SoftDeletes<M, R> {
@@ -48,9 +48,9 @@ export default class BaseModel extends Model implements BaseColumns {
     public static QueryBuilder = BunQueryBuilder;
 
     declare id: number | bigint;
-    declare created_at: DateTime | string;
-    declare updated_at: DateTime | string;
-    declare deleted_at: DateTime | string | null;
+    declare created_at: Luxon.DateTime | string;
+    declare updated_at: Luxon.DateTime | string;
+    declare deleted_at: Luxon.DateTime | string | null;
 
     public static get namespace(): string {
         const filePath = fileURLToPath(import.meta.url);
@@ -64,13 +64,13 @@ export default class BaseModel extends Model implements BaseColumns {
     }
 
     $beforeInsert(queryContext: QueryContext): void {
-        const now = DateTime.now();
+        const now = Luxon.DateTime.now();
         this.created_at = now;
         this.updated_at = now;
     }
 
     $beforeUpdate(opt: ModelOptions, queryContext: QueryContext): void {
-        this.updated_at = DateTime.now();
+        this.updated_at = Luxon.DateTime.now();
     }
 
     public static query<T extends Model>(this: Constructor<T>, trxOrKnex?: TransactionOrKnex): QueryBuilderType<T> {

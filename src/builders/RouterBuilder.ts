@@ -17,9 +17,9 @@ export interface ResourceOptions {
 }
 
 export default class RouterBuilder {
-    private basePath: string = "";
-    private middlewares: Array<IMiddleware> = [];
-    private baseNamespace: string = "app/controllers";
+    protected basePath: string = "";
+    protected middlewares: Array<IMiddleware> = [];
+    protected baseNamespace: string = "app/controllers";
 
     public prefix(basePath: string): RouterBuilder {
         this.basePath = basePath;
