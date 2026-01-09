@@ -1,24 +1,19 @@
-import { DateTime } from "luxon";
+import Luxon from "@bejibun/utils/facades/Luxon";
 import { Constructor, Model, ModelOptions, PartialModelObject, QueryBuilder, QueryBuilderType, QueryContext, TransactionOrKnex } from "objection";
 import SoftDeletes from "../facades/SoftDeletes";
-export interface BaseColumns {
-    id: bigint | number;
-    created_at: DateTime | string;
-    updated_at: DateTime | string;
-    deleted_at: DateTime | string | null;
-}
+export type Timestamp = typeof Luxon.DateTime | Date | string;
+export type NullableTimestamp = Timestamp | null;
 declare class BunQueryBuilder<M extends Model, R = M[]> extends SoftDeletes<M, R> {
     update(payload: PartialModelObject<M>): Promise<QueryBuilder<M, R>>;
 }
-export default class BaseModel extends Model implements BaseColumns {
+export default class BaseModel extends Model {
     static tableName: string;
     static idColumn: string;
+    static createdColumn: string;
+    static updatedColumn: string;
     static deletedColumn: string;
     static QueryBuilder: typeof BunQueryBuilder;
     id: number | bigint;
-    created_at: DateTime | string;
-    updated_at: DateTime | string;
-    deleted_at: DateTime | string | null;
     static get namespace(): string;
     $beforeInsert(queryContext: QueryContext): void;
     $beforeUpdate(opt: ModelOptions, queryContext: QueryContext): void;

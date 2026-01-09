@@ -13,16 +13,16 @@ export default class SoftDeletes<M extends Model, R = M[]> extends QueryBuilder<
         // @ts-ignore
         super(modelClass);
 
-        this.onBuild((builder: QueryBuilder<M, R>) => {
-            const context = this.context() as SoftDeleteQueryContext;
+        (this as any).onBuild((builder: QueryBuilder<M, R>): void => {
+            const context = (this as any).context() as SoftDeleteQueryContext;
 
             if (!this.hasFilterApplied) {
-                const tableName = this.modelClass().tableName;
+                const tableName = (this as any).modelClass().tableName;
 
                 if (context.onlyTrashed) {
-                    builder.whereNotNull(`${tableName}.${(this.modelClass() as any).deletedColumn}`);
+                    builder.whereNotNull(`${tableName}.${((this as any).modelClass() as any).deletedColumn}`);
                 } else if (!context.withTrashed) {
-                    builder.whereNull(`${tableName}.${(this.modelClass() as any).deletedColumn}`);
+                    builder.whereNull(`${tableName}.${((this as any).modelClass() as any).deletedColumn}`);
                 }
 
                 this.hasFilterApplied = true;
@@ -45,8 +45,8 @@ export default class SoftDeletes<M extends Model, R = M[]> extends QueryBuilder<
     }
 
     delete(): QueryBuilder<M, number> {
-        return this.update({
-            [(this.modelClass() as any).deletedColumn]: DateTime.now()
+        return (this as any).update({
+            [((this as any).modelClass() as any).deletedColumn]: DateTime.now()
         } as any);
     }
 
@@ -60,7 +60,7 @@ export default class SoftDeletes<M extends Model, R = M[]> extends QueryBuilder<
 
     restore(): QueryBuilder<M, number> {
         return this.onlyTrashed().update({
-            [(this.modelClass() as any).deletedColumn]: null
+            [((this as any).modelClass() as any).deletedColumn]: null
         } as any);
     }
 }

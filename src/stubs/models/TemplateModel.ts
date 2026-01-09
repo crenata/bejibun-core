@@ -1,17 +1,13 @@
-import BaseModel, {BaseColumns} from "@bejibun/core/bases/BaseModel";
-import Luxon from "@bejibun/utils/facades/Luxon";
+import type {Timestamp, NullableTimestamp} from "@bejibun/core/bases/BaseModel";
+import BaseModel from "@bejibun/core/bases/BaseModel";
 
-export interface TemplateColumns extends BaseColumns {
-    name: string;
-}
-
-export default class TemplateModel extends BaseModel implements TemplateColumns {
+export default class TemplateModel extends BaseModel {
     public static tableName: string = "templates";
     public static idColumn: string = "id";
 
     declare id: bigint;
     declare name: string;
-    declare created_at: Luxon.DateTime | string;
-    declare updated_at: Luxon.DateTime | string;
-    declare deleted_at: Luxon.DateTime | string | null;
+    declare created_at: Timestamp;
+    declare updated_at: Timestamp;
+    declare deleted_at: NullableTimestamp;
 }

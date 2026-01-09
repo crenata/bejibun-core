@@ -8,9 +8,9 @@ export interface ResourceOptions {
     except?: Array<ResourceAction>;
 }
 export default class RouterBuilder {
-    private basePath;
-    private middlewares;
-    private baseNamespace;
+    protected basePath: string;
+    protected middlewares: Array<IMiddleware>;
+    protected baseNamespace: string;
     prefix(basePath: string): RouterBuilder;
     middleware(...middlewares: Array<IMiddleware>): RouterBuilder;
     namespace(baseNamespace: string): RouterBuilder;

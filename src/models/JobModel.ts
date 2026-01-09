@@ -1,18 +1,11 @@
 import BaseModel from "@/bases/BaseModel";
+import EpochTimestamps from "@/models/EpochTimestamps";
 
-export interface JobColumns {
-    id: bigint;
-    queue: string;
-    payload: string;
-    attempts: bigint;
-    reserved_at: bigint | null;
-    available_at: bigint;
-    created_at: bigint;
-}
-
-export default class JobModel extends BaseModel implements JobColumns {
+export default class JobModel extends EpochTimestamps(BaseModel) {
     public static tableName: string = "jobs";
     public static idColumn: string = "id";
+    public static updatedColumn = null;
+    public static deletedColumn = null;
 
     declare id: bigint;
     declare queue: string;

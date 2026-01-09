@@ -1,7 +1,7 @@
 import App from "@bejibun/app";
-import { defineValue, isEmpty } from "@bejibun/utils";
+import { defineValue, isEmpty, isNotEmpty } from "@bejibun/utils";
+import Luxon from "@bejibun/utils/facades/Luxon";
 import Str from "@bejibun/utils/facades/Str";
-import { DateTime } from "luxon";
 import { Model } from "objection";
 import { relative, sep } from "path";
 import { fileURLToPath } from "url";
@@ -22,6 +22,8 @@ class BunQueryBuilder extends SoftDeletes {
 export default class BaseModel extends Model {
     static tableName;
     static idColumn;
+    static createdColumn = "created_at";
+    static updatedColumn = "updated_at";
     static deletedColumn = "deleted_at";
     static QueryBuilder = BunQueryBuilder;
     static get namespace() {
@@ -31,15 +33,21 @@ export default class BaseModel extends Model {
         const namespaces = withoutExt.split(sep);
         namespaces.pop();
         namespaces.push(this.name);
-        return namespaces.map(part => Str.toPascalCase(part)).join("/");
+        return namespaces.map((part) => Str.toPascalCase(part)).join("/");
     }
     $beforeInsert(queryContext) {
-        const now = DateTime.now();
-        this.created_at = now;
-        this.updated_at = now;
+        const now = Luxon.DateTime.now();
+        if (isNotEmpty(this[this.constructor.createdColumn])) {
+            this[this.constructor.createdColumn] = now;
+        }
+        if (isNotEmpty(this[this.constructor.updatedColumn])) {
+            this[this.constructor.updatedColumn] = now;
+        }
     }
     $beforeUpdate(opt, queryContext) {
-        this.updated_at = DateTime.now();
+        if (isNotEmpty(this[this.constructor.updatedColumn])) {
+            this[this.constructor.updatedColumn] = Luxon.DateTime.now();
+        }
     }
     static query(trxOrKnex) {
         return super.query(trxOrKnex);
