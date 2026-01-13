@@ -1,3 +1,4 @@
+import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
 import {defineValue} from "@bejibun/utils";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
@@ -43,7 +44,12 @@ export default class ExceptionHandler {
             .send();
     }
 
-    public route(request: Bun.BunRequest): globalThis.Response {
+    public async route(request: Bun.BunRequest): Promise<globalThis.Response> {
+        const url: URL = new URL(request.url);
+        const file: Bun.BunFile = Bun.file(App.Path.publicPath(url.pathname.replace(/^\//, "")));
+
+        if (await file.exists()) return new globalThis.Response(file);
+
         return Response
             .setMessage("What are you looking for doesn't exists.")
             .setStatus(request.method === HttpMethodEnum.Options ? 204 : 404)
