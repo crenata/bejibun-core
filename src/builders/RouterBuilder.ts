@@ -261,6 +261,8 @@ export default class RouterBuilder {
             if (this.hasRaw(routes)) routes = routes.route;
         }
 
+        if ("raws" in routes) routes = routes.routes;
+
         const mergedRoutes = this.mergeRoutes(routes);
 
         if (Array.isArray(mergedRoutes)) return Object.assign({}, ...mergedRoutes);
