@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## [v0.2.0](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.66...v0.2.0) - 2026-01-09
 
 ### 🩹 Fixes
+- Router serialize raws into routes - [#11](https://github.com/Bejibun-Framework/bejibun-core/pull/11)
 
 ### 📖 Changes
 - Added dynamic model timestamps for `created_at`, `updated_at`, and `deleted_at`
@@ -14,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - No longer `BaseColumns` on `Model`
 
 #### What's New :
+- Added public URL - [#12](https://github.com/Bejibun-Framework/bejibun-core/pull/12)
 - Epoch Timestamp Trait
 - Queue Jobs
 
