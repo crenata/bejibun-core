@@ -3,6 +3,21 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.69](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.66...v0.1.69) - 2026-01-13
+
+### 🩹 Fixes
+- Router serialize raws into routes - [#11](https://github.com/Bejibun-Framework/bejibun-core/pull/11)
+
+### 📖 Changes
+- Added public URL - [#12](https://github.com/Bejibun-Framework/bejibun-core/pull/12)
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.66](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.65...v0.1.66) - 2025-12-31
 
 ### 🩹 Fixes
