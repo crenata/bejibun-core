@@ -3,6 +3,20 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.70](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.69...v0.1.70) - 2026-01-19
+
+### 🩹 Fixes
+
+### 📖 Changes
+- Added S3 storage support - [#13](https://github.com/Bejibun-Framework/bejibun-core/pull/13)
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.69](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.66...v0.1.69) - 2026-01-13
 
 ### 🩹 Fixes
