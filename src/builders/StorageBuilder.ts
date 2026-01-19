@@ -46,11 +46,28 @@ export default class StorageBuilder {
             case DiskDriverEnum.Local:
                 if (isEmpty(this.currentDisk?.root)) throw new DiskException(`Missing "root" for "local" disk configuration.`);
                 break;
+            case DiskDriverEnum.S3:
+                if (isEmpty(this.currentDisk?.endpoint)) throw new DiskException(`Missing "endpoint" for "s3" disk configuration.`);
+                if (isEmpty(this.currentDisk?.access_key_id)) throw new DiskException(`Missing "access_key_id" for "s3" disk configuration.`);
+                if (isEmpty(this.currentDisk?.secret_access_key)) throw new DiskException(`Missing "secret_access_key" for "s3" disk configuration.`);
+                break;
             default:
                 break;
         }
 
         return driver;
+    }
+
+    private get s3(): Bun.S3Client {
+        if (this.driver !== DiskDriverEnum.S3) throw new DiskException(`Driver is not "s3".`);
+
+        return new Bun.S3Client({
+            endpoint: this.currentDisk?.endpoint,
+            region: this.currentDisk?.region,
+            bucket: this.currentDisk?.bucket,
+            accessKeyId: this.currentDisk?.access_key_id,
+            secretAccessKey: this.currentDisk?.secret_access_key
+        });
     }
 
     public build(overrideDisk: StorageDisk): StorageBuilder {
@@ -71,6 +88,8 @@ export default class StorageBuilder {
         switch (this.driver) {
             case DiskDriverEnum.Local:
                 return await Bun.file(path.resolve(this.currentDisk.root, filepath)).exists();
+            case DiskDriverEnum.S3:
+                return await this.s3.file(filepath).exists();
             default:
                 return false;
         }
@@ -91,6 +110,9 @@ export default class StorageBuilder {
             case DiskDriverEnum.Local:
                 data = await Bun.file(path.resolve(this.currentDisk.root, filepath)).text();
                 break;
+            case DiskDriverEnum.S3:
+                data = await this.s3.file(filepath).text();
+                break;
             default:
                 break;
         }
@@ -107,6 +129,9 @@ export default class StorageBuilder {
                 case DiskDriverEnum.Local:
                     await Bun.write(path.resolve(this.currentDisk.root, filepath), content);
                     break;
+                case DiskDriverEnum.S3:
+                    await this.s3.write(filepath, content);
+                    break;
                 default:
                     break;
             }
@@ -121,6 +146,9 @@ export default class StorageBuilder {
         switch (this.driver) {
             case DiskDriverEnum.Local:
                 await Bun.file(path.resolve(this.currentDisk.root, filepath)).delete();
+                break;
+            case DiskDriverEnum.S3:
+                await this.s3.file(filepath).delete();
                 break;
             default:
                 break;
