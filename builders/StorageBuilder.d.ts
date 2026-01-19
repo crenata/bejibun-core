@@ -7,6 +7,7 @@ export default class StorageBuilder {
     private get config();
     private get currentDisk();
     private get driver();
+    private get s3();
     build(overrideDisk: StorageDisk): StorageBuilder;
     disk(drive: string): StorageBuilder;
     exists(filepath: string): Promise<boolean>;
