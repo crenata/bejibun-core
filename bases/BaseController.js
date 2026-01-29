@@ -6,9 +6,10 @@ export default class BaseController {
     async parse(request) {
         const contentType = defineValue(request.headers.get("content-type"), "");
         const formData = new FormData();
+        let data = {};
         try {
             if (contentType.includes("application/json"))
-                return Bobject.serialize(await request.json());
+                Object.assign(data, Bobject.serialize(await request.json()));
             for (const [key, value] of Object.entries(request.params)) {
                 formData.append(key, value);
             }
@@ -30,7 +31,7 @@ export default class BaseController {
         catch {
             // do nothing
         }
-        return Bobject.parseFormData(formData);
+        return Object.assign(data, Bobject.parseFormData(formData));
     }
     get response() {
         return Response;
