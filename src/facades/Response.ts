@@ -12,4 +12,8 @@ export default class Response {
     public static setStatus(status: number): ResponseBuilder {
         return new ResponseBuilder().setStatus(status);
     }
+
+    public static setCustom(custom?: Record<string, any>): ResponseBuilder {
+        return new ResponseBuilder().setCustom(custom);
+    }
 }

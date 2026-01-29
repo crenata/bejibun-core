@@ -3,6 +3,20 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.1.72](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.71...v0.1.72) - 2026-01-29
+
+### 🩹 Fixes
+
+### 📖 Changes
+- Added `setCustom(custom?: Record<string, any>)` on Response builder.
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.71](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.70...v0.1.71) - 2026-01-29
 
 ### 🩹 Fixes
