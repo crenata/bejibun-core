@@ -1,7 +1,14 @@
 import type {TFacilitator, TPaywall, TX402Config} from "@bejibun/x402";
 import type {EnumItem} from "@bejibun/utils/facades/Enum";
 import type {IMiddleware} from "@/types/middleware";
-import type {HandlerType, ResourceAction, Route, RouterGroup, RouterMethodMap} from "@/types/router";
+import type {
+    HandlerType,
+    RawsRoute,
+    ResourceAction,
+    Route,
+    RouterGroup,
+    RouterMethodMap
+} from "@/types/router";
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
 import {defineValue, isEmpty, isModuleExists, isNotEmpty} from "@bejibun/utils";
@@ -52,11 +59,50 @@ export default class RouterBuilder {
         const rawGroups: Array<Route> = [];
         let routeGroups: RouterGroup = {};
 
+        if (this.hasRaws(routes)) {
+            const routeList: Array<RawsRoute | Route | RouterGroup> = Array.isArray(routes) ? routes.flat() : [routes];
+            const routerGroups: Array<RouterGroup> = routeList.filter((value: Route | RouterGroup) => !this.hasRaws(value) && !this.hasRaw(value));
+            const rawRoutes: Array<Route> = routeList.filter((value: Route | RouterGroup) => this.hasRaws(value)).map((value: RawsRoute) => value.raws).flat();
+            const newRoutes: Record<string, any> = {};
+
+            for (const route of rawRoutes) {
+                const middlewares: Array<IMiddleware> = this.middlewares.concat(defineValue(route.raw.middlewares, []));
+                const effectiveNamespace: string = defineValue(this.baseNamespace, route.raw.namespace);
+                const cleanPath: string = this.joinPaths(defineValue(route.raw.prefix, this.basePath), route.raw.path);
+
+                let resolvedHandler: HandlerType = typeof route.raw.handler === "string" ?
+                    this.resolveControllerString(route.raw.handler, effectiveNamespace) :
+                    route.raw.handler;
+
+                for (const middleware of [...middlewares].reverse()) {
+                    resolvedHandler = middleware.handle(resolvedHandler);
+                }
+
+                if (isEmpty(newRoutes[cleanPath])) newRoutes[cleanPath] = {};
+
+                Object.assign(newRoutes[cleanPath], {
+                    [route.raw.method]: resolvedHandler
+                });
+
+                route.raw.middlewares = middlewares;
+                route.raw.namespace = effectiveNamespace;
+                route.raw.path = cleanPath;
+
+                rawGroups.push(route);
+            }
+
+            routeGroups = Object.assign(
+                {},
+                ...routerGroups.map((value: RouterGroup) => this.applyGroup(value)),
+                newRoutes
+            );
+        }
+
         if (this.hasRaw(routes)) {
             const routeList: Array<Route | RouterGroup> = Array.isArray(routes) ? routes.flat() : [routes];
-            const routerGroups: Array<RouterGroup> = routeList.filter((value: Route | RouterGroup) => !this.hasRaw(value));
+            const routerGroups: Array<RouterGroup> = routeList.filter((value: Route | RouterGroup) => !this.hasRaws(value) && !this.hasRaw(value));
             const rawRoutes: Array<Route> = routeList.filter((value: Route | RouterGroup) => this.hasRaw(value));
-            const newRoutes: any = {};
+            const newRoutes: Record<string, any> = {};
 
             for (const route of rawRoutes) {
                 const middlewares: Array<IMiddleware> = this.middlewares.concat(defineValue(route.raw.middlewares, []));
@@ -99,7 +145,7 @@ export default class RouterBuilder {
         if (isEmpty(routes)) return {};
 
         if (Array.isArray(routes)) {
-            return routes.map((value: any) => {
+            return routes.map((value: RawsRoute | Route | RouterGroup) => {
                 if (isNotEmpty(value.raws)) return value.raws;
 
                 return value;
@@ -254,14 +300,14 @@ export default class RouterBuilder {
         return this.match(Enum.setEnums(HttpMethodEnum).toArray().map((value: EnumItem) => value.value), path, handler);
     }
 
-    public serialize(routes: Route | Array<Route> | RouterGroup | Array<RouterGroup>): RouterGroup {
+    public serialize(routes: Route | Array<Route> | RouterGroup | Array<RouterGroup> | Array<RawsRoute>): RouterGroup {
         if (Array.isArray(routes)) {
             if (this.hasRaw(routes)) routes = routes.map((value: Route) => value.route);
+            if (this.hasRaws(routes)) routes = (routes as any).map((value: any) => value.routes).flat();
         } else {
             if (this.hasRaw(routes)) routes = routes.route;
+            if (this.hasRaws(routes)) routes = routes.routes;
         }
-
-        if ("raws" in routes) routes = routes.routes;
 
         const mergedRoutes = this.mergeRoutes(routes);
 
@@ -324,7 +370,7 @@ export default class RouterBuilder {
         try {
             ControllerClass = require(location).default;
         } catch {
-            return async (...args: any[]) => {
+            return async (...args: Array<any>) => {
                 const module = await import(location);
                 const ESMController = module.default;
                 const instance = new ESMController();
@@ -364,7 +410,7 @@ export default class RouterBuilder {
         return new Set(all);
     }
 
-    private hasRaw(routes: Route | Array<Route> | RouterGroup): routes is Route {
+    private hasRaw(routes: RawsRoute | Array<RawsRoute> | Route | Array<Route> | RouterGroup): routes is Route {
         if (Array.isArray(routes)) return routes.flat().some(route => isNotEmpty(route) && "raw" in route);
 
         return (
@@ -374,11 +420,21 @@ export default class RouterBuilder {
         );
     }
 
+    private hasRaws(routes: RawsRoute | Array<RawsRoute> | Route | Array<Route> | RouterGroup): routes is RawsRoute {
+        if (Array.isArray(routes)) return routes.flat().some(route => isNotEmpty(route) && "raws" in route);
+
+        return (
+            isNotEmpty(routes) &&
+            typeof routes === "object" &&
+            "raws" in routes
+        );
+    }
+
     private isMethodMap(value: any): value is RouterMethodMap {
         return (
             isNotEmpty(value) &&
             typeof value === "object" &&
-            Object.values(value).every(v => typeof v === "function")
+            Object.values(value).every((v: any) => typeof v === "function")
         );
     }
 
@@ -388,7 +444,8 @@ export default class RouterBuilder {
         if (this.hasRaw(route)) {
             const routeList: Array<Route | RouterGroup> = Array.isArray(route) ? route.flat() : [route];
             const rawRoutes: Array<Route> = routeList.filter((value: Route | RouterGroup) => this.hasRaw(value));
-            const newRoutes: any = {};
+            const newRoutes: Record<string, any> = {};
+            const rawGroups: Array<Route> = [];
 
             for (const route of rawRoutes) {
                 const middlewares: Array<IMiddleware> = route.raw.middlewares.concat(defineValue(this.middlewares, []));
@@ -413,7 +470,18 @@ export default class RouterBuilder {
                 Object.assign(newRoutes[cleanPath], {
                     [route.raw.method]: resolvedHandler
                 });
+
+                route.raw.middlewares = middlewares;
+                route.raw.namespace = effectiveNamespace;
+                route.raw.path = cleanPath;
+
+                rawGroups.push(route);
             }
+
+            if (isNotEmpty(rawGroups)) return {
+                raws: rawGroups,
+                routes: newRoutes
+            };
 
             return newRoutes;
         }

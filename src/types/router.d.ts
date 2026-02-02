@@ -15,4 +15,8 @@ export type Route = {
     raw: RawRoute,
     route: RouterGroup
 };
+export type RawsRoute = {
+    raws: Array<Route>,
+    routes: Array<RouterGroup>
+};
 export type ResourceAction = "index" | "store" | "show" | "update" | "destroy";
