@@ -9,4 +9,7 @@ export default class Response {
     static setStatus(status) {
         return new ResponseBuilder().setStatus(status);
     }
+    static setCustom(custom) {
+        return new ResponseBuilder().setCustom(custom);
+    }
 }

@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [v0.2.0](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.66...v0.2.0) - 2026-01-13
+## [v0.2.0](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.73...v0.2.0) - 2026-02-02
 
 ### 🩹 Fixes
 
@@ -48,6 +48,48 @@ await TestJob.dispatch(/*any params here*/).delay(60 * 10 /*10 minutes*/).send()
 
 ---
 
+## [v0.1.73](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.72...v0.1.73) - 2026-02-02
+
+### 🩹 Fixes
+- Fix infinite nested router - [#14](https://github.com/Bejibun-Framework/bejibun-core/pull/14)
+
+### 📖 Changes
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
+## [v0.1.72](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.71...v0.1.72) - 2026-01-29
+
+### 🩹 Fixes
+
+### 📖 Changes
+- Added `setCustom(custom?: Record<string, any>)` on Response builder.
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
+## [v0.1.71](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.70...v0.1.71) - 2026-01-29
+
+### 🩹 Fixes
+- Merge request payload json with other types
+
+### 📖 Changes
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.70](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.69...v0.1.70) - 2026-01-19
 
 ### 🩹 Fixes
@@ -84,7 +126,7 @@ await TestJob.dispatch(/*any params here*/).delay(60 * 10 /*10 minutes*/).send()
 ### 📖 Changes
 #### What's New :
 - Added `Router.resource()`
-  
+
 Single line code that automatically generates a full set of CRUD.
 
 #### How to use?

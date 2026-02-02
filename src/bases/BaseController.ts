@@ -1,4 +1,4 @@
-import {defineValue, isEmpty, isNotEmpty} from "@bejibun/utils";
+import {defineValue, isNotEmpty} from "@bejibun/utils";
 import {default as Bobject} from "@bejibun/utils/facades/Object";
 import {errors, VineValidator} from "@vinejs/vine";
 import ValidatorException from "@/exceptions/ValidatorException";
@@ -6,11 +6,13 @@ import Response from "@/facades/Response";
 
 export default class BaseController {
     public async parse(request: Bun.BunRequest): Promise<Record<string, any>> {
-        const contentType = defineValue(request.headers.get("content-type"), "");
-        const formData = new FormData();
+        const contentType: string = defineValue(request.headers.get("content-type"), "");
+        const formData: FormData = new FormData();
+
+        let data: Record<string, any> = {};
 
         try {
-            if (contentType.includes("application/json")) return Bobject.serialize(await request.json());
+            if (contentType.includes("application/json")) Object.assign(data, Bobject.serialize(await request.json()));
 
             for (const [key, value] of Object.entries(request.params)) {
                 formData.append(key, value as string);
@@ -38,7 +40,7 @@ export default class BaseController {
             // do nothing
         }
 
-        return Bobject.parseFormData(formData);
+        return Object.assign(data, Bobject.parseFormData(formData));
     }
 
     public get response(): typeof Response {

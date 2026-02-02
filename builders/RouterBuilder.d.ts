@@ -1,6 +1,6 @@
 import type { TFacilitator, TPaywall, TX402Config } from "@bejibun/x402";
 import type { IMiddleware } from "../types/middleware";
-import type { HandlerType, ResourceAction, Route, RouterGroup } from "../types/router";
+import type { HandlerType, RawsRoute, ResourceAction, Route, RouterGroup } from "../types/router";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import BaseController from "../bases/BaseController";
 export interface ResourceOptions {
@@ -29,12 +29,13 @@ export default class RouterBuilder {
     trace(path: string, handler: string | HandlerType): Route;
     match(methods: Array<HttpMethodEnum>, path: string, handler: string | HandlerType): RouterGroup;
     any(path: string, handler: string | HandlerType): RouterGroup;
-    serialize(routes: Route | Array<Route> | RouterGroup | Array<RouterGroup>): RouterGroup;
+    serialize(routes: Route | Array<Route> | RouterGroup | Array<RouterGroup> | Array<RawsRoute>): RouterGroup;
     private mergeRoutes;
     private joinPaths;
     private resolveControllerString;
     private resolveIncludedActions;
     private hasRaw;
+    private hasRaws;
     private isMethodMap;
     private applyGroup;
 }

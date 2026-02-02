@@ -4,11 +4,13 @@ export default class ResponseBuilder {
     protected data?: any;
     protected message: string;
     protected status: number;
+    protected custom?: Record<string, any>;
 
     public constructor() {
         this.data = null;
         this.message = "Success";
         this.status = 200;
+        this.custom = {};
     }
 
     public setData(data?: any): ResponseBuilder {
@@ -29,11 +31,18 @@ export default class ResponseBuilder {
         return this;
     }
 
+    public setCustom(custom?: Record<string, any>): ResponseBuilder {
+        this.custom = custom;
+
+        return this;
+    }
+
     public send(): globalThis.Response {
         return globalThis.Response.json({
             data: this.data,
             message: this.message,
-            status: this.status
+            status: this.status,
+            ...this.custom
         }, {
             headers: {
                 ...Cors.init
