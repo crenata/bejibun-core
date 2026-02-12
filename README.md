@@ -562,6 +562,17 @@ await Storage.build({
 }).delete("path/to/your/file.ext");
 ```
 
+### Queue
+Run processes at background.
+
+```ts
+// Immediately
+await TestJob.dispatch(/*any params here*/).send();
+
+// With delay
+await TestJob.dispatch(/*any params here*/).delay(60 * 10 /*10 minutes*/).send();
+```
+
 ### Cors
 Documentation : [@bejibun/cors](https://github.com/Bejibun-Framework/bejibun-cors/blob/master/README.md)
 
