@@ -16,7 +16,8 @@ All notable changes to this project will be documented in this file.
 
 #### What's New :
 - Epoch Timestamp Trait
-- Queue Jobs
+- Job Dispatch
+- Queue Worker
 
 #### What is Epoch Timestamp Trait?
 Override default model timestamps for `created_at`, `updated_at`, and `deleted_at` to unix timestamp.
