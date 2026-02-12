@@ -7,6 +7,7 @@ declare class BunQueryBuilder<M extends Model, R = M[]> extends SoftDeletes<M, R
     update(payload: PartialModelObject<M>): Promise<QueryBuilder<M, R>>;
 }
 export default class BaseModel extends Model {
+    protected static _namespace: string;
     static tableName: string;
     static idColumn: string;
     static createdColumn: string;
@@ -17,6 +18,7 @@ export default class BaseModel extends Model {
     static get namespace(): string;
     $beforeInsert(queryContext: QueryContext): void;
     $beforeUpdate(opt: ModelOptions, queryContext: QueryContext): void;
+    static setNamespace(namespace: string): void;
     static query<T extends Model>(this: Constructor<T>, trxOrKnex?: TransactionOrKnex): QueryBuilderType<T>;
     static withTrashed<T extends Model>(this: T): QueryBuilderType<T>;
     static onlyTrashed<T extends Model>(this: T): QueryBuilderType<T>;

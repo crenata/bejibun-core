@@ -1,3 +1,4 @@
+import {ModelOptions, QueryBuilder, QueryContext} from "objection";
 import BaseModel from "@/bases/BaseModel";
 import EpochTimestamps from "@/models/EpochTimestamps";
 
@@ -6,6 +7,12 @@ export default class JobModel extends EpochTimestamps(BaseModel) {
     public static idColumn: string = "id";
     public static updatedColumn = null;
     public static deletedColumn = null;
+
+    public static QueryBuilder = QueryBuilder;
+
+    $beforeUpdate(opt: ModelOptions, queryContext: QueryContext): void {
+        // do nothing
+    }
 
     declare id: bigint;
     declare queue: string;

@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## [v0.2.0](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.73...v0.2.0) - 2026-02-02
 
 ### 🩹 Fixes
+- Invalid namespace for model - [#15](https://github.com/Bejibun-Framework/bejibun-core/issues/15)
 
 ### 📖 Changes
 - Added dynamic model timestamps for `created_at`, `updated_at`, and `deleted_at`

@@ -1,7 +1,5 @@
-import App from "@bejibun/app";
 import {defineValue, isEmpty, isNotEmpty} from "@bejibun/utils";
 import Luxon from "@bejibun/utils/facades/Luxon";
-import Str from "@bejibun/utils/facades/Str";
 import {
     Constructor,
     Model,
@@ -12,10 +10,9 @@ import {
     QueryContext,
     TransactionOrKnex
 } from "objection";
-import {relative, sep} from "path";
-import {fileURLToPath} from "url";
 import ModelNotFoundException from "@/exceptions/ModelNotFoundException";
 import SoftDeletes from "@/facades/SoftDeletes";
+import RuntimeException from "@/exceptions/RuntimeException";
 
 export type Timestamp = typeof Luxon.DateTime | Date | string;
 export type NullableTimestamp = Timestamp | null;
@@ -37,6 +34,8 @@ class BunQueryBuilder<M extends Model, R = M[]> extends SoftDeletes<M, R> {
 
 // @ts-ignore
 export default class BaseModel extends Model {
+    protected static _namespace: string;
+
     public static tableName: string;
     public static idColumn: string;
     public static createdColumn: string = "created_at";
@@ -48,14 +47,9 @@ export default class BaseModel extends Model {
     declare id: number | bigint;
 
     public static get namespace(): string {
-        const filePath: string = fileURLToPath(import.meta.url);
-        const rel: string = relative(App.Path.rootPath(), filePath);
-        const withoutExt: string = rel.replace(/\.[tj]s$/, "");
-        const namespaces: Array<string> = withoutExt.split(sep);
-        namespaces.pop();
-        namespaces.push(this.name);
+        if (isEmpty(this._namespace)) throw new RuntimeException(`Model namespace not registered for [${this.name}]`);
 
-        return namespaces.map((part: string) => Str.toPascalCase(part)).join("/");
+        return this._namespace;
     }
 
     $beforeInsert(queryContext: QueryContext): void {
@@ -72,6 +66,10 @@ export default class BaseModel extends Model {
         if (isNotEmpty((this as any)[(this.constructor as any).updatedColumn])) {
             (this as any)[(this.constructor as any).updatedColumn] = Luxon.DateTime.now() as any;
         }
+    }
+
+    public static setNamespace(namespace: string): void {
+        this._namespace = namespace;
     }
 
     public static query<T extends Model>(this: Constructor<T>, trxOrKnex?: TransactionOrKnex): QueryBuilderType<T> {

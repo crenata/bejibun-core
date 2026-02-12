@@ -1,9 +1,12 @@
+import { ModelOptions, QueryBuilder, QueryContext } from "objection";
 declare const JobModel_base: any;
 export default class JobModel extends JobModel_base {
     static tableName: string;
     static idColumn: string;
     static updatedColumn: null;
     static deletedColumn: null;
+    static QueryBuilder: typeof QueryBuilder;
+    $beforeUpdate(opt: ModelOptions, queryContext: QueryContext): void;
     id: bigint;
     queue: string;
     payload: string;

@@ -1,6 +1,7 @@
 import Luxon from "@bejibun/utils/facades/Luxon";
 import JobModel from "../models/JobModel";
 export default class JobBuilder {
+    queue;
     now;
     availableAt;
     args;
@@ -8,6 +9,10 @@ export default class JobBuilder {
         this.now = Luxon.DateTime.now().toUnixInteger();
         this.availableAt = this.now;
         this.args = [];
+    }
+    setQueue(queue) {
+        this.queue = queue;
+        return this;
     }
     dispatch(...args) {
         this.args.push(...args);
@@ -19,7 +24,7 @@ export default class JobBuilder {
     }
     async send() {
         await JobModel.create({
-            queue: Bun.randomUUIDv7(),
+            queue: this.queue,
             payload: JSON.stringify(this.args),
             available_at: this.availableAt,
             created_at: this.now

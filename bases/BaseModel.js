@@ -1,12 +1,9 @@
-import App from "@bejibun/app";
 import { defineValue, isEmpty, isNotEmpty } from "@bejibun/utils";
 import Luxon from "@bejibun/utils/facades/Luxon";
-import Str from "@bejibun/utils/facades/Str";
 import { Model } from "objection";
-import { relative, sep } from "path";
-import { fileURLToPath } from "url";
 import ModelNotFoundException from "../exceptions/ModelNotFoundException";
 import SoftDeletes from "../facades/SoftDeletes";
+import RuntimeException from "../exceptions/RuntimeException";
 class BunQueryBuilder extends SoftDeletes {
     // @ts-ignore
     async update(payload) {
@@ -20,6 +17,7 @@ class BunQueryBuilder extends SoftDeletes {
 }
 // @ts-ignore
 export default class BaseModel extends Model {
+    static _namespace;
     static tableName;
     static idColumn;
     static createdColumn = "created_at";
@@ -27,13 +25,9 @@ export default class BaseModel extends Model {
     static deletedColumn = "deleted_at";
     static QueryBuilder = BunQueryBuilder;
     static get namespace() {
-        const filePath = fileURLToPath(import.meta.url);
-        const rel = relative(App.Path.rootPath(), filePath);
-        const withoutExt = rel.replace(/\.[tj]s$/, "");
-        const namespaces = withoutExt.split(sep);
-        namespaces.pop();
-        namespaces.push(this.name);
-        return namespaces.map((part) => Str.toPascalCase(part)).join("/");
+        if (isEmpty(this._namespace))
+            throw new RuntimeException(`Model namespace not registered for [${this.name}]`);
+        return this._namespace;
     }
     $beforeInsert(queryContext) {
         const now = Luxon.DateTime.now();
@@ -48,6 +42,9 @@ export default class BaseModel extends Model {
         if (isNotEmpty(this[this.constructor.updatedColumn])) {
             this[this.constructor.updatedColumn] = Luxon.DateTime.now();
         }
+    }
+    static setNamespace(namespace) {
+        this._namespace = namespace;
     }
     static query(trxOrKnex) {
         return super.query(trxOrKnex);
