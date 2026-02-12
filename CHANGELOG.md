@@ -3,6 +3,52 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.2.0](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.73...v0.2.0) - 2026-02-02
+
+### 🩹 Fixes
+- Invalid namespace for model - [#15](https://github.com/Bejibun-Framework/bejibun-core/issues/15)
+
+### 📖 Changes
+- Added dynamic model timestamps for `created_at`, `updated_at`, and `deleted_at`
+
+#### Breaking Changes :
+- No longer `BaseColumns` on `Model`
+
+#### What's New :
+- Epoch Timestamp Trait
+- Queue Jobs
+
+#### What is Epoch Timestamp Trait?
+Override default model timestamps for `created_at`, `updated_at`, and `deleted_at` to unix timestamp.
+
+Example :
+```text
+2026-01-01 12:00:00.000 +0000 -> 1767948151
+```
+
+#### How does Queue work?
+When you dispatch job, system will add the job to database and save its params.
+
+Then worker will run jobs on the database and called `handle` function with params from the database which saved before.
+
+Worker only run jobs when the job is available by using `available_at`. You can also delay the job by passing `.delay(seconds)`
+
+Example :
+```ts
+// Immediately
+await TestJob.dispatch(/*any params here*/).send();
+
+// With delay
+await TestJob.dispatch(/*any params here*/).delay(60 * 10 /*10 minutes*/).send();
+```
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.1.73](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.1.72...v0.1.73) - 2026-02-02
 
 ### 🩹 Fixes
@@ -81,7 +127,7 @@ All notable changes to this project will be documented in this file.
 ### 📖 Changes
 #### What's New :
 - Added `Router.resource()`
-  
+
 Single line code that automatically generates a full set of CRUD.
 
 #### How to use?

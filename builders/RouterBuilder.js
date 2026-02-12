@@ -3,7 +3,6 @@ import Logger from "@bejibun/logger";
 import { defineValue, isEmpty, isModuleExists, isNotEmpty } from "@bejibun/utils";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import Enum from "@bejibun/utils/facades/Enum";
-import path from "path";
 import RouterException from "../exceptions/RouterException";
 export default class RouterBuilder {
     basePath = "";
@@ -267,7 +266,7 @@ export default class RouterBuilder {
         if (isEmpty(controllerName) || isEmpty(methodName)) {
             throw new RouterException(`Invalid router controller definition: ${definition}.`);
         }
-        const controllerPath = path.resolve(App.Path.rootPath(), defineValue(overrideNamespace, this.baseNamespace));
+        const controllerPath = App.Path.rootPath(defineValue(overrideNamespace, this.baseNamespace));
         let location = null;
         try {
             location = Bun.resolveSync(`./${controllerName}.ts`, controllerPath);

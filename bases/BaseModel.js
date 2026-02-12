@@ -1,12 +1,9 @@
-import App from "@bejibun/app";
-import { defineValue, isEmpty } from "@bejibun/utils";
-import Str from "@bejibun/utils/facades/Str";
-import { DateTime } from "luxon";
+import { defineValue, isEmpty, isNotEmpty } from "@bejibun/utils";
+import Luxon from "@bejibun/utils/facades/Luxon";
 import { Model } from "objection";
-import { relative, sep } from "path";
-import { fileURLToPath } from "url";
 import ModelNotFoundException from "../exceptions/ModelNotFoundException";
 import SoftDeletes from "../facades/SoftDeletes";
+import RuntimeException from "../exceptions/RuntimeException";
 class BunQueryBuilder extends SoftDeletes {
     // @ts-ignore
     async update(payload) {
@@ -20,26 +17,34 @@ class BunQueryBuilder extends SoftDeletes {
 }
 // @ts-ignore
 export default class BaseModel extends Model {
+    static _namespace;
     static tableName;
     static idColumn;
+    static createdColumn = "created_at";
+    static updatedColumn = "updated_at";
     static deletedColumn = "deleted_at";
     static QueryBuilder = BunQueryBuilder;
     static get namespace() {
-        const filePath = fileURLToPath(import.meta.url);
-        const rel = relative(App.Path.rootPath(), filePath);
-        const withoutExt = rel.replace(/\.[tj]s$/, "");
-        const namespaces = withoutExt.split(sep);
-        namespaces.pop();
-        namespaces.push(this.name);
-        return namespaces.map(part => Str.toPascalCase(part)).join("/");
+        if (isEmpty(this._namespace))
+            throw new RuntimeException(`Model namespace not registered for [${this.name}]`);
+        return this._namespace;
     }
     $beforeInsert(queryContext) {
-        const now = DateTime.now();
-        this.created_at = now;
-        this.updated_at = now;
+        const now = Luxon.DateTime.now();
+        if (isNotEmpty(this[this.constructor.createdColumn])) {
+            this[this.constructor.createdColumn] = now;
+        }
+        if (isNotEmpty(this[this.constructor.updatedColumn])) {
+            this[this.constructor.updatedColumn] = now;
+        }
     }
     $beforeUpdate(opt, queryContext) {
-        this.updated_at = DateTime.now();
+        if (isNotEmpty(this[this.constructor.updatedColumn])) {
+            this[this.constructor.updatedColumn] = Luxon.DateTime.now();
+        }
+    }
+    static setNamespace(namespace) {
+        this._namespace = namespace;
     }
     static query(trxOrKnex) {
         return super.query(trxOrKnex);
