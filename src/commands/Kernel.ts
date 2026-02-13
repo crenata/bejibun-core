@@ -1,6 +1,7 @@
 import type {Command} from "commander";
 import App from "@bejibun/app";
 import {defineValue, isEmpty} from "@bejibun/utils";
+import BaseModel from "@/bases/BaseModel";
 
 export default class Kernel {
     public static registerCommands(program: Command): void {
@@ -67,7 +68,11 @@ export default class Kernel {
                 const commandObj = args[args.length - 1];
                 const options = typeof commandObj.opts === "function" ? commandObj.opts() : commandObj;
                 const positionalArgs = args[0];
-                await instance.handle(options, positionalArgs);
+                try {
+                    await instance.handle(options, positionalArgs);
+                } finally {
+                    await BaseModel.knex().destroy();
+                }
             });
         }
     }

@@ -7,7 +7,7 @@ import Router from "@/facades/Router";
 import MaintenanceMiddleware from "@/middlewares/MaintenanceMiddleware";
 import RateLimiterMiddleware from "@/middlewares/RateLimiterMiddleware";
 
-import (App.Path.rootPath("bootstrap.ts"));
+await import (App.Path.rootPath("bootstrap.ts"));
 
 export default class Server {
     private get exceptionHandler(): any {

@@ -1,8 +1,10 @@
+import App from "@bejibun/app";
 import Str from "@bejibun/utils/facades/Str";
 import { program } from "commander";
 import os from "os";
 import Kernel from "./commands/Kernel";
 import { version } from "package.json";
+await import(App.Path.rootPath("bootstrap.ts"));
 const commandExec = "ace";
 program
     .name(commandExec)

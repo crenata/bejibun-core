@@ -1,23 +1,23 @@
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
-import {defineValue, isEmpty, isNotEmpty} from "@bejibun/utils";
+import {defineValue, isEmpty} from "@bejibun/utils";
 import RuntimeException from "@/exceptions/RuntimeException";
 import JobModel from "@/models/JobModel";
 
-export default class QueueWorkCommand {
+export default class QueueRetryCommand {
     /**
      * The name and signature of the console command.
      *
      * @var $signature string
      */
-    protected $signature: string = "queue:work";
+    protected $signature: string = "queue:retry";
 
     /**
      * The console command description.
      *
      * @var $description string
      */
-    protected $description: string = "Start processing jobs on the queue as a daemon";
+    protected $description: string = "Retry a failed queue job";
 
     /**
      * The options or optional flag of the console command.
@@ -50,9 +50,11 @@ export default class QueueWorkCommand {
         });
 
         while (running) {
-            const job: any = await JobModel.query().where("attempts", "<", 3).orderBy("id", "asc").first();
+            const job: any = await JobModel.query().where("attempts", ">=", 3).orderBy("id", "asc").first();
 
-            if (isNotEmpty(job?.id)) {
+            if (isEmpty(job?.id)) {
+                running = false;
+            } else {
                 const handler: Function = async () => {
                     const module = await import(App.Path.rootPath(job.queue));
 
@@ -75,5 +77,7 @@ export default class QueueWorkCommand {
                 }
             }
         }
+
+        Logger.setContext("Queue").info("All failed jobs retried successfully.");
     }
 }

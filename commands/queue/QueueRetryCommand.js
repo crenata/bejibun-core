@@ -1,21 +1,21 @@
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
-import { defineValue, isEmpty, isNotEmpty } from "@bejibun/utils";
+import { defineValue, isEmpty } from "@bejibun/utils";
 import RuntimeException from "../../exceptions/RuntimeException";
 import JobModel from "../../models/JobModel";
-export default class QueueWorkCommand {
+export default class QueueRetryCommand {
     /**
      * The name and signature of the console command.
      *
      * @var $signature string
      */
-    $signature = "queue:work";
+    $signature = "queue:retry";
     /**
      * The console command description.
      *
      * @var $description string
      */
-    $description = "Start processing jobs on the queue as a daemon";
+    $description = "Retry a failed queue job";
     /**
      * The options or optional flag of the console command.
      *
@@ -43,8 +43,11 @@ export default class QueueWorkCommand {
             Logger.setContext("Queue").info("Stopping queue worker, SIGTERM sent.");
         });
         while (running) {
-            const job = await JobModel.query().where("attempts", "<", 3).orderBy("id", "asc").first();
-            if (isNotEmpty(job?.id)) {
+            const job = await JobModel.query().where("attempts", ">=", 3).orderBy("id", "asc").first();
+            if (isEmpty(job?.id)) {
+                running = false;
+            }
+            else {
                 const handler = async () => {
                     const module = await import(App.Path.rootPath(job.queue));
                     const Class = module.default;
@@ -66,5 +69,6 @@ export default class QueueWorkCommand {
                 }
             }
         }
+        Logger.setContext("Queue").info("All failed jobs retried successfully.");
     }
 }
