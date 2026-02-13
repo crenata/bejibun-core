@@ -600,6 +600,7 @@ Commands:
   maintenance:up               Turn app into live mode
   make:command <file>          Create a new command file
   make:controller <file>       Create a new controller file
+  make:job <file>              Create a new job file
   make:middleware <file>       Create a new middleware file
   make:migration <file>        Create a new migration file
   make:model <file>            Create a new model file
@@ -610,6 +611,9 @@ Commands:
   migrate:rollback [options]   Rollback the latest migrations
   migrate:status [options]     List migrations status
   package:configure [options]  Configure package after installation
+  queue:flush                  Flush all of the failed queue jobs
+  queue:retry                  Retry a failed queue job
+  queue:work                   Start processing jobs on the queue as a daemon
   help [command]               display help for command
 
 Examples:
