@@ -5,7 +5,7 @@ import RuntimeException from "./exceptions/RuntimeException";
 import Router from "./facades/Router";
 import MaintenanceMiddleware from "./middlewares/MaintenanceMiddleware";
 import RateLimiterMiddleware from "./middlewares/RateLimiterMiddleware";
-import(App.Path.rootPath("bootstrap.ts"));
+await import(App.Path.rootPath("bootstrap.ts"));
 export default class Server {
     get exceptionHandler() {
         const exceptionHandlerPath = App.Path.appPath("exceptions/handler.ts");
