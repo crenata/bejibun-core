@@ -1,6 +1,6 @@
 {
     "name": "@bejibun/core",
-    "version": "0.2.1",
+    "version": "0.2.11",
     "author": "Havea Crenata <havea.crenata@gmail.com>",
     "repository": {
         "type": "git",
@@ -11,7 +11,7 @@
     "dependencies": {
         "@bejibun/app": "^0.1.23",
         "@bejibun/cache": "^0.1.18",
-        "@bejibun/cors": "^0.1.16",
+        "@bejibun/cors": "^0.1.17",
         "@bejibun/database": "^0.1.19",
         "@bejibun/logger": "^0.1.22",
         "@bejibun/utils": "^0.1.28",
