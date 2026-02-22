@@ -11,15 +11,20 @@ export default class NamespaceBuilder {
         return parts.join("/");
     }
     async walk(directory) {
-        const entries = readdirSync(directory, { withFileTypes: true });
-        const files = await Promise.all(entries.map((entry) => {
-            const fullPath = join(directory, entry.name);
-            return entry.isDirectory() ?
-                this.walk(fullPath) :
-                ((fullPath.endsWith(".ts") ||
-                    fullPath.endsWith(".js")) ? [fullPath] : []);
-        }));
-        return files.flat();
+        try {
+            const entries = readdirSync(directory, { withFileTypes: true });
+            const files = await Promise.all(entries.map((entry) => {
+                const fullPath = join(directory, entry.name);
+                return entry.isDirectory() ?
+                    this.walk(fullPath) :
+                    ((fullPath.endsWith(".ts") ||
+                        fullPath.endsWith(".js")) ? [fullPath] : []);
+            }));
+            return files.flat();
+        }
+        catch {
+            return [];
+        }
     }
     async load(directory) {
         const files = await this.walk(directory);

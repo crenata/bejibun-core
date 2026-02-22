@@ -3,6 +3,20 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.2.12](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.2.1...v0.2.12) - 2026-02-13
+
+### 🩹 Fixes
+
+### 📖 Changes
+- Added backward compatibility for queue jobs.
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.2.11](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.2.1...v0.2.11) - 2026-02-13
 
 ### 🩹 Fixes

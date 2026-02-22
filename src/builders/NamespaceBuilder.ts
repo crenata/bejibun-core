@@ -14,24 +14,28 @@ export default class NamespaceBuilder {
     }
 
     private async walk(directory: any): Promise<Array<string>> {
-        const entries: Array<any> = readdirSync(directory, {withFileTypes: true});
+        try {
+            const entries: Array<any> = readdirSync(directory, {withFileTypes: true});
 
-        const files: Array<any> = await Promise.all(
-            entries.map((entry: any) => {
-                const fullPath: string = join(directory, entry.name);
+            const files: Array<any> = await Promise.all(
+                entries.map((entry: any) => {
+                    const fullPath: string = join(directory, entry.name);
 
-                return entry.isDirectory() ?
-                    this.walk(fullPath) :
-                    (
+                    return entry.isDirectory() ?
+                        this.walk(fullPath) :
                         (
-                            fullPath.endsWith(".ts") ||
-                            fullPath.endsWith(".js")
-                        ) ? [fullPath] : []
-                    );
-            })
-        );
+                            (
+                                fullPath.endsWith(".ts") ||
+                                fullPath.endsWith(".js")
+                            ) ? [fullPath] : []
+                        );
+                })
+            );
 
-        return files.flat();
+            return files.flat();
+        } catch {
+            return [];
+        }
     }
 
     public async load(directory: string): Promise<void> {
