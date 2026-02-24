@@ -3,6 +3,62 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.2.13](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.2.12...v0.2.13) - 2026-02-24
+
+### 🩹 Fixes
+
+### 📖 Changes
+- Added storage options - [#18](https://github.com/Bejibun-Framework/bejibun-core/pull/18)
+
+```ts
+export type StorageOptions = {
+    mode?: number;
+    createPath?: boolean;
+    acl?:
+        | "private"
+        | "public-read"
+        | "public-read-write"
+        | "aws-exec-read"
+        | "authenticated-read"
+        | "bucket-owner-read"
+        | "bucket-owner-full-control"
+        | "log-delivery-write";
+    bucket?: string;
+    region?: string;
+    accessKeyId?: string;
+    secretAccessKey?: string;
+    sessionToken?: string;
+    endpoint?: string;
+    virtualHostedStyle?: boolean;
+    partSize?: number;
+    queueSize?: number;
+    retry?: number;
+    type?: string;
+    contentDisposition?: string | undefined;
+    storageClass?:
+        | "STANDARD"
+        | "DEEP_ARCHIVE"
+        | "EXPRESS_ONEZONE"
+        | "GLACIER"
+        | "GLACIER_IR"
+        | "INTELLIGENT_TIERING"
+        | "ONEZONE_IA"
+        | "OUTPOSTS"
+        | "REDUCED_REDUNDANCY"
+        | "SNOW"
+        | "STANDARD_IA";
+    requestPayer?: boolean;
+    highWaterMark?: number;
+};
+```
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.2.12](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.2.1...v0.2.12) - 2026-02-22
 
 ### 🩹 Fixes

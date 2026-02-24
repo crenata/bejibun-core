@@ -104,7 +104,7 @@ export default class StorageBuilder {
         }
         return data;
     }
-    async put(filepath, content) {
+    async put(filepath, content, options) {
         if (isEmpty(filepath))
             throw new DiskException("The file path is required.");
         if (isEmpty(content))
@@ -112,10 +112,10 @@ export default class StorageBuilder {
         try {
             switch (this.driver) {
                 case DiskDriverEnum.Local:
-                    await Bun.write(path.resolve(this.currentDisk.root, filepath), content);
+                    await Bun.write(path.resolve(this.currentDisk.root, filepath), content, options);
                     break;
                 case DiskDriverEnum.S3:
-                    await this.s3.write(filepath, content);
+                    await this.s3.write(filepath, content, options);
                     break;
                 default:
                     break;

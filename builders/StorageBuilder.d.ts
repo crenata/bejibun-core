@@ -1,4 +1,4 @@
-import { StorageDisk } from "../types/storage";
+import type { StorageDisk, StorageOptions } from "../types/storage";
 export default class StorageBuilder {
     protected conf: Record<string, any>;
     protected overrideDisk?: StorageDisk;
@@ -13,6 +13,6 @@ export default class StorageBuilder {
     exists(filepath: string): Promise<boolean>;
     missing(filepath: string): Promise<boolean>;
     get(filepath: string): Promise<any>;
-    put(filepath: string, content: any): Promise<void>;
+    put(filepath: string, content: any, options?: StorageOptions): Promise<void>;
     delete(filepath: string): Promise<void>;
 }
