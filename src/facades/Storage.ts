@@ -1,5 +1,5 @@
+import type {StorageDisk, StorageOptions} from "@/types/storage";
 import StorageBuilder from "@/builders/StorageBuilder";
-import {StorageDisk} from "@/types/storage";
 
 export default class Storage {
     public static build(disk: StorageDisk): StorageBuilder {
@@ -22,7 +22,7 @@ export default class Storage {
         return await new StorageBuilder().get(path);
     }
 
-    public static async put(path: string, content: any): Promise<void> {
+    public static async put(path: string, content: any, options?: StorageOptions): Promise<void> {
         return await new StorageBuilder().put(path, content);
     }
 
