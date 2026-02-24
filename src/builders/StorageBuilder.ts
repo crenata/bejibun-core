@@ -1,3 +1,4 @@
+import type {StorageDisk, StorageOptions} from "@/types/storage";
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
 import {defineValue, isEmpty} from "@bejibun/utils";
@@ -7,7 +8,6 @@ import fs from "fs";
 import DiskConfig from "@/config/disk";
 import DiskException from "@/exceptions/DiskException";
 import DiskDriverEnum from "@/enums/DiskDriverEnum";
-import {StorageDisk} from "@/types/storage";
 
 export default class StorageBuilder {
     protected conf: Record<string, any>;
@@ -120,17 +120,17 @@ export default class StorageBuilder {
         return data;
     }
 
-    public async put(filepath: string, content: any): Promise<void> {
+    public async put(filepath: string, content: any, options?: StorageOptions): Promise<void> {
         if (isEmpty(filepath)) throw new DiskException("The file path is required.");
         if (isEmpty(content)) throw new DiskException("The content is required.");
 
         try {
             switch (this.driver) {
                 case DiskDriverEnum.Local:
-                    await Bun.write(path.resolve(this.currentDisk.root, filepath), content);
+                    await Bun.write(path.resolve(this.currentDisk.root, filepath), content, options);
                     break;
                 case DiskDriverEnum.S3:
-                    await this.s3.write(filepath, content);
+                    await this.s3.write(filepath, content, options);
                     break;
                 default:
                     break;

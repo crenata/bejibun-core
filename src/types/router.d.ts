@@ -4,19 +4,19 @@ export type HandlerType = (request: Bun.BunRequest, server: Bun.Server) => Promi
 export type RouterMethodMap = Record<string, HandlerType>;
 export type RouterGroup = Record<string, RouterMethodMap | RouterGroup>;
 export type RawRoute = {
-    prefix: string,
-    middlewares: Array<IMiddleware>,
-    namespace: string,
-    method: string,
-    path: string,
-    handler: string | HandlerType
+    prefix: string;
+    middlewares: Array<IMiddleware>;
+    namespace: string;
+    method: string;
+    path: string;
+    handler: string | HandlerType;
 };
 export type Route = {
-    raw: RawRoute,
-    route: RouterGroup
+    raw: RawRoute;
+    route: RouterGroup;
 };
 export type RawsRoute = {
-    raws: Array<Route>,
-    routes: Array<RouterGroup>
+    raws: Array<Route>;
+    routes: Array<RouterGroup>;
 };
 export type ResourceAction = "index" | "store" | "show" | "update" | "destroy";
