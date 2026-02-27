@@ -20,11 +20,11 @@ export default class BaseModel extends Model {
     $beforeUpdate(opt: ModelOptions, queryContext: QueryContext): void;
     static setNamespace(namespace: string): void;
     static query<T extends Model>(this: Constructor<T>, trxOrKnex?: TransactionOrKnex): QueryBuilderType<T>;
-    static withTrashed<T extends Model>(this: T): QueryBuilderType<T>;
-    static onlyTrashed<T extends Model>(this: T): QueryBuilderType<T>;
-    static all<T extends Model>(this: T): QueryBuilderType<T>;
-    static create<T extends Model>(this: T, payload: Record<string, any>): QueryBuilderType<T>;
-    static find<T extends Model>(this: T, id: bigint | number | string): QueryBuilderType<T>;
-    static findOrFail<T extends Model>(this: T, id: bigint | number | string): Promise<T>;
+    static withTrashed<T extends Model>(this: T, trxOrKnex?: TransactionOrKnex): QueryBuilderType<T>;
+    static onlyTrashed<T extends Model>(this: T, trxOrKnex?: TransactionOrKnex): QueryBuilderType<T>;
+    static all<T extends Model>(this: T, trxOrKnex?: TransactionOrKnex): QueryBuilderType<T>;
+    static create<T extends Model>(this: T, payload: Record<string, any>, trxOrKnex?: TransactionOrKnex): QueryBuilderType<T>;
+    static find<T extends Model>(this: T, id: bigint | number | string, trxOrKnex?: TransactionOrKnex): QueryBuilderType<T>;
+    static findOrFail<T extends Model>(this: T, id: bigint | number | string, trxOrKnex?: TransactionOrKnex): Promise<T>;
 }
 export {};

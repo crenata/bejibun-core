@@ -76,28 +76,28 @@ export default class BaseModel extends Model {
         return super.query(trxOrKnex);
     };
 
-    public static withTrashed<T extends Model>(this: T): QueryBuilderType<T> {
-        return (this as any).query().withTrashed();
+    public static withTrashed<T extends Model>(this: T, trxOrKnex?: TransactionOrKnex): QueryBuilderType<T> {
+        return (this as any).query(trxOrKnex).withTrashed();
     }
 
-    public static onlyTrashed<T extends Model>(this: T): QueryBuilderType<T> {
-        return (this as any).query().onlyTrashed();
+    public static onlyTrashed<T extends Model>(this: T, trxOrKnex?: TransactionOrKnex): QueryBuilderType<T> {
+        return (this as any).query(trxOrKnex).onlyTrashed();
     }
 
-    public static all<T extends Model>(this: T): QueryBuilderType<T> {
-        return (this as any).query().select();
+    public static all<T extends Model>(this: T, trxOrKnex?: TransactionOrKnex): QueryBuilderType<T> {
+        return (this as any).query(trxOrKnex).select();
     }
 
-    public static create<T extends Model>(this: T, payload: Record<string, any>): QueryBuilderType<T> {
-        return (this as any).query().insert(payload);
+    public static create<T extends Model>(this: T, payload: Record<string, any>, trxOrKnex?: TransactionOrKnex): QueryBuilderType<T> {
+        return (this as any).query(trxOrKnex).insert(payload);
     }
 
-    public static find<T extends Model>(this: T, id: bigint | number | string): QueryBuilderType<T> {
-        return (this as any).query().findById(id);
+    public static find<T extends Model>(this: T, id: bigint | number | string, trxOrKnex?: TransactionOrKnex): QueryBuilderType<T> {
+        return (this as any).query(trxOrKnex).findById(id);
     }
 
-    public static async findOrFail<T extends Model>(this: T, id: bigint | number | string): Promise<T> {
-        const result: T = await (this as any).find(id);
+    public static async findOrFail<T extends Model>(this: T, id: bigint | number | string, trxOrKnex?: TransactionOrKnex): Promise<T> {
+        const result: T = await (this as any).query(trxOrKnex).findById(id);
 
         if (isEmpty(result)) throw new ModelNotFoundException(`No query results for model [${(this as any).namespace}] [${id}].`);
 
