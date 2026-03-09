@@ -50,23 +50,23 @@ export default class BaseModel extends Model {
         return super.query(trxOrKnex);
     }
     ;
-    static withTrashed() {
-        return this.query().withTrashed();
+    static withTrashed(trxOrKnex) {
+        return this.query(trxOrKnex).withTrashed();
     }
-    static onlyTrashed() {
-        return this.query().onlyTrashed();
+    static onlyTrashed(trxOrKnex) {
+        return this.query(trxOrKnex).onlyTrashed();
     }
-    static all() {
-        return this.query().select();
+    static all(trxOrKnex) {
+        return this.query(trxOrKnex).select();
     }
-    static create(payload) {
-        return this.query().insert(payload);
+    static create(payload, trxOrKnex) {
+        return this.query(trxOrKnex).insert(payload);
     }
-    static find(id) {
-        return this.query().findById(id);
+    static find(id, trxOrKnex) {
+        return this.query(trxOrKnex).findById(id);
     }
-    static async findOrFail(id) {
-        const result = await this.find(id);
+    static async findOrFail(id, trxOrKnex) {
+        const result = await this.query(trxOrKnex).findById(id);
         if (isEmpty(result))
             throw new ModelNotFoundException(`No query results for model [${this.namespace}] [${id}].`);
         return result;
