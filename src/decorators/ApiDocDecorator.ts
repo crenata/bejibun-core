@@ -1,0 +1,35 @@
+import "reflect-metadata";
+
+export type ApiDocConfig = {
+    description: string | null | undefined;
+    request: {
+        params: {
+            name: string;
+            in: "header" | "path" | "query";
+            required: boolean;
+            schema: {
+                type: "string";
+            };
+        }[];
+    } | null | undefined;
+    response: {
+        [statusCode: number]: {
+            description: string;
+            content: {
+                [contentType: string]: {
+                    example: any;
+                };
+            };
+        }[];
+    } | null | undefined;
+};
+
+export const ApiDocDecoratorKey: string = "api:doc";
+
+const ApiDocDecorator = (config: ApiDocConfig) => {
+    return (target: any, propertyKey: string) => {
+        Reflect.defineMetadata(ApiDocDecoratorKey, config, target, propertyKey);
+    };
+};
+
+export default ApiDocDecorator;

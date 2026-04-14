@@ -3,16 +3,19 @@ import Logger from "@bejibun/logger";
 import { defineValue, isEmpty, isModuleExists, isNotEmpty } from "@bejibun/utils";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import Enum from "@bejibun/utils/facades/Enum";
+import "reflect-metadata";
+import { ApiDocDecoratorKey } from "../decorators/ApiDocDecorator";
 import RouterException from "../exceptions/RouterException";
 export default class RouterBuilder {
     basePath = "";
     middlewares = [];
     baseNamespace = "app/controllers";
-    documentation = {
+    apiDoc = {
         description: "",
         request: {
-            params: null
-        }
+            params: []
+        },
+        response: {}
     };
     prefix(basePath) {
         this.basePath = basePath;
@@ -24,10 +27,6 @@ export default class RouterBuilder {
     }
     namespace(baseNamespace) {
         this.baseNamespace = baseNamespace;
-        return this;
-    }
-    docs(documentation) {
-        this.documentation = Object.assign(this.documentation, documentation);
         return this;
     }
     x402(config, facilitatorConfig, paywallConfig) {
@@ -141,7 +140,7 @@ export default class RouterBuilder {
                             prefix: this.basePath,
                             middlewares: [],
                             namespace: this.baseNamespace,
-                            documentation: this.documentation,
+                            apiDoc: this.apiDoc,
                             method,
                             path,
                             handler
@@ -176,7 +175,7 @@ export default class RouterBuilder {
                 prefix: this.basePath,
                 middlewares: this.middlewares,
                 namespace: this.baseNamespace,
-                documentation: this.documentation,
+                apiDoc: this.apiDoc,
                 method,
                 path,
                 handler
@@ -291,11 +290,13 @@ export default class RouterBuilder {
         let ControllerClass;
         try {
             ControllerClass = require(location).default;
+            this.apiDoc = Reflect.getMetadata(ApiDocDecoratorKey, ControllerClass.prototype, methodName);
         }
         catch {
             return async (...args) => {
                 const module = await import(location);
                 const ESMController = module.default;
+                this.apiDoc = Reflect.getMetadata(ApiDocDecoratorKey, ESMController.prototype, methodName);
                 const instance = new ESMController();
                 if (typeof instance[methodName] !== "function") {
                     throw new RouterException(`Method "${methodName}" not found in ${controllerName}.`);

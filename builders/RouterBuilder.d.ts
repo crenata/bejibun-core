@@ -1,7 +1,9 @@
 import type { TFacilitator, TPaywall, TX402Config } from "@bejibun/x402";
+import type { ApiDocConfig } from "../decorators/ApiDocDecorator";
 import type { IMiddleware } from "../types/middleware";
-import type { HandlerType, RawsRoute, ResourceAction, Route, RouterDocs, RouterGroup } from "../types/router";
+import type { HandlerType, RawsRoute, ResourceAction, Route, RouterGroup } from "../types/router";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
+import "reflect-metadata";
 import BaseController from "../bases/BaseController";
 export interface ResourceOptions {
     only?: Array<ResourceAction>;
@@ -11,11 +13,10 @@ export default class RouterBuilder {
     protected basePath: string;
     protected middlewares: Array<IMiddleware>;
     protected baseNamespace: string;
-    protected documentation: RouterDocs;
+    protected apiDoc: ApiDocConfig;
     prefix(basePath: string): RouterBuilder;
     middleware(...middlewares: Array<IMiddleware>): RouterBuilder;
     namespace(baseNamespace: string): RouterBuilder;
-    docs(documentation: RouterDocs): RouterBuilder;
     x402(config?: TX402Config, facilitatorConfig?: TFacilitator, paywallConfig?: TPaywall): RouterBuilder;
     group(routes: Route | Array<Route> | RouterGroup): RouterGroup | Array<RouterGroup>;
     resource(path: string, controller: typeof BaseController, options?: ResourceOptions): RouterGroup;

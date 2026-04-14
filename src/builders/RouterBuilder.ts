@@ -1,12 +1,12 @@
 import type {TFacilitator, TPaywall, TX402Config} from "@bejibun/x402";
 import type {EnumItem} from "@bejibun/utils/facades/Enum";
+import type {ApiDocConfig} from "@/decorators/ApiDocDecorator";
 import type {IMiddleware} from "@/types/middleware";
 import type {
     HandlerType,
     RawsRoute,
     ResourceAction,
     Route,
-    RouterDocs,
     RouterGroup,
     RouterMethodMap
 } from "@/types/router";
@@ -15,7 +15,9 @@ import Logger from "@bejibun/logger";
 import {defineValue, isEmpty, isModuleExists, isNotEmpty} from "@bejibun/utils";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import Enum from "@bejibun/utils/facades/Enum";
+import "reflect-metadata";
 import BaseController from "@/bases/BaseController";
+import {ApiDocDecoratorKey} from "@/decorators/ApiDocDecorator";
 import RouterException from "@/exceptions/RouterException";
 
 export interface ResourceOptions {
@@ -27,11 +29,12 @@ export default class RouterBuilder {
     protected basePath: string = "";
     protected middlewares: Array<IMiddleware> = [];
     protected baseNamespace: string = "app/controllers";
-    protected documentation: RouterDocs = {
+    protected apiDoc: ApiDocConfig = {
         description: "",
         request: {
-            params: null
-        }
+            params: []
+        },
+        response: {}
     };
 
     public prefix(basePath: string): RouterBuilder {
@@ -48,12 +51,6 @@ export default class RouterBuilder {
 
     public namespace(baseNamespace: string): RouterBuilder {
         this.baseNamespace = baseNamespace;
-
-        return this;
-    }
-
-    public docs(documentation: RouterDocs): RouterBuilder {
-        this.documentation = Object.assign(this.documentation, documentation);
 
         return this;
     }
@@ -204,7 +201,7 @@ export default class RouterBuilder {
                             prefix: this.basePath,
                             middlewares: [],
                             namespace: this.baseNamespace,
-                            documentation: this.documentation,
+                            apiDoc: this.apiDoc,
                             method,
                             path,
                             handler
@@ -245,7 +242,7 @@ export default class RouterBuilder {
                 prefix: this.basePath,
                 middlewares: this.middlewares,
                 namespace: this.baseNamespace,
-                documentation: this.documentation,
+                apiDoc: this.apiDoc,
                 method,
                 path,
                 handler
@@ -383,10 +380,15 @@ export default class RouterBuilder {
 
         try {
             ControllerClass = require(location).default;
+
+            this.apiDoc = Reflect.getMetadata(ApiDocDecoratorKey, ControllerClass.prototype, methodName);
         } catch {
             return async (...args: Array<any>) => {
                 const module = await import(location);
                 const ESMController = module.default;
+
+                this.apiDoc = Reflect.getMetadata(ApiDocDecoratorKey, ESMController.prototype, methodName);
+
                 const instance = new ESMController();
 
                 if (typeof instance[methodName] !== "function") {

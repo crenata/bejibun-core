@@ -6,7 +6,6 @@ import Router from "./facades/Router";
 import MaintenanceMiddleware from "./middlewares/MaintenanceMiddleware";
 import RateLimiterMiddleware from "./middlewares/RateLimiterMiddleware";
 import { version } from "package.json";
-import { vineToSwaggerParams } from "./utils/router";
 await import(App.Path.rootPath("bootstrap.ts"));
 export default class Server {
     get exceptionHandler() {
@@ -44,9 +43,9 @@ export default class Server {
             const path = raw.path.replace(/:([^/]+)/g, "{$1}");
             paths[path] = {};
             paths[path][raw.method.toLowerCase()] = {
-                summary: raw.documentation.description,
-                parameters: vineToSwaggerParams(raw.documentation.request.params),
-                responses: {
+                summary: defineValue(raw.apiDoc?.description, ""),
+                parameters: defineValue(raw.apiDoc?.request?.params, []),
+                responses: defineValue(raw.apiDoc?.response, {
                     200: {
                         description: "Success",
                         content: {
@@ -58,7 +57,7 @@ export default class Server {
                             }
                         }
                     }
-                }
+                })
             };
         }
         await Bun.write(App.Path.publicPath("apis.json"), JSON.stringify({

@@ -1,6 +1,6 @@
 import type {ResourceOptions} from "@/builders/RouterBuilder";
 import type {IMiddleware} from "@/types/middleware";
-import type {HandlerType, RouterDocs, RouterGroup} from "@/types/router";
+import type {HandlerType, RouterGroup} from "@/types/router";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import BaseController from "@/bases/BaseController";
 import RouterBuilder from "@/builders/RouterBuilder";
@@ -17,10 +17,6 @@ export default class Router {
 
     public static namespace(baseNamespace: string): RouterBuilder {
         return new RouterBuilder().namespace(baseNamespace);
-    }
-
-    public static docs(docs: RouterDocs): RouterBuilder {
-        return new RouterBuilder().docs(docs);
     }
 
     public static x402(): RouterBuilder {
