@@ -8,6 +8,12 @@ export default class RouterBuilder {
     basePath = "";
     middlewares = [];
     baseNamespace = "app/controllers";
+    documentation = {
+        description: "",
+        request: {
+            params: null
+        }
+    };
     prefix(basePath) {
         this.basePath = basePath;
         return this;
@@ -18,6 +24,10 @@ export default class RouterBuilder {
     }
     namespace(baseNamespace) {
         this.baseNamespace = baseNamespace;
+        return this;
+    }
+    docs(documentation) {
+        this.documentation = Object.assign(this.documentation, documentation);
         return this;
     }
     x402(config, facilitatorConfig, paywallConfig) {
@@ -131,6 +141,7 @@ export default class RouterBuilder {
                             prefix: this.basePath,
                             middlewares: [],
                             namespace: this.baseNamespace,
+                            documentation: this.documentation,
                             method,
                             path,
                             handler
@@ -165,6 +176,7 @@ export default class RouterBuilder {
                 prefix: this.basePath,
                 middlewares: this.middlewares,
                 namespace: this.baseNamespace,
+                documentation: this.documentation,
                 method,
                 path,
                 handler

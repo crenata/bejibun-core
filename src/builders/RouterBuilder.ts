@@ -6,6 +6,7 @@ import type {
     RawsRoute,
     ResourceAction,
     Route,
+    RouterDocs,
     RouterGroup,
     RouterMethodMap
 } from "@/types/router";
@@ -26,6 +27,12 @@ export default class RouterBuilder {
     protected basePath: string = "";
     protected middlewares: Array<IMiddleware> = [];
     protected baseNamespace: string = "app/controllers";
+    protected documentation: RouterDocs = {
+        description: "",
+        request: {
+            params: null
+        }
+    };
 
     public prefix(basePath: string): RouterBuilder {
         this.basePath = basePath;
@@ -41,6 +48,12 @@ export default class RouterBuilder {
 
     public namespace(baseNamespace: string): RouterBuilder {
         this.baseNamespace = baseNamespace;
+
+        return this;
+    }
+
+    public docs(documentation: RouterDocs): RouterBuilder {
+        this.documentation = Object.assign(this.documentation, documentation);
 
         return this;
     }
@@ -191,6 +204,7 @@ export default class RouterBuilder {
                             prefix: this.basePath,
                             middlewares: [],
                             namespace: this.baseNamespace,
+                            documentation: this.documentation,
                             method,
                             path,
                             handler
@@ -231,6 +245,7 @@ export default class RouterBuilder {
                 prefix: this.basePath,
                 middlewares: this.middlewares,
                 namespace: this.baseNamespace,
+                documentation: this.documentation,
                 method,
                 path,
                 handler
