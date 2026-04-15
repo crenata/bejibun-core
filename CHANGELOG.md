@@ -3,6 +3,74 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.2.17](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.2.16...v0.2.17) - 2026-04-15
+
+### 🩹 Fixes
+
+### 📖 Changes
+- Added route `/apis` for route list (powered by swagger)
+- Added decorator kernel
+- Added `@ApiDoc(config: ApiDocConfig)` decorator
+```ts
+type ApiDocConfig = {
+    description: string | null | undefined;
+    request: {
+        params: {
+            name: string;
+            in: "header" | "path" | "query";
+            required: boolean;
+            schema: {
+                type: "string";
+            };
+        }[];
+    } | null | undefined;
+    response: {
+        [statusCode: number]: {
+            description: string;
+            content: {
+                [contentType: string]: {
+                    example: any;
+                };
+            };
+        }[];
+    } | null | undefined;
+};
+```
+
+#### How to use?
+```ts
+@ApiDoc({
+    description: "Hello with Name",
+    request: {
+        params: [
+            {
+                name: "name",
+                in: "path",
+                required: true,
+                schema: {
+                    type: "string"
+                }
+            }
+        ]
+    }
+})
+public async helloName(request: Bun.BunRequest): Promise<Response> {
+    const body = await super.parse(request);
+    await super.validate(HelloValidator.helloName, body);
+
+    return super.response.setData({
+        message: `Hello, ${body.name}!`,
+    }).send();
+}
+```
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.2.16](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.2.15...v0.2.16) - 2026-03-18
 
 ### 🩹 Fixes
