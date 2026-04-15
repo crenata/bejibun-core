@@ -23,5 +23,5 @@ export type ApiDocConfig = {
     } | null | undefined;
 };
 export declare const ApiDocDecoratorKey: string;
-declare const ApiDocDecorator: (config: ApiDocConfig) => (target: any, propertyKey: string) => void;
+declare const ApiDocDecorator: (config: ApiDocConfig) => Function;
 export default ApiDocDecorator;

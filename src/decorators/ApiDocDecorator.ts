@@ -26,8 +26,8 @@ export type ApiDocConfig = {
 
 export const ApiDocDecoratorKey: string = "api:doc";
 
-const ApiDocDecorator = (config: ApiDocConfig) => {
-    return (target: any, propertyKey: string) => {
+const ApiDocDecorator = (config: ApiDocConfig): Function => {
+    return (target: any, propertyKey: string): void => {
         Reflect.defineMetadata(ApiDocDecoratorKey, config, target, propertyKey);
     };
 };
