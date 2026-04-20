@@ -6,6 +6,7 @@ import RuntimeException from "@/exceptions/RuntimeException";
 import Router from "@/facades/Router";
 import MaintenanceMiddleware from "@/middlewares/MaintenanceMiddleware";
 import RateLimiterMiddleware from "@/middlewares/RateLimiterMiddleware";
+import {version} from "package.json";
 
 await import (App.Path.rootPath("bootstrap.ts"));
 
@@ -20,7 +21,7 @@ export default class Server {
         }
     }
 
-    private get apiRoutes(): RouterGroup {
+    private get apiRoutes(): any {
         const apiRoutesPath = App.Path.routesPath("api.ts");
 
         try {
@@ -40,7 +41,50 @@ export default class Server {
         }
     }
 
-    public run(): void {
+    public async run(): Promise<void> {
+        const apiRoutes: RouterGroup = Router.serialize(this.apiRoutes);
+
+        const paths: Record<string, any> = {};
+
+        for (const item of this.apiRoutes.raws) {
+            const raw: Record<string, any> = (item as any).raw;
+            const path: string = raw.path.replace(/:([^/]+)/g, "{$1}");
+            paths[path] = {};
+
+            paths[path][raw.method.toLowerCase()] = {
+                summary: defineValue(raw.apiDoc?.description, ""),
+                parameters: defineValue(raw.apiDoc?.request?.params, []),
+                responses: defineValue(raw.apiDoc?.response, {
+                    200: {
+                        description: "Success",
+                        content: {
+                            "application/json": {
+                                example: {
+                                    message: "Success",
+                                    status: 200
+                                }
+                            }
+                        }
+                    }
+                })
+            };
+        }
+
+        await Bun.write(App.Path.publicPath("apis.json"), JSON.stringify({
+            openapi: "3.0.0",
+            info: {
+                title: "Route List",
+                version: version,
+                description: "Bejibun Route List"
+            },
+            servers: [
+                {
+                    url: Bun.env.APP_URL
+                }
+            ],
+            paths: paths
+        }, null, 2));
+
         const server = Bun.serve({
             development: Bun.env.NODE_ENV !== "production" && {
                 // Enable browser hot reloading in development
@@ -56,6 +100,7 @@ export default class Server {
 
             routes: {
                 "/": require(App.Path.publicPath("index.html")),
+                "/apis": require(App.Path.publicPath("apis.html")),
 
                 ...Object.assign({}, ...defineValue(Router.middleware(
                     new MaintenanceMiddleware(),
@@ -63,7 +108,7 @@ export default class Server {
                 ).group([
                     Router.namespace("app/exceptions").any("/*", "Handler@route"),
 
-                    Router.serialize(this.apiRoutes),
+                    apiRoutes,
 
                     Router.serialize(this.webRoutes)
                 ]), []))
@@ -74,4 +119,4 @@ export default class Server {
     }
 }
 
-new Server().run();
+await new Server().run();

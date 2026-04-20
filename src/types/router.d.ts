@@ -1,4 +1,5 @@
-import {IMiddleware} from "@/types/middleware";
+import type {ApiDocConfig} from "@/decorators/ApiDocDecorator";
+import type {IMiddleware} from "@/types/middleware";
 
 export type HandlerType = (request: Bun.BunRequest, server: Bun.Server) => Promise<Response>;
 export type RouterMethodMap = Record<string, HandlerType>;
@@ -7,6 +8,7 @@ export type RawRoute = {
     prefix: string;
     middlewares: Array<IMiddleware>;
     namespace: string;
+    apiDoc: ApiDocConfig;
     method: string;
     path: string;
     handler: string | HandlerType;

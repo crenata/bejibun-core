@@ -5,6 +5,7 @@ import RuntimeException from "./exceptions/RuntimeException";
 import Router from "./facades/Router";
 import MaintenanceMiddleware from "./middlewares/MaintenanceMiddleware";
 import RateLimiterMiddleware from "./middlewares/RateLimiterMiddleware";
+import { version } from "package.json";
 await import(App.Path.rootPath("bootstrap.ts"));
 export default class Server {
     get exceptionHandler() {
@@ -34,7 +35,45 @@ export default class Server {
             throw new RuntimeException(`Missing web file on routes directory [${webRoutesPath}].`, null, error.message);
         }
     }
-    run() {
+    async run() {
+        const apiRoutes = Router.serialize(this.apiRoutes);
+        const paths = {};
+        for (const item of this.apiRoutes.raws) {
+            const raw = item.raw;
+            const path = raw.path.replace(/:([^/]+)/g, "{$1}");
+            paths[path] = {};
+            paths[path][raw.method.toLowerCase()] = {
+                summary: defineValue(raw.apiDoc?.description, ""),
+                parameters: defineValue(raw.apiDoc?.request?.params, []),
+                responses: defineValue(raw.apiDoc?.response, {
+                    200: {
+                        description: "Success",
+                        content: {
+                            "application/json": {
+                                example: {
+                                    message: "Success",
+                                    status: 200
+                                }
+                            }
+                        }
+                    }
+                })
+            };
+        }
+        await Bun.write(App.Path.publicPath("apis.json"), JSON.stringify({
+            openapi: "3.0.0",
+            info: {
+                title: "Route List",
+                version: version,
+                description: "Bejibun Route List"
+            },
+            servers: [
+                {
+                    url: Bun.env.APP_URL
+                }
+            ],
+            paths: paths
+        }, null, 2));
         const server = Bun.serve({
             development: Bun.env.NODE_ENV !== "production" && {
                 // Enable browser hot reloading in development
@@ -46,9 +85,10 @@ export default class Server {
             port: Bun.env.APP_PORT,
             routes: {
                 "/": require(App.Path.publicPath("index.html")),
+                "/apis": require(App.Path.publicPath("apis.html")),
                 ...Object.assign({}, ...defineValue(Router.middleware(new MaintenanceMiddleware(), new RateLimiterMiddleware()).group([
                     Router.namespace("app/exceptions").any("/*", "Handler@route"),
-                    Router.serialize(this.apiRoutes),
+                    apiRoutes,
                     Router.serialize(this.webRoutes)
                 ]), []))
             }
@@ -56,4 +96,4 @@ export default class Server {
         Logger.setContext("APP").info(`🚀 Server running at ${server.url.origin}`);
     }
 }
-new Server().run();
+await new Server().run();
