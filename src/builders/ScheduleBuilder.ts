@@ -1,16 +1,16 @@
 import ScheduleLoader from "@/loader/ScheduleLoader";
 
 export default class ScheduleBuilder {
-    protected _command: string;
-    protected timer: number; // minutes
+    protected cmd: string;
+    protected timer: number; // seconds
 
     public constructor() {
-        this._command = "";
+        this.cmd = "";
         this.timer = 60;
     }
 
     public command(command: string): ScheduleBuilder {
-        this._command = command;
+        this.cmd = command;
 
         return this;
     }
@@ -19,7 +19,7 @@ export default class ScheduleBuilder {
         this.timer = 60;
 
         ScheduleLoader.add({
-            command: this._command,
+            command: this.cmd,
             timer: this.timer
         });
     }

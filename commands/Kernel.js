@@ -1,6 +1,8 @@
 import App from "@bejibun/app";
 import { defineValue, isEmpty } from "@bejibun/utils";
 import BaseModel from "../bases/BaseModel";
+import RuntimeException from "../exceptions/RuntimeException";
+import Schedule from "../facades/Schedule";
 export default class Kernel {
     static registerCommands(program) {
         const rootCommands = require(App.Path.configPath("command.ts")).default;
@@ -64,5 +66,15 @@ export default class Kernel {
                 }
             });
         }
+    }
+    static registerSchedulers() {
+        const kernelPath = App.Path.commandsPath("Kernel.ts");
+        const { default: Kernel } = require(kernelPath);
+        if (isEmpty(Kernel))
+            throw new RuntimeException(`Kernel class not found [${kernelPath}].`);
+        const instance = new Kernel();
+        if (typeof instance.schedule !== "function")
+            throw new RuntimeException(`Kernel class has no schedule function in [${kernelPath}].`);
+        instance.schedule(Schedule);
     }
 }

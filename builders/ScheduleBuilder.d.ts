@@ -1,5 +1,5 @@
 export default class ScheduleBuilder {
-    protected _command: string;
+    protected cmd: string;
     protected timer: number;
     constructor();
     command(command: string): ScheduleBuilder;

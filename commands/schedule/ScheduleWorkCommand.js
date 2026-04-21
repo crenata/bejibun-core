@@ -1,8 +1,7 @@
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
-import { isEmpty, isNotEmpty } from "@bejibun/utils";
-import RuntimeException from "../../exceptions/RuntimeException";
-import Schedule from "../../facades/Schedule";
+import Kernel from "../../commands/Kernel";
+import ScheduleLoader from "../../loader/ScheduleLoader";
 export default class ScheduleWorkCommand {
     /**
      * The name and signature of the console command.
@@ -28,36 +27,51 @@ export default class ScheduleWorkCommand {
      * @var $arguments Array<Array<string>>
      */
     $arguments = [];
+    timeouts = new Map();
+    running = new Set();
     async handle(options, args) {
-        let interval = null;
         process.on("exit", async () => {
-            if (isNotEmpty(interval))
-                clearInterval(interval);
-            Logger.setContext("Queue").info("Schedule worker stopped.");
+            this.stopAll();
+            Logger.setContext("Schedule").info("Schedule worker stopped.");
         });
         process.on("SIGINT", async () => {
-            if (isNotEmpty(interval))
-                clearInterval(interval);
-            Logger.setContext("Queue").info("Stopping schedule worker, SIGINT sent.");
+            this.stopAll();
+            Logger.setContext("Schedule").info("Stopping schedule worker, SIGINT sent.");
         });
         process.on("SIGTERM", async () => {
-            if (isNotEmpty(interval))
-                clearInterval(interval);
-            Logger.setContext("Queue").info("Stopping schedule worker, SIGTERM sent.");
+            this.stopAll();
+            Logger.setContext("Schedule").info("Stopping schedule worker, SIGTERM sent.");
         });
-        const schedule = async () => {
-            const kernelPath = App.Path.commandsPath("Kernel.ts");
-            const module = await import(kernelPath);
-            const Kernel = module.default;
-            if (isEmpty(Kernel))
-                throw new RuntimeException(`Kernel class not found [${kernelPath}].`);
-            const instance = new Kernel();
-            if (typeof instance.schedule !== "function")
-                throw new RuntimeException(`Kernel class has no schedule function in [${kernelPath}].`);
-            instance.schedule(Schedule);
+        Kernel.registerSchedulers();
+        ScheduleLoader.schedulers.forEach((scheduler) => {
+            this.scheduleAligned(scheduler);
+        });
+    }
+    scheduleAligned(task) {
+        const intervalMs = task.timer * 1000;
+        const scheduleNext = () => {
+            const now = Date.now();
+            const nextRun = Math.floor(now / intervalMs) * intervalMs + intervalMs;
+            const delay = nextRun - now;
+            const timeout = setTimeout(() => {
+                if (this.running.has(task.command))
+                    return scheduleNext();
+                this.running.add(task.command);
+                Logger.setContext("Schedule").info(`Executing schedule for command [${task.command}].`);
+                Bun.spawnSync(["bun", "ace", task.command], {
+                    cwd: App.Path.rootPath()
+                });
+                this.running.delete(task.command);
+                scheduleNext();
+            }, delay);
+            this.timeouts.set(task.command, timeout);
         };
-        interval = setInterval(() => {
-            Logger.debug("asd");
-        }, 1000);
+        scheduleNext();
+    }
+    stopAll() {
+        for (const timeout of this.timeouts.values()) {
+            clearTimeout(timeout);
+        }
+        this.timeouts.clear();
     }
 }

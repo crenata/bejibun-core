@@ -23,5 +23,9 @@ export default class ScheduleWorkCommand {
      * @var $arguments Array<Array<string>>
      */
     protected $arguments: Array<Array<string>>;
+    protected timeouts: Map<string, ReturnType<typeof setTimeout>>;
+    protected running: Set<string>;
     handle(options: any, args: string): Promise<void>;
+    private scheduleAligned;
+    private stopAll;
 }
