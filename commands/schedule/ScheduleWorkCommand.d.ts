@@ -23,9 +23,13 @@ export default class ScheduleWorkCommand {
      * @var $arguments Array<Array<string>>
      */
     protected $arguments: Array<Array<string>>;
-    protected timeouts: Map<string, ReturnType<typeof setTimeout>>;
     protected running: Set<string>;
+    protected lastRuns: Map<string, number>;
+    protected interval: NodeJS.Timeout | null;
     handle(options: any, args: string): Promise<void>;
-    private scheduleAligned;
-    private stopAll;
+    private startSchedule;
+    private stopSchedule;
+    private tick;
+    private shouldRun;
+    private run;
 }

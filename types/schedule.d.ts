@@ -1,4 +1,5 @@
 export type TSchedule = {
     command: string;
-    timer: number;
+    cron: string;
+    timezone: string | undefined;
 };

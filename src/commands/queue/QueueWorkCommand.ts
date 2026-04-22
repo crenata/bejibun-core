@@ -49,6 +49,8 @@ export default class QueueWorkCommand {
             Logger.setContext("Queue").info("Stopping queue worker, SIGTERM sent.");
         });
 
+        Logger.setContext("Queue").info("Queue worker started.");
+
         while (running) {
             const job: any = await JobModel.query().where("attempts", "<", 3).orderBy("id", "asc").first();
 
