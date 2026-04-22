@@ -1,10 +1,11 @@
 export default class ScheduleBuilder {
-    protected cmd: string;
-    protected cron: string;
-    protected tz: string | undefined;
+    protected _command: string;
+    protected _cron: string;
+    protected _timezone: string | undefined;
     constructor();
     command(command: string): ScheduleBuilder;
     timezone(timezone: string): ScheduleBuilder;
+    cron(cron: string): void;
     everySecond(): void;
     everyTwoSeconds(): void;
     everyFiveSeconds(): void;

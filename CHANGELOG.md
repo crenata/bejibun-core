@@ -3,6 +3,71 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.2.18](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.2.17...v0.2.18) - 2026-04-22
+
+### 🩹 Fixes
+
+### 📖 Changes
+#### Scheduler
+- Added schedule worker `bun ace schedule:work`
+- No overlapping
+
+#### How to use?
+```ts
+// commands/Kernel.ts
+import type Schedule from "@bejibun/core/facades/Schedule";
+
+export default class Kernel {
+    public schedule(schedule: Schedule): void {
+        // Your code goes here
+        schedule.command("hello:world").everyMinute();
+    }
+}
+```
+
+#### Available functions
+- `.cron(cron: string)`
+- `.everySecond()`
+- `.everyTwoSeconds()`
+- `.everyFiveSeconds()`
+- `.everyTenSeconds()`
+- `.everyFifteenSeconds()`
+- `.everyTwentySeconds()`
+- `.everyThirtySeconds()`
+- `.everyMinute()`
+- `.everyTwoMinutes()`
+- `.everyThreeMinutes()`
+- `.everyFourMinutes()`
+- `.everyFiveMinutes()`
+- `.everyTenMinutes()`
+- `.everyFifteenMinutes()`
+- `.everyThirtyMinutes()`
+- `.hourly()`
+- `.hourlyAt(minute: number)`
+- `.everyOddHour(minute: number = 0)`
+- `.everyTwoHours(minute: number = 0)`
+- `.everyThreeHours(minute: number = 0)`
+- `.everyFourHours(minute: number = 0)`
+- `.everySixHours(minute: number = 0)`
+- `.daily()`
+- `.dailyAt(time: string)`
+- `.twiceDaily(h1: number, h2: number)`
+- `.twiceDailyAt(h1: number, h2: number, minute: number)`
+- `.weekly()`
+- `.weeklyOn(day: number, time: string)`
+- `.monthly()`
+- `.monthlyOn(day: number, time: string)`
+- `.twiceMonthly(d1: number, d2: number, time: string)`
+- `.yearly()`
+- `.yearlyOn(month: number, day: number, time: string)`
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.2.17](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.2.16...v0.2.17) - 2026-04-15
 
 ### 🩹 Fixes
