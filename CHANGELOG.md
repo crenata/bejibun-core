@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [v0.3.11](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.3.0...v0.3.11) - 2026-04-27
+## [v0.3.12](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.3.0...v0.3.12) - 2026-04-27
 
 ### 🩹 Fixes
 
