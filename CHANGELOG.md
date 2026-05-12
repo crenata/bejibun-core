@@ -3,6 +3,25 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.3.13](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.3.0...v0.3.13) - 2026-05-12
+
+### 🩹 Fixes
+
+### 📖 Changes
+- Added global `config(key: string, defaultValue?: any)` for getting value from config path
+- Added global `env(key: string)` for getting value from env file
+- Added `config/performance.ts` to turn features into on/off for better performances
+
+#### Upgrade [@bejibun/database](https://github.com/Bejibun-Framework/bejibun-database) to v0.1.20
+[https://github.com/Bejibun-Framework/bejibun-database/releases/tag/v0.1.20](https://github.com/Bejibun-Framework/bejibun-database/releases/tag/v0.1.20)
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.3.12](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.3.0...v0.3.12) - 2026-04-27
 
 ### 🩹 Fixes

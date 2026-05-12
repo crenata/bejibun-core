@@ -1,6 +1,8 @@
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
 import { defineValue } from "@bejibun/utils";
+import fs from "fs";
+import PerformanceConfig from "./config/performance";
 import RuntimeException from "./exceptions/RuntimeException";
 import Router from "./facades/Router";
 import MaintenanceMiddleware from "./middlewares/MaintenanceMiddleware";
@@ -34,6 +36,15 @@ export default class Server {
         catch (error) {
             throw new RuntimeException(`Missing web file on routes directory [${webRoutesPath}].`, null, error.message);
         }
+    }
+    get performance() {
+        const configPath = App.Path.configPath("performance.ts");
+        let config;
+        if (fs.existsSync(configPath))
+            config = require(configPath).default;
+        else
+            config = PerformanceConfig;
+        return config;
     }
     async run() {
         const apiRoutes = Router.serialize(this.apiRoutes);
@@ -74,8 +85,13 @@ export default class Server {
             ],
             paths: paths
         }, null, 2));
+        const middlewares = [];
+        if (this.performance.middlewares.limiter)
+            middlewares.push(new RateLimiterMiddleware());
+        if (this.performance.middlewares.maintenance)
+            middlewares.push(new MaintenanceMiddleware());
         const server = Bun.serve({
-            development: Bun.env.NODE_ENV !== "production" && {
+            development: defineValue(Bun.env.APP_ENV, "development") !== "production" && {
                 // Enable browser hot reloading in development
                 hmr: true,
                 // Echo console logs from the browser to the server
@@ -86,7 +102,7 @@ export default class Server {
             routes: {
                 "/": require(App.Path.publicPath("index.html")),
                 "/apis": require(App.Path.publicPath("apis.html")),
-                ...Object.assign({}, ...defineValue(Router.middleware(new MaintenanceMiddleware(), new RateLimiterMiddleware()).group([
+                ...Object.assign({}, ...defineValue(Router.middleware(...middlewares).group([
                     Router.namespace("app/exceptions").any("/*", "Handler@route"),
                     apiRoutes,
                     Router.serialize(this.webRoutes)

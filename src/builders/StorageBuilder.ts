@@ -15,7 +15,7 @@ export default class StorageBuilder {
     protected drive?: string;
 
     public constructor() {
-        const configPath = App.Path.configPath("disk.ts");
+        const configPath: string = App.Path.configPath("disk.ts");
 
         let config: any;
 

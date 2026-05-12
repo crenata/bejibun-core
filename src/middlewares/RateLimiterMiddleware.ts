@@ -8,7 +8,7 @@ import RateLimiter from "@/facades/RateLimiter";
 export default class RateLimiterMiddleware {
     public handle(handler: HandlerType): HandlerType {
         return async (request: Bun.BunRequest, server: Bun.Server<any>) => {
-            const configPath = App.Path.configPath("limiter.ts");
+            const configPath: string = App.Path.configPath("limiter.ts");
 
             let config: any;
 

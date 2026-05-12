@@ -1,1 +1,1 @@
-export {};
+import "./globals/index";
