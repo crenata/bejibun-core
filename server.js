@@ -3,11 +3,11 @@ import Logger from "@bejibun/logger";
 import { defineValue } from "@bejibun/utils";
 import fs from "fs";
 import PerformanceConfig from "./config/performance";
+import RouteConfig from "./config/route";
 import RuntimeException from "./exceptions/RuntimeException";
 import Router from "./facades/Router";
 import MaintenanceMiddleware from "./middlewares/MaintenanceMiddleware";
 import RateLimiterMiddleware from "./middlewares/RateLimiterMiddleware";
-import { version } from "package.json";
 await import(App.Path.rootPath("bootstrap.ts"));
 export default class Server {
     get exceptionHandler() {
@@ -46,16 +46,27 @@ export default class Server {
             config = PerformanceConfig;
         return config;
     }
+    get route() {
+        const configPath = App.Path.configPath("route.ts");
+        let config;
+        if (fs.existsSync(configPath))
+            config = require(configPath).default;
+        else
+            config = RouteConfig;
+        return config;
+    }
     async run() {
         const apiRoutes = Router.serialize(this.apiRoutes);
+        console.log(apiRoutes)
         const paths = {};
         for (const item of this.apiRoutes.raws) {
             const raw = item.raw;
             const path = raw.path.replace(/:([^/]+)/g, "{$1}");
             paths[path] = {};
             paths[path][raw.method.toLowerCase()] = {
-                summary: defineValue(raw.apiDoc?.description, ""),
                 parameters: defineValue(raw.apiDoc?.request?.params, []),
+                summary: defineValue(raw.apiDoc?.description, ""),
+                tags: defineValue(raw.apiDoc?.tags, []),
                 responses: defineValue(raw.apiDoc?.response, {
                     200: {
                         description: "Success",
@@ -72,18 +83,8 @@ export default class Server {
             };
         }
         await Bun.write(App.Path.publicPath("apis.json"), JSON.stringify({
-            openapi: "3.0.0",
-            info: {
-                title: "Route List",
-                version: version,
-                description: "Bejibun Route List"
-            },
-            servers: [
-                {
-                    url: Bun.env.APP_URL
-                }
-            ],
-            paths: paths
+            ...this.route.templates[this.route.default],
+            paths
         }, null, 2));
         const middlewares = [];
         if (this.performance.middlewares.limiter)

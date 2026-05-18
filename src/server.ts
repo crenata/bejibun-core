@@ -4,11 +4,11 @@ import Logger from "@bejibun/logger";
 import {defineValue} from "@bejibun/utils";
 import fs from "fs";
 import PerformanceConfig from "@/config/performance";
+import RouteConfig from "@/config/route";
 import RuntimeException from "@/exceptions/RuntimeException";
 import Router from "@/facades/Router";
 import MaintenanceMiddleware from "@/middlewares/MaintenanceMiddleware";
 import RateLimiterMiddleware from "@/middlewares/RateLimiterMiddleware";
-import {version} from "package.json";
 
 await import (App.Path.rootPath("bootstrap.ts"));
 
@@ -54,6 +54,17 @@ export default class Server {
         return config;
     }
 
+    private get route(): Record<string, any> {
+        const configPath: string = App.Path.configPath("route.ts");
+
+        let config: any;
+
+        if (fs.existsSync(configPath)) config = require(configPath).default;
+        else config = RouteConfig;
+
+        return config;
+    }
+
     public async run(): Promise<void> {
         const apiRoutes: RouterGroup = Router.serialize(this.apiRoutes);
 
@@ -65,8 +76,9 @@ export default class Server {
             paths[path] = {};
 
             paths[path][raw.method.toLowerCase()] = {
-                summary: defineValue(raw.apiDoc?.description, ""),
                 parameters: defineValue(raw.apiDoc?.request?.params, []),
+                summary: defineValue(raw.apiDoc?.description, ""),
+                tags: defineValue(raw.apiDoc?.tags, []),
                 responses: defineValue(raw.apiDoc?.response, {
                     200: {
                         description: "Success",
@@ -84,18 +96,8 @@ export default class Server {
         }
 
         await Bun.write(App.Path.publicPath("apis.json"), JSON.stringify({
-            openapi: "3.0.0",
-            info: {
-                title: "Route List",
-                version: version,
-                description: "Bejibun Route List"
-            },
-            servers: [
-                {
-                    url: Bun.env.APP_URL
-                }
-            ],
-            paths: paths
+            ...this.route.templates[this.route.default],
+            paths
         }, null, 2));
 
         const middlewares: Array<any> = [];
