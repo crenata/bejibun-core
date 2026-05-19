@@ -31,7 +31,7 @@ export default class ExceptionHandler {
             .setStatus(500)
             .send();
     }
-    async route(request) {
+    async publicRoute(request) {
         const url = new URL(request.url);
         const file = Bun.file(App.Path.publicPath(url.pathname.replace(/^\//, "")));
         if (await file.exists())
