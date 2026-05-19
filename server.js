@@ -57,7 +57,6 @@ export default class Server {
     }
     async run() {
         const apiRoutes = Router.serialize(this.apiRoutes);
-        console.log(apiRoutes)
         const paths = {};
         for (const item of this.apiRoutes.raws) {
             const raw = item.raw;
@@ -103,11 +102,11 @@ export default class Server {
             routes: {
                 "/": require(App.Path.publicPath("index.html")),
                 "/apis": require(App.Path.publicPath("apis.html")),
-                ...Object.assign({}, ...defineValue(Router.middleware(...middlewares).group([
-                    Router.namespace("app/exceptions").any("/*", "Handler@route"),
+                ...Object.assign({}, defineValue(Router.serialize(Router.middleware(...middlewares).group([
                     apiRoutes,
                     Router.serialize(this.webRoutes)
-                ]), []))
+                ])), {})),
+                "/*": new this.exceptionHandler().route
             }
         });
         Logger.setContext("APP").info(`🚀 Server running at ${server.url.origin}`);
