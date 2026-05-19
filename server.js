@@ -1,6 +1,6 @@
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
-import { defineValue } from "@bejibun/utils";
+import { defineValue, isEmpty } from "@bejibun/utils";
 import fs from "fs";
 import PerformanceConfig from "./config/performance";
 import RouteConfig from "./config/route";
@@ -61,7 +61,8 @@ export default class Server {
         for (const item of this.apiRoutes.raws) {
             const raw = item.raw;
             const path = raw.path.replace(/:([^/]+)/g, "{$1}");
-            paths[path] = {};
+            if (isEmpty(paths[path]))
+                paths[path] = {};
             paths[path][raw.method.toLowerCase()] = {
                 parameters: defineValue(raw.apiDoc?.request?.params, []),
                 summary: defineValue(raw.apiDoc?.description, ""),
@@ -106,7 +107,7 @@ export default class Server {
                     apiRoutes,
                     Router.serialize(this.webRoutes)
                 ])), {})),
-                "/*": new this.exceptionHandler().route
+                "/*": new this.exceptionHandler().publicRoute
             }
         });
         Logger.setContext("APP").info(`🚀 Server running at ${server.url.origin}`);

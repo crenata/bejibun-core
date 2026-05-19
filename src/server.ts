@@ -1,7 +1,7 @@
 import type {RouterGroup} from "@/types";
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
-import {defineValue} from "@bejibun/utils";
+import {defineValue, isEmpty} from "@bejibun/utils";
 import fs from "fs";
 import PerformanceConfig from "@/config/performance";
 import RouteConfig from "@/config/route";
@@ -73,7 +73,8 @@ export default class Server {
         for (const item of this.apiRoutes.raws) {
             const raw: Record<string, any> = (item as any).raw;
             const path: string = raw.path.replace(/:([^/]+)/g, "{$1}");
-            paths[path] = {};
+
+            if (isEmpty(paths[path])) paths[path] = {};
 
             paths[path][raw.method.toLowerCase()] = {
                 parameters: defineValue(raw.apiDoc?.request?.params, []),
