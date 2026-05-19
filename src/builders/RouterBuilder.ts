@@ -292,19 +292,13 @@ export default class RouterBuilder {
     }
 
     public match(methods: Array<HttpMethodEnum>, path: string, handler: string | HandlerType): RouterGroup {
-        const routeMap: RouterGroup = {};
+        const routers: Array<Route> = [];
 
         for (const method of methods) {
-            const single = this.buildSingle(method, path, handler).route;
-            const fullPath = Object.keys(single)[0];
-            const handlers = single[fullPath];
-
-            if (isEmpty(routeMap[fullPath])) routeMap[fullPath] = {};
-
-            Object.assign(routeMap[fullPath], handlers);
+            routers.push(this.buildSingle(method, path, handler));
         }
 
-        return routeMap;
+        return this.group(routers);
     }
 
     public any(path: string, handler: string | HandlerType): RouterGroup {

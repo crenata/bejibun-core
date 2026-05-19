@@ -44,7 +44,7 @@ export default class ExceptionHandler {
             .send();
     }
 
-    public async route(request: Bun.BunRequest): Promise<globalThis.Response> {
+    public async publicRoute(request: Bun.BunRequest): Promise<globalThis.Response> {
         const url: URL = new URL(request.url);
         const file: Bun.BunFile = Bun.file(App.Path.publicPath(url.pathname.replace(/^\//, "")));
 

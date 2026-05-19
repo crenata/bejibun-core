@@ -122,13 +122,13 @@ export default class Server {
                 "/": require(App.Path.publicPath("index.html")),
                 "/apis": require(App.Path.publicPath("apis.html")),
 
-                ...Object.assign({}, ...defineValue(Router.middleware(...middlewares).group([
-                    Router.namespace("app/exceptions").any("/*", "Handler@route"),
-
+                ...Object.assign({}, defineValue(Router.serialize(Router.middleware(...middlewares).group([
                     apiRoutes,
 
                     Router.serialize(this.webRoutes)
-                ]), []))
+                ])), {})),
+
+                "/*": new this.exceptionHandler().publicRoute
             }
         });
 

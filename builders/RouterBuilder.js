@@ -215,16 +215,11 @@ export default class RouterBuilder {
         return this.buildSingle(HttpMethodEnum.Trace, path, handler);
     }
     match(methods, path, handler) {
-        const routeMap = {};
+        const routers = [];
         for (const method of methods) {
-            const single = this.buildSingle(method, path, handler).route;
-            const fullPath = Object.keys(single)[0];
-            const handlers = single[fullPath];
-            if (isEmpty(routeMap[fullPath]))
-                routeMap[fullPath] = {};
-            Object.assign(routeMap[fullPath], handlers);
+            routers.push(this.buildSingle(method, path, handler));
         }
-        return routeMap;
+        return this.group(routers);
     }
     any(path, handler) {
         return this.match(Enum.setEnums(HttpMethodEnum).toArray().map((value) => value.value), path, handler);
