@@ -3,6 +3,36 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.3.15](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.3.14...v0.3.15) - 2026-05-21
+
+### 🩹 Fixes
+- Reworked schedule worker execution logic to fix cron timing inaccuracies
+- Fixed potential duplicate execution caused by cron re-evaluation per tick
+- Fixed drift issues in scheduling caused by `cron-parser.prev()` based checks
+- Fixed possible stuck running state by ensuring cleanup in finally
+- Improved shutdown handling of schedule worker interval
+
+### 📖 Changes
+- Replaced per-tick cron parsing with cached `CronExpression`
+- Added `nextRun` based execution system instead of `lastRuns` tracking
+- Replaced `setInterval` loop with adaptive `setTimeout` scheduler (better timing accuracy)
+- Added `prepareSchedules()` step during boot to register all cron jobs once
+- Improved `run()` execution to await process completion (`proc.exited`)
+- Reduced runtime overhead in scheduler tick loop
+- Reduced CPU usage by eliminating repeated cron parsing every second
+- More efficient scheduler loop using timestamp comparisons instead of cron evaluation
+- Better scaling behavior when many scheduled tasks exist
+- Removed internal reliance on lastRuns tracking system
+- Scheduling logic now depends entirely on precomputed `nextRun`
+- Behavior may differ slightly for edge-case cron expressions due to new evaluation model
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.3.14](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.3.13...v0.3.14) - 2026-05-19
 
 ### 🩹 Fixes

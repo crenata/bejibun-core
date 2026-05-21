@@ -617,6 +617,18 @@ export default class Kernel {
 }
 ```
 
+### Global Functions
+
+#### Config
+```ts
+config("disk.default");
+```
+
+#### Env
+```ts
+env("APP_KEY");
+```
+
 ### Cors
 Documentation : [@bejibun/cors](https://github.com/Bejibun-Framework/bejibun-cors/blob/master/README.md)
 

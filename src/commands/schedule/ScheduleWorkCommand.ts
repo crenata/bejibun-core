@@ -7,6 +7,11 @@ import CronExpressionParser, {CronExpression} from "cron-parser";
 import Kernel from "@/commands/Kernel";
 import ScheduleLoader from "@/loader/ScheduleLoader";
 
+type TPreparedSchedule = TSchedule & {
+    expression: CronExpression;
+    nextRun: number;
+};
+
 export default class ScheduleWorkCommand {
     /**
      * The name and signature of the console command.
@@ -37,8 +42,8 @@ export default class ScheduleWorkCommand {
     protected $arguments: Array<Array<string>> = [];
 
     protected running: Set<string> = new Set<string>();
-    protected lastRuns: Map<string, number> = new Map<string, number>();
     protected interval: NodeJS.Timeout | null = null;
+    protected schedules: Array<TPreparedSchedule> = [];
 
     public async handle(options: any, args: string): Promise<void> {
         process.on("exit", async (): Promise<void> => {
@@ -56,61 +61,75 @@ export default class ScheduleWorkCommand {
 
         Kernel.registerSchedulers();
 
+        this.prepareSchedules();
+
         Logger.setContext("Schedule").info("Schedule worker started.");
 
         this.startSchedule();
     }
 
+    private prepareSchedules(): void {
+        this.schedules = [];
+
+        for (const schedule of ScheduleLoader.schedulers) {
+            if (isEmpty(schedule.cron)) continue;
+
+            try {
+                const timezone: string = defineValue(schedule.timezone, "UTC");
+                const now: Date = Luxon.DateTime.now().setZone(timezone).toJSDate();
+
+                const expression: CronExpression = CronExpressionParser.parse(schedule.cron, {
+                    currentDate: now,
+                });
+
+                const nextRun: number = expression.next().getTime();
+
+                this.schedules.push({
+                    ...schedule,
+                    expression,
+                    nextRun
+                });
+
+                Logger.setContext("Schedule").info(`Registered schedule for command [${schedule.command}].`);
+            } catch (error: any) {
+                Logger.setContext("Schedule").error(`Invalid cron for [${schedule.command}]: ${schedule.cron}.`).trace(error);
+            }
+        }
+    }
+
     private startSchedule(): void {
-        this.interval = setInterval(() => {
+        const tick = (): void => {
             this.tick();
-        }, 1000);
+
+            const delay: number = 1000 - (Date.now() % 1000);
+
+            this.interval = setTimeout(tick, delay);
+        };
+
+        tick();
     }
 
     private stopSchedule(): void {
         if (isNotEmpty(this.interval)) {
-            clearInterval(this.interval as NodeJS.Timeout);
+            clearTimeout(this.interval as NodeJS.Timeout);
+
             this.interval = null;
         }
     }
 
     private tick(): void {
-        for (const schedule of ScheduleLoader.schedulers) {
-            const now: Date = Luxon.DateTime.now().setZone(defineValue(schedule.timezone, "UTC")).toJSDate();
+        const now: number = Date.now();
 
-            if (this.shouldRun(schedule, now)) {
+        for (const schedule of this.schedules) {
+            if (now >= schedule.nextRun) {
                 this.run(schedule);
+
+                schedule.nextRun = schedule.expression.next().getTime();
             }
         }
     }
 
-    private shouldRun(task: TSchedule, now: Date): boolean {
-        if (isEmpty(task.cron)) return false;
-
-        try {
-            const interval: CronExpression = CronExpressionParser.parse(task.cron, {
-                currentDate: now
-            });
-            const prev: number = interval.prev().getTime();
-            const lastRun: number | undefined = this.lastRuns.get(task.command);
-
-            if (lastRun === prev) return false;
-
-            if (Math.abs(now.getTime() - prev) < 1000) {
-                this.lastRuns.set(task.command, prev);
-
-                return true;
-            }
-
-            return false;
-        } catch (error: any) {
-            Logger.setContext("Schedule").error(`Invalid cron for [${task.command}]: ${task.cron}.`).trace(error);
-
-            return false;
-        }
-    }
-
-    private run(task: TSchedule): void {
+    private async run(task: TSchedule): Promise<void> {
         if (this.running.has(task.command)) return;
 
         this.running.add(task.command);
@@ -118,13 +137,15 @@ export default class ScheduleWorkCommand {
         Logger.setContext("Schedule").info(`Executing schedule for command [${task.command}].`);
 
         try {
-            Bun.spawnSync(["bun", "ace", task.command], {
+            const proc: Bun.Subprocess = Bun.spawn(["bun", "ace", task.command], {
                 cwd: App.Path.rootPath()
             });
+
+            await proc.exited;
         } catch (error: any) {
             Logger.setContext("Schedule").error(`Error running command [${task.command}].`).trace(error);
+        } finally {
+            this.running.delete(task.command);
         }
-
-        this.running.delete(task.command);
     }
 }

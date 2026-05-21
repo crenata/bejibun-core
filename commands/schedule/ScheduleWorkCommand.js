@@ -31,8 +31,8 @@ export default class ScheduleWorkCommand {
      */
     $arguments = [];
     running = new Set();
-    lastRuns = new Map();
     interval = null;
+    schedules = [];
     async handle(options, args) {
         process.on("exit", async () => {
             this.stopSchedule();
@@ -47,63 +47,73 @@ export default class ScheduleWorkCommand {
             Logger.setContext("Schedule").info("Stopping schedule worker, SIGTERM sent.");
         });
         Kernel.registerSchedulers();
+        this.prepareSchedules();
         Logger.setContext("Schedule").info("Schedule worker started.");
         this.startSchedule();
     }
+    prepareSchedules() {
+        this.schedules = [];
+        for (const schedule of ScheduleLoader.schedulers) {
+            if (isEmpty(schedule.cron))
+                continue;
+            try {
+                const timezone = defineValue(schedule.timezone, "UTC");
+                const now = Luxon.DateTime.now().setZone(timezone).toJSDate();
+                const expression = CronExpressionParser.parse(schedule.cron, {
+                    currentDate: now,
+                });
+                const nextRun = expression.next().getTime();
+                this.schedules.push({
+                    ...schedule,
+                    expression,
+                    nextRun
+                });
+                Logger.setContext("Schedule").info(`Registered schedule for command [${schedule.command}].`);
+            }
+            catch (error) {
+                Logger.setContext("Schedule").error(`Invalid cron for [${schedule.command}]: ${schedule.cron}.`).trace(error);
+            }
+        }
+    }
     startSchedule() {
-        this.interval = setInterval(() => {
+        const tick = () => {
             this.tick();
-        }, 1000);
+            const delay = 1000 - (Date.now() % 1000);
+            this.interval = setTimeout(tick, delay);
+        };
+        tick();
     }
     stopSchedule() {
         if (isNotEmpty(this.interval)) {
-            clearInterval(this.interval);
+            clearTimeout(this.interval);
             this.interval = null;
         }
     }
     tick() {
-        for (const schedule of ScheduleLoader.schedulers) {
-            const now = Luxon.DateTime.now().setZone(defineValue(schedule.timezone, "UTC")).toJSDate();
-            if (this.shouldRun(schedule, now)) {
+        const now = Date.now();
+        for (const schedule of this.schedules) {
+            if (now >= schedule.nextRun) {
                 this.run(schedule);
+                schedule.nextRun = schedule.expression.next().getTime();
             }
         }
     }
-    shouldRun(task, now) {
-        if (isEmpty(task.cron))
-            return false;
-        try {
-            const interval = CronExpressionParser.parse(task.cron, {
-                currentDate: now
-            });
-            const prev = interval.prev().getTime();
-            const lastRun = this.lastRuns.get(task.command);
-            if (lastRun === prev)
-                return false;
-            if (Math.abs(now.getTime() - prev) < 1000) {
-                this.lastRuns.set(task.command, prev);
-                return true;
-            }
-            return false;
-        }
-        catch (error) {
-            Logger.setContext("Schedule").error(`Invalid cron for [${task.command}]: ${task.cron}.`).trace(error);
-            return false;
-        }
-    }
-    run(task) {
+    async run(task) {
         if (this.running.has(task.command))
             return;
         this.running.add(task.command);
         Logger.setContext("Schedule").info(`Executing schedule for command [${task.command}].`);
         try {
-            Bun.spawnSync(["bun", "ace", task.command], {
+            const proc = Bun.spawn(["bun", "ace", task.command], {
                 cwd: App.Path.rootPath()
             });
+            await proc.exited;
         }
         catch (error) {
             Logger.setContext("Schedule").error(`Error running command [${task.command}].`).trace(error);
         }
-        this.running.delete(task.command);
+        finally {
+            this.running.delete(task.command);
+        }
     }
 }

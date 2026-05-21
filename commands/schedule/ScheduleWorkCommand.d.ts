@@ -1,3 +1,9 @@
+import type { TSchedule } from "../../types/schedule";
+import { CronExpression } from "cron-parser";
+type TPreparedSchedule = TSchedule & {
+    expression: CronExpression;
+    nextRun: number;
+};
 export default class ScheduleWorkCommand {
     /**
      * The name and signature of the console command.
@@ -24,12 +30,13 @@ export default class ScheduleWorkCommand {
      */
     protected $arguments: Array<Array<string>>;
     protected running: Set<string>;
-    protected lastRuns: Map<string, number>;
     protected interval: NodeJS.Timeout | null;
+    protected schedules: Array<TPreparedSchedule>;
     handle(options: any, args: string): Promise<void>;
+    private prepareSchedules;
     private startSchedule;
     private stopSchedule;
     private tick;
-    private shouldRun;
     private run;
 }
+export {};
