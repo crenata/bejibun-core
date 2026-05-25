@@ -1,6 +1,6 @@
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
-import { defineValue, isEmpty, isNotEmpty } from "@bejibun/utils";
+import { defineValue, isEmpty } from "@bejibun/utils";
 import RuntimeException from "../../exceptions/RuntimeException";
 import JobModel from "../../models/JobModel";
 export default class QueueWorkCommand {
@@ -45,7 +45,10 @@ export default class QueueWorkCommand {
         Logger.setContext("Queue").info("Queue worker started.");
         while (running) {
             const job = await JobModel.query().where("attempts", "<", 3).orderBy("id", "asc").first();
-            if (isNotEmpty(job?.id)) {
+            if (isEmpty(job?.id)) {
+                await Bun.sleep(1000);
+            }
+            else {
                 const handler = async () => {
                     const module = await import(App.Path.rootPath(job.queue));
                     const Class = module.default;
@@ -54,7 +57,7 @@ export default class QueueWorkCommand {
                     const instance = new Class();
                     if (typeof instance.handle !== "function")
                         throw new RuntimeException(`Job class has no handle function in [${job.queue}].`);
-                    instance.handle(JSON.parse(job.payload));
+                    instance.handle(Bun.JSON5.parse(job.payload));
                 };
                 try {
                     await handler();

@@ -1,4 +1,4 @@
-import { DateTime } from "luxon";
+import Luxon from "@bejibun/utils/facades/Luxon";
 import { QueryBuilder } from "objection";
 export default class SoftDeletes extends QueryBuilder {
     hasFilterApplied = false;
@@ -33,7 +33,7 @@ export default class SoftDeletes extends QueryBuilder {
     }
     delete() {
         return this.update({
-            [this.modelClass().deletedColumn]: DateTime.now()
+            [this.modelClass().deletedColumn]: Luxon.DateTime.now()
         });
     }
     del() {

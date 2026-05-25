@@ -64,7 +64,7 @@ export default class QueueRetryCommand {
                     const instance = new Class();
                     if (typeof instance.handle !== "function") throw new RuntimeException(`Job class has no handle function in [${job.queue}].`);
 
-                    instance.handle(JSON.parse(job.payload));
+                    instance.handle(Bun.JSON5.parse(job.payload));
                 };
 
                 try {

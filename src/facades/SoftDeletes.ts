@@ -1,4 +1,4 @@
-import {DateTime} from "luxon";
+import Luxon from "@bejibun/utils/facades/Luxon";
 import {QueryBuilder, ModelClass, QueryContext, Model} from "objection";
 
 interface SoftDeleteQueryContext extends QueryContext {
@@ -46,7 +46,7 @@ export default class SoftDeletes<M extends Model, R = M[]> extends QueryBuilder<
 
     delete(): QueryBuilder<M, number> {
         return (this as any).update({
-            [((this as any).modelClass() as any).deletedColumn]: DateTime.now()
+            [((this as any).modelClass() as any).deletedColumn]: Luxon.DateTime.now()
         } as any);
     }
 

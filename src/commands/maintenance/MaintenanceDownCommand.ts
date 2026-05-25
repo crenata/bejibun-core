@@ -1,6 +1,6 @@
 import AppConfig from "@bejibun/app/config/app";
 import Logger from "@bejibun/logger";
-import {DateTime} from "luxon";
+import Luxon from "@bejibun/utils/facades/Luxon";
 
 export default class MaintenanceDownCommand {
     /**
@@ -38,7 +38,7 @@ export default class MaintenanceDownCommand {
             message: "🚧 We're doing maintenance. Please check back soon.",
             status: 503,
             allows: options.allows,
-            unix: Math.floor(DateTime.now().toSeconds())
+            unix: Luxon.DateTime.now().toUnixInteger()
         }, null, 2));
 
         Logger.setContext("APP").info("Application turned into maintenance mode.");
