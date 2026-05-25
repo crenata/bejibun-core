@@ -1,6 +1,7 @@
 import "reflect-metadata";
 export type ApiDocConfig = {
     description?: string;
+    deprecated?: boolean;
     tags?: Array<string>;
     request?: {
         params?: Array<{

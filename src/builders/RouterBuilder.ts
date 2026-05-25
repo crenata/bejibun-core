@@ -31,6 +31,7 @@ export default class RouterBuilder {
     protected baseNamespace: string = "app/controllers";
     protected apiDoc: ApiDocConfig = {
         description: "",
+        deprecated: false,
         request: {
             params: []
         },
