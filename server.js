@@ -64,6 +64,7 @@ export default class Server {
             if (isEmpty(paths[path]))
                 paths[path] = {};
             paths[path][raw.method.toLowerCase()] = {
+                deprecated: defineValue(raw.apiDoc?.deprecated, false),
                 parameters: defineValue(raw.apiDoc?.request?.params, []),
                 summary: defineValue(raw.apiDoc?.description, ""),
                 tags: defineValue(raw.apiDoc?.tags, []),
