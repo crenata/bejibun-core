@@ -1,0 +1,7 @@
+import type { Command } from "commander";
+export default class Kernel {
+    static registerCommands(program: Command): void;
+    static registerSchedulers(): void;
+    static registerDecorator(): void;
+    static registerWebSockets(): void;
+}

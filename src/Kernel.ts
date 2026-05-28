@@ -1,9 +1,11 @@
 import type {Command} from "commander";
 import App from "@bejibun/app";
-import {defineValue, isEmpty} from "@bejibun/utils";
+import {defineValue, isEmpty, isNotEmpty} from "@bejibun/utils";
+import path from "path";
 import BaseModel from "@/bases/BaseModel";
 import RuntimeException from "@/exceptions/RuntimeException";
 import Schedule from "@/facades/Schedule";
+import WebSocketLoader from "@/loader/WebSocketLoader";
 
 export default class Kernel {
     public static registerCommands(program: Command): void {
@@ -89,5 +91,52 @@ export default class Kernel {
         if (typeof instance.schedule !== "function") throw new RuntimeException(`Kernel class has no schedule function in [${kernelPath}].`);
 
         instance.schedule(Schedule);
+    }
+
+    public static registerDecorator(): void {
+        const paths: Array<Record<string, any>> = [
+            {
+                absolute: true,
+                cwd: path.resolve(__dirname, "decorators")
+            }
+        ];
+        const files: Array<string> = paths
+            .map(value => Array.from(new Bun.Glob("**/*").scanSync({
+                absolute: value.absolute,
+                cwd: value.cwd
+            })))
+            .flat()
+            .filter(value => (
+                /\.(m?js|ts)$/.test(value) &&
+                !value.endsWith(".d.ts") &&
+                !value.includes("Kernel")
+            ));
+
+        for (const file of files) {
+            const {default: decorator} = require(file);
+
+            if (typeof decorator !== "function") continue;
+
+            if (isNotEmpty(decorator.name)) (globalThis as any)[decorator.name.replace("Decorator", "")] = decorator;
+        }
+    }
+
+    public static registerWebSockets(): void {
+        const files: Array<string> = Array.from(new Bun.Glob("**/*")
+            .scanSync({
+                absolute: true,
+                cwd: App.Path.appPath("websockets")
+            }))
+            .flat()
+            .filter(value => (
+                /\.(m?js|ts)$/.test(value) &&
+                !value.endsWith(".d.ts")
+            ));
+
+        for (const file of files) {
+            const {default: WebSocketClass} = require(file);
+
+            WebSocketLoader.add(WebSocketClass);
+        }
     }
 }

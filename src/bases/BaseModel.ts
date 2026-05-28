@@ -47,7 +47,7 @@ export default class BaseModel extends Model {
     declare id: number | bigint;
 
     public static get namespace(): string {
-        if (isEmpty(this._namespace)) throw new RuntimeException(`Model namespace not registered for [${this.name}]`);
+        if (isEmpty(this._namespace)) throw new RuntimeException(`Model namespace not registered for [${this.name}].`);
 
         return this._namespace;
     }

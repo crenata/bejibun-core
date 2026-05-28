@@ -32,6 +32,7 @@ export default class RouterBuilder {
     trace(path: string, handler: string | HandlerType): Route;
     match(methods: Array<HttpMethodEnum>, path: string, handler: string | HandlerType): RouterGroup;
     any(path: string, handler: string | HandlerType): RouterGroup;
+    websocket(path: string, handler: string | HandlerType): Route;
     serialize(routes: Route | Array<Route> | RouterGroup | Array<RouterGroup> | Array<RawsRoute>): RouterGroup;
     private mergeRoutes;
     private joinPaths;

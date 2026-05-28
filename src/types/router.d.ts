@@ -11,6 +11,7 @@ export type RawRoute = {
     apiDoc: ApiDocConfig;
     method: string;
     path: string;
+    websocket?: boolean;
     handler: string | HandlerType;
 };
 export type Route = {
