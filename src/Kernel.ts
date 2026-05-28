@@ -17,7 +17,7 @@ export default class Kernel {
             },
             {
                 absolute: true,
-                cwd: __dirname
+                cwd: path.resolve(__dirname, "commands")
             },
             {
                 absolute: true,
