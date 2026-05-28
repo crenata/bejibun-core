@@ -3,6 +3,37 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.4.0](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.3.16...v0.4.0) - 2026-05-28
+
+### 🩹 Fixes
+
+### 📖 Changes
+- Introduced WebSocket route support with a simple router-based setup
+- Added `Router.websocket()` method for registering WebSocket handlers directly from the router
+- Enabled prefix chaining support for WebSocket routes using `Router.prefix()`
+- Simplified WebSocket initialization to match standard HTTP route definitions for a more consistent developer experience
+
+### Feedback
+- WebSocket routes now feel identical to regular route registration
+- Reduced boilerplate for real-time feature setup
+- Cleaner and more maintainable routing configuration
+
+Example
+```ts
+import Router from "@bejibun/core/facades/Router";
+
+export default Router.prefix("hello").group([
+    Router.websocket("websocket", "HelloWebSocket@handle")
+]);
+```
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.3.16](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.3.15...v0.3.16) - 2026-05-25
 
 ### 🩹 Fixes
