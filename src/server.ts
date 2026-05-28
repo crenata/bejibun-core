@@ -1,14 +1,17 @@
-import type {RouterGroup} from "@/types";
+import type {Route, RouterGroup} from "@/types";
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
 import {defineValue, isEmpty} from "@bejibun/utils";
 import fs from "fs";
 import PerformanceConfig from "@/config/performance";
 import RouteConfig from "@/config/route";
+import WebSocketConfig from "@/config/websocket";
 import RuntimeException from "@/exceptions/RuntimeException";
 import Router from "@/facades/Router";
 import MaintenanceMiddleware from "@/middlewares/MaintenanceMiddleware";
 import RateLimiterMiddleware from "@/middlewares/RateLimiterMiddleware";
+import BaseWebSocket from "@/bases/BaseWebSocket";
+import WebSocketLoader from "@/loader/WebSocketLoader";
 
 await import (App.Path.rootPath("bootstrap.ts"));
 
@@ -30,6 +33,16 @@ export default class Server {
             return require(apiRoutesPath).default;
         } catch (error: any) {
             throw new RuntimeException(`Missing api file on routes directory [${apiRoutesPath}].`, null, error.message);
+        }
+    }
+
+    private get webSocketRoutes(): any {
+        const webSocketRoutesPath = App.Path.routesPath("websocket.ts");
+
+        try {
+            return require(webSocketRoutesPath).default;
+        } catch (error: any) {
+            throw new RuntimeException(`Missing webSocket file on routes directory [${webSocketRoutesPath}].`, null, error.message);
         }
     }
 
@@ -56,6 +69,17 @@ export default class Server {
 
     private get route(): Record<string, any> {
         const configPath: string = App.Path.configPath("route.ts");
+
+        let config: any;
+
+        if (fs.existsSync(configPath)) config = require(configPath).default;
+        else config = RouteConfig;
+
+        return config;
+    }
+
+    private get websocket(): Record<string, any> {
+        const configPath: string = App.Path.configPath("websocket.ts");
 
         let config: any;
 
@@ -130,7 +154,62 @@ export default class Server {
                     Router.serialize(this.webRoutes)
                 ])), {})),
 
+                ...Object.fromEntries(
+                    Object.keys(this.webSocketRoutes.routes).map((key: string) => [
+                        key,
+                        (request: Bun.BunRequest, server: Bun.Server<any>) => {
+                            server.upgrade(request, {
+                                data: {
+                                    id: Bun.randomUUIDv7(),
+                                    path: key
+                                } as any
+                            });
+                        }
+                    ])
+                ),
+
                 "/*": new this.exceptionHandler().publicRoute
+            },
+
+            websocket: {
+                open: (ws: Bun.ServerWebSocket<any>): void | Promise<void> => {
+                    BaseWebSocket.addClient(ws.data.path, ws);
+
+                    Logger.setContext("WebSocket").info(`Connected from ${ws.data.id} via [${ws.data.path}].`);
+                },
+
+                message: (ws: Bun.ServerWebSocket<any>, message: string | Buffer<ArrayBuffer>): void | Promise<void> => {
+                    const Controller: any = WebSocketLoader.controllers.find((controller: any) => controller.path === ws.data.path);
+                    if (isEmpty(Controller)) throw new RuntimeException(`WebSocket controller not found for route [${ws.data.path}].`);
+
+                    let route: any = null;
+                    if (Array.isArray(this.webSocketRoutes)) {
+                        route = this.webSocketRoutes.find((route: Route) => route.raw.path === ws.data.path);
+                    } else {
+                        route = this.webSocketRoutes.raws.find((route: Route) => route.raw.path === ws.data.path);
+                    }
+                    if (isEmpty(route)) throw new RuntimeException(`WebSocket route not found [${ws.data.path}].`);
+
+                    const [controllerName, methodName] = route.raw.handler.split("@");
+
+                    const instance: any = new Controller();
+
+                    if (typeof instance[methodName] !== "function") {
+                        throw new RuntimeException(`Method "${methodName}" not found in ${controllerName}.`);
+                    }
+
+                    Logger.setContext("WebSocket").info(`Received message from ${ws.data.id} via [${ws.data.path}].`);
+
+                    instance[methodName](message);
+                },
+
+                close: (ws: Bun.ServerWebSocket<any>, code: number, reason: string): void | Promise<void> => {
+                    BaseWebSocket.removeClient(ws.data.path, ws);
+
+                    Logger.setContext("WebSocket").warn(`Disconnected connection from ${ws.data.id} via [${ws.data.path}] [${code}] [${reason}].`);
+                },
+
+                ...this.websocket
             }
         });
 

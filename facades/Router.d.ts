@@ -23,5 +23,6 @@ export default class Router {
     static trace(path: string, handler: string | HandlerType): Route;
     static match(methods: Array<HttpMethodEnum>, path: string, handler: string | HandlerType): RouterGroup;
     static any(path: string, handler: string | HandlerType): RouterGroup;
+    static websocket(path: string, handler: string | HandlerType): RouterGroup;
     static serialize(routes: Route | Array<Route> | RouterGroup | Array<RouterGroup>): RouterGroup;
 }

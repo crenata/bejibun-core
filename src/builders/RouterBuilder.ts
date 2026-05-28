@@ -77,11 +77,15 @@ export default class RouterBuilder {
 
             for (const route of rawRoutes) {
                 const middlewares: Array<IMiddleware> = this.middlewares.concat(defineValue(route.raw.middlewares, []));
-                const effectiveNamespace: string = defineValue(this.baseNamespace, route.raw.namespace);
+                const effectiveNamespace: string = route.raw.websocket ?
+                    defineValue("app/websockets", route.raw.namespace) :
+                    defineValue(this.baseNamespace, route.raw.namespace);
                 const cleanPath: string = this.joinPaths(defineValue(route.raw.prefix, this.basePath), route.raw.path);
 
                 let resolvedHandler: HandlerType = typeof route.raw.handler === "string" ?
-                    this.resolveControllerString(route.raw.handler, effectiveNamespace) :
+                    this.resolveControllerString(route.raw.handler, effectiveNamespace, route.raw.websocket ? {
+                        path: cleanPath
+                    } : undefined) :
                     route.raw.handler;
 
                 for (const middleware of [...middlewares].reverse()) {
@@ -90,9 +94,13 @@ export default class RouterBuilder {
 
                 if (isEmpty(newRoutes[cleanPath])) newRoutes[cleanPath] = {};
 
-                Object.assign(newRoutes[cleanPath], {
-                    [route.raw.method]: resolvedHandler
-                });
+                if (isEmpty(route.raw.method)) {
+                    newRoutes[cleanPath] = resolvedHandler;
+                } else {
+                    Object.assign(newRoutes[cleanPath], {
+                        [route.raw.method]: resolvedHandler
+                    });
+                }
 
                 route.raw.middlewares = middlewares;
                 route.raw.namespace = effectiveNamespace;
@@ -116,11 +124,15 @@ export default class RouterBuilder {
 
             for (const route of rawRoutes) {
                 const middlewares: Array<IMiddleware> = this.middlewares.concat(defineValue(route.raw.middlewares, []));
-                const effectiveNamespace: string = defineValue(this.baseNamespace, route.raw.namespace);
+                const effectiveNamespace: string = route.raw.websocket ?
+                    defineValue("app/websockets", route.raw.namespace) :
+                    defineValue(this.baseNamespace, route.raw.namespace);
                 const cleanPath: string = this.joinPaths(defineValue(route.raw.prefix, this.basePath), route.raw.path);
 
                 let resolvedHandler: HandlerType = typeof route.raw.handler === "string" ?
-                    this.resolveControllerString(route.raw.handler, effectiveNamespace) :
+                    this.resolveControllerString(route.raw.handler, effectiveNamespace, route.raw.websocket ? {
+                        path: cleanPath
+                    } : undefined) :
                     route.raw.handler;
 
                 for (const middleware of [...middlewares].reverse()) {
@@ -129,9 +141,13 @@ export default class RouterBuilder {
 
                 if (isEmpty(newRoutes[cleanPath])) newRoutes[cleanPath] = {};
 
-                Object.assign(newRoutes[cleanPath], {
-                    [route.raw.method]: resolvedHandler
-                });
+                if (isEmpty(route.raw.method)) {
+                    newRoutes[cleanPath] = resolvedHandler;
+                } else {
+                    Object.assign(newRoutes[cleanPath], {
+                        [route.raw.method]: resolvedHandler
+                    });
+                }
 
                 route.raw.middlewares = middlewares;
                 route.raw.namespace = effectiveNamespace;
@@ -306,6 +322,39 @@ export default class RouterBuilder {
         return this.match(Enum.setEnums(HttpMethodEnum).toArray().map((value: EnumItem) => value.value), path, handler);
     }
 
+    public websocket(path: string, handler: string | HandlerType): Route {
+        const cleanPath: string = this.joinPaths(this.basePath, path);
+
+        let resolvedHandler: any = (request: Bun.BunRequest, server: Bun.Server<any>) => {
+            server.upgrade(request, {
+                data: {
+                    id: Bun.randomUUIDv7(),
+                    path: cleanPath
+                } as any
+            });
+        };
+
+        for (const middleware of [...this.middlewares].reverse()) {
+            resolvedHandler = middleware.handle(resolvedHandler);
+        }
+
+        return {
+            raw: {
+                prefix: this.basePath,
+                middlewares: this.middlewares,
+                namespace: "app/websockets",
+                apiDoc: this.apiDoc,
+                method: "",
+                path,
+                websocket: true,
+                handler
+            },
+            route: {
+                [cleanPath]: resolvedHandler
+            }
+        };
+    }
+
     public serialize(routes: Route | Array<Route> | RouterGroup | Array<RouterGroup> | Array<RawsRoute>): RouterGroup {
         if (Array.isArray(routes)) {
             if (this.hasRaw(routes)) routes = routes.map((value: Route) => value.route);
@@ -353,7 +402,7 @@ export default class RouterBuilder {
         return `/${[base, path].filter(Boolean).join("/")}`;
     }
 
-    private resolveControllerString(definition: string, overrideNamespace?: string): HandlerType {
+    private resolveControllerString(definition: string, overrideNamespace?: string, websocket?: Record<string, any>): HandlerType {
         const [controllerName, methodName] = definition.split("@");
 
         if (isEmpty(controllerName) || isEmpty(methodName)) {
@@ -376,11 +425,15 @@ export default class RouterBuilder {
         try {
             ControllerClass = require(location).default;
 
+            if (isNotEmpty(websocket)) ControllerClass.path = (websocket as any)?.path;
+
             this.apiDoc = Reflect.getMetadata(ApiDocDecoratorKey, ControllerClass.prototype, methodName);
         } catch {
             return async (...args: Array<any>) => {
                 const module = await import(location);
                 const ESMController = module.default;
+
+                if (isNotEmpty(websocket)) ESMController.path = (websocket as any)?.path;
 
                 this.apiDoc = Reflect.getMetadata(ApiDocDecoratorKey, ESMController.prototype, methodName);
 
@@ -461,15 +514,24 @@ export default class RouterBuilder {
             for (const route of rawRoutes) {
                 const middlewares: Array<IMiddleware> = route.raw.middlewares.concat(defineValue(this.middlewares, []));
                 const cleanPath: string = this.joinPaths(defineValue(route.raw.prefix, this.basePath), route.raw.path);
-                const effectiveNamespace: string = defineValue(
-                    this.baseNamespace === "app/controllers" ?
-                        null :
-                        this.baseNamespace,
-                    route.raw.namespace
-                );
+                const effectiveNamespace: string = route.raw.websocket ?
+                    defineValue(
+                        this.baseNamespace === "app/websockets" ?
+                            null :
+                            this.baseNamespace,
+                        route.raw.namespace
+                    ) :
+                    defineValue(
+                        this.baseNamespace === "app/controllers" ?
+                            null :
+                            this.baseNamespace,
+                        route.raw.namespace
+                    );
 
                 let resolvedHandler: HandlerType = typeof route.raw.handler === "string" ?
-                    this.resolveControllerString(route.raw.handler, effectiveNamespace) :
+                    this.resolveControllerString(route.raw.handler, effectiveNamespace, route.raw.websocket ? {
+                        path: cleanPath
+                    } : undefined) :
                     route.raw.handler;
 
                 for (const middleware of [...middlewares].reverse()) {

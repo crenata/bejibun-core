@@ -26,7 +26,7 @@ export default class BaseModel extends Model {
     static QueryBuilder = BunQueryBuilder;
     static get namespace() {
         if (isEmpty(this._namespace))
-            throw new RuntimeException(`Model namespace not registered for [${this.name}]`);
+            throw new RuntimeException(`Model namespace not registered for [${this.name}].`);
         return this._namespace;
     }
     $beforeInsert(queryContext) {

@@ -79,6 +79,10 @@ export default class Router {
         return new RouterBuilder().any(path, handler);
     }
 
+    public static websocket(path: string, handler: string | HandlerType): RouterGroup {
+        return new RouterBuilder().websocket(path, handler);
+    }
+
     public static serialize(routes: Route | Array<Route> | RouterGroup | Array<RouterGroup>): RouterGroup {
         return new RouterBuilder().serialize(routes);
     }

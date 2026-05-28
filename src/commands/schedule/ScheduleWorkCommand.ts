@@ -4,7 +4,7 @@ import Logger from "@bejibun/logger";
 import {defineValue, isEmpty, isNotEmpty} from "@bejibun/utils";
 import Luxon from "@bejibun/utils/facades/Luxon";
 import CronExpressionParser, {CronExpression} from "cron-parser";
-import Kernel from "@/commands/Kernel";
+import Kernel from "@/Kernel";
 import ScheduleLoader from "@/loader/ScheduleLoader";
 
 type TPreparedSchedule = TSchedule & {

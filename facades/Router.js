@@ -51,6 +51,9 @@ export default class Router {
     static any(path, handler) {
         return new RouterBuilder().any(path, handler);
     }
+    static websocket(path, handler) {
+        return new RouterBuilder().websocket(path, handler);
+    }
     static serialize(routes) {
         return new RouterBuilder().serialize(routes);
     }
