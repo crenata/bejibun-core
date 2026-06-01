@@ -3,6 +3,61 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.4.22](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.4.2...v0.4.22) - 2026-06-01
+
+### 🩹 Fixes
+- Invalid parameter for specific seeder - [#2](https://github.com/Bejibun-Framework/bejibun-database/issues/2)
+
+### 📖 Changes
+#### WebSocket Controller Enhancements
+To simplify connection management and enable more advanced real-time features, the current WebSocket client instance is now automatically passed to controller methods.
+
+#### New controller signature :
+```ts
+(ws: Bun.ServerWebSocket<any>, message: string | Buffer<ArrayBuffer>)
+```
+
+#### This allows handlers to :
+- Access the active client connection directly
+- Identify the sender without performing additional lookups
+- Broadcast messages more efficiently
+- Build room, presence, and private messaging systems with less boilerplate
+
+#### Updated websocket routing example :
+```ts
+import Router from "@bejibun/core/facades/Router";
+
+export default Router.prefix("chat").group([
+    Router.websocket("/", "ChatWebSocket@handle")
+]);
+```
+
+```ts
+import BaseWebSocket from "@bejibun/core/bases/BaseWebSocket";
+
+export default class HelloWebSocket extends BaseWebSocket {
+    public async handle(ws: Bun.ServerWebSocket<any>, message: string | Buffer<ArrayBuffer>): Promise<void> {
+        for (const connection of super.connections) {
+            if (connection.data.id !== ws.data.id) {
+                if (connection.readyState === 1) {
+                    connection.send(message);
+                }
+            }
+        }
+    }
+}
+```
+
+### 📦 Dependencies
+- Upgraded `@bejibun/database` to v0.1.21
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.4.2](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.4.1...v0.4.2) - 2026-05-31
 
 ### 🩹 Fixes

@@ -165,7 +165,7 @@ export default class Server {
                         throw new RuntimeException(`Method "${methodName}" not found in ${controllerName}.`);
                     }
                     Logger.setContext("WebSocket").info(`Received message from ${ws.data.id} via [${ws.data.path}].`);
-                    instance[methodName](message);
+                    instance[methodName](ws, message);
                 },
                 close: (ws, code, reason) => {
                     BaseWebSocket.removeClient(ws.data.path, ws);

@@ -622,9 +622,25 @@ Setup websocket like router.
 ```ts
 import Router from "@bejibun/core/facades/Router";
 
-export default Router.prefix("hello").group([
-    Router.websocket("websocket", "HelloWebSocket@handle")
+export default Router.prefix("chat").group([
+    Router.websocket("/", "ChatWebSocket@handle")
 ]);
+```
+
+```ts
+import BaseWebSocket from "@bejibun/core/bases/BaseWebSocket";
+
+export default class HelloWebSocket extends BaseWebSocket {
+    public async handle(ws: Bun.ServerWebSocket<any>, message: string | Buffer<ArrayBuffer>): Promise<void> {
+        for (const connection of super.connections) {
+            if (connection.data.id !== ws.data.id) {
+                if (connection.readyState === 1) {
+                    connection.send(message);
+                }
+            }
+        }
+    }
+}
 ```
 
 ### Global Functions

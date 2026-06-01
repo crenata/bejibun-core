@@ -200,7 +200,7 @@ export default class Server {
 
                     Logger.setContext("WebSocket").info(`Received message from ${ws.data.id} via [${ws.data.path}].`);
 
-                    instance[methodName](message);
+                    instance[methodName](ws, message);
                 },
 
                 close: (ws: Bun.ServerWebSocket<any>, code: number, reason: string): void | Promise<void> => {
