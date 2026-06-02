@@ -655,6 +655,9 @@ config("disk.default");
 env("APP_KEY");
 ```
 
+### Redis
+Documentation : [@bejibun/redis](https://github.com/Bejibun-Framework/bejibun-redis/blob/master/README.md)
+
 ### Cors
 Documentation : [@bejibun/cors](https://github.com/Bejibun-Framework/bejibun-cors/blob/master/README.md)
 

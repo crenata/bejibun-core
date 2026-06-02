@@ -3,6 +3,57 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.4.23](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.4.22...v0.4.23) - 2026-06-02
+
+### 🩹 Fixes
+
+### 📖 Changes
+#### Counter & Numeric Value Utilities
+This release introduces built-in helpers for managing counters and numeric values across Redis and Cache drivers.
+
+#### Redis Utilities
+Added new Redis helper methods :
+- Added `.exists()` Check whether a key exists
+- Added `.incr()` Increment a numeric value by 1
+- Added `.decr()` Decrement a numeric value by 1
+- Added `.incrBy()` Increment a numeric value by a specified amount
+- Added `.decrBy()` Decrement a numeric value by a specified amount
+
+#### Example :
+```ts
+await Redis.exists("visitors");
+
+await Redis.incr("visitors");
+await Redis.decr("visitors");
+
+await Redis.incrBy("visitors", 10);
+await Redis.decrBy("visitors", 5);
+```
+
+#### Cache Utilities
+Added atomic cache counter operations :
+- Added `.incrementBy()` Increment a numeric value by a specified amount
+- Added `.decrementBy()` Decrement a numeric value by a specified amount
+
+#### Example :
+```ts
+await Cache.incrementBy("cache-key", 10);
+await Cache.decrementBy("cache-key", 5);
+```
+
+These helpers eliminate the need for manual read-modify-write operations and provide a cleaner API for working with numeric values.
+
+### 📦 Dependencies
+- Upgraded `@bejibun/redis` to v0.1.45
+- Upgraded `@bejibun/cache` to v0.1.23
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.4.22](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.4.2...v0.4.22) - 2026-06-01
 
 ### 🩹 Fixes
