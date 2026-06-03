@@ -1,4 +1,4 @@
-import Cors from "@bejibun/cors";
+import CorsLoader from "../loader/CorsLoader";
 export default class ResponseBuilder {
     data;
     message;
@@ -34,7 +34,7 @@ export default class ResponseBuilder {
             ...this.custom
         }, {
             headers: {
-                ...Cors.init
+                ...CorsLoader.cors
             },
             status: this.status
         });
@@ -43,7 +43,7 @@ export default class ResponseBuilder {
         return new globalThis.Response(Bun.file(this.data), {
             ...options,
             headers: {
-                ...Cors.init
+                ...CorsLoader.cors
             },
             status: this.status
         });

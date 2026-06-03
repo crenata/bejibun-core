@@ -1,11 +1,14 @@
 import App from "@bejibun/app";
+import Cors from "@bejibun/cors";
 import Database from "@bejibun/database";
 import BaseModel from "./bases/BaseModel";
 import "./globals/index";
 import Kernel from "./Kernel";
 import NamespaceLoader from "./loader/NamespaceLoader";
+import CorsLoader from "./loader/CorsLoader";
 BaseModel.knex(Database.knex());
 Kernel.registerDecorator();
 Kernel.registerWebSockets();
 await NamespaceLoader.load(App.Path.jobsPath());
 await NamespaceLoader.load(App.Path.modelsPath());
+CorsLoader.set(Cors.init);

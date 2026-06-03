@@ -3,6 +3,132 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.4.24](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.4.23...v0.4.24) - 2026-06-02
+
+### 🩹 Fixes
+
+### ⚡ Improvements
+#### CORS Initialization Optimization
+CORS configuration is now loaded during application startup instead of being resolved per request.
+
+#### Benefits :
+- Reduced request-processing overhead
+- Faster response times
+- Improved throughput under high traffic
+- More efficient request lifecycle
+
+#### Comparison :
+Before
+```shell
+# oha -z 10s http://localhost:3000/api/hello
+Summary:
+  Success rate: 100.00%
+  Total:        10001.5150 ms
+  Slowest:      53.5521 ms
+  Fastest:      0.0475 ms
+  Average:      1.3931 ms
+  Requests/sec: 35835.2710
+
+  Total data:   28.71 MiB
+  Size/request: 84 B
+  Size/sec:     2.87 MiB
+
+Response time histogram:
+   0.047 ms [1]      |
+   5.398 ms [341771] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  10.748 ms [14656]  |■
+  16.099 ms [1657]   |
+  21.449 ms [153]    |
+  26.800 ms [53]     |
+  32.150 ms [14]     |
+  37.501 ms [36]     |
+  42.851 ms [0]      |
+  48.202 ms [0]      |
+  53.552 ms [50]     |
+
+Response time distribution:
+  10.00% in 0.7232 ms
+  25.00% in 0.8081 ms
+  50.00% in 0.9186 ms
+  75.00% in 1.0798 ms
+  90.00% in 1.8092 ms
+  95.00% in 5.0601 ms
+  99.00% in 9.0271 ms
+  99.90% in 15.5873 ms
+  99.99% in 52.9444 ms
+
+
+Details (average, fastest, slowest):
+  DNS+dialup:   0.4550 ms, 0.1211 ms, 0.9573 ms
+  DNS-lookup:   0.0139 ms, 0.0009 ms, 0.1125 ms
+
+Status code distribution:
+  [200] 358391 responses
+
+Error distribution:
+  [16] aborted due to deadline
+```
+
+After
+```shell
+# oha -z 10s http://localhost:3000/api/hello
+Summary:
+  Success rate: 100.00%
+  Total:        10001.6281 ms
+  Slowest:      25.3454 ms
+  Fastest:      0.0377 ms
+  Average:      0.6426 ms
+  Requests/sec: 77538.4760
+
+  Total data:   62.12 MiB
+  Size/request: 84 B
+  Size/sec:     6.21 MiB
+
+Response time histogram:
+   0.038 ms [1]      |
+   2.568 ms [759352] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+   5.099 ms [15467]  |
+   7.630 ms [380]    |
+  10.161 ms [17]     |
+  12.692 ms [86]     |
+  15.222 ms [49]     |
+  17.753 ms [50]     |
+  20.284 ms [0]      |
+  22.815 ms [49]     |
+  25.345 ms [51]     |
+
+Response time distribution:
+  10.00% in 0.4064 ms
+  25.00% in 0.4520 ms
+  50.00% in 0.5122 ms
+  75.00% in 0.6009 ms
+  90.00% in 0.9154 ms
+  95.00% in 1.2295 ms
+  99.00% in 3.0504 ms
+  99.90% in 4.7744 ms
+  99.99% in 22.5150 ms
+
+
+Details (average, fastest, slowest):
+  DNS+dialup:   1.7204 ms, 1.2155 ms, 2.2845 ms
+  DNS-lookup:   0.0165 ms, 0.0008 ms, 0.1865 ms
+
+Status code distribution:
+  [200] 775502 responses
+
+Error distribution:
+  [9] aborted due to deadline
+```
+
+### 📦 Dependencies
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.4.23](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.4.22...v0.4.23) - 2026-06-02
 
 ### 🩹 Fixes
