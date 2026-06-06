@@ -191,7 +191,7 @@ export default Router.prefix("test")
         Router.get("get", "TestController@get"),
         Router.get("detail/:id", "TestController@detail"),
         Router.post("add", "TestController@add"),
-        Router.post("edit", "TestController@edit"),
+        Router.put("edit", "TestController@edit"),
         Router.delete("delete/:id", "TestController@delete"),
         Router.get("restore/:id", "TestController@restore"),
 
