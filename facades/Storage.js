@@ -18,6 +18,12 @@ export default class Storage {
     static async put(path, content, options) {
         return await new StorageBuilder().put(path, content);
     }
+    static async copy(source, destination, options) {
+        return await new StorageBuilder().copy(source, destination, options);
+    }
+    static async move(source, destination, options) {
+        return await new StorageBuilder().move(source, destination, options);
+    }
     static async delete(path) {
         return await new StorageBuilder().delete(path);
     }

@@ -522,6 +522,8 @@ await Storage.exists("path/to/your/file.ext"); // Check if the file exists
 await Storage.missing("path/to/your/file.ext"); // Check if the file doesn't exists
 await Storage.get("path/to/your/file.ext"); // Get data content
 await Storage.put("path/to/your/file.ext", "content"); // Store content to file
+await Storage.copy("source/file.ext", "destination/file.ext"); // Copy file
+await Storage.move("source/file.ext", "destination/file.ext"); // Move file
 await Storage.delete("path/to/your/file.ext"); // Delete file
 ```
 
@@ -533,6 +535,8 @@ await Storage.disk("public").exists("path/to/your/file.ext");
 await Storage.disk("public").missing("path/to/your/file.ext");
 await Storage.disk("public").get("path/to/your/file.ext");
 await Storage.disk("public").put("path/to/your/file.ext", "content");
+await Storage.disk("public").copy("source/file.ext", "destination/file.ext");
+await Storage.disk("public").move("source/file.ext", "destination/file.ext");
 await Storage.disk("public").delete("path/to/your/file.ext");
 ```
 
@@ -556,6 +560,14 @@ await Storage.build({
     driver: "local",
     root: App.Path.storagePath("custom")
 }).put("path/to/your/file.ext", "content");
+await Storage.build({
+    driver: "local",
+    root: App.Path.storagePath("custom")
+}).copy("source/file.ext", "destination/file.ext");
+await Storage.build({
+    driver: "local",
+    root: App.Path.storagePath("custom")
+}).move("source/file.ext", "destination/file.ext");
 await Storage.build({
     driver: "local",
     root: App.Path.storagePath("custom")

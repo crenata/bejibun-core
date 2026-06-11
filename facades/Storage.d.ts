@@ -5,7 +5,9 @@ export default class Storage {
     static disk(disk: string): StorageBuilder;
     static exists(path: string): Promise<boolean>;
     static missing(path: string): Promise<boolean>;
-    static get(path: string): Promise<any>;
+    static get(path: string): Promise<Bun.BunFile | Bun.S3File>;
     static put(path: string, content: any, options?: StorageOptions): Promise<void>;
+    static copy(source: string, destination: string, options?: StorageOptions): Promise<void>;
+    static move(source: string, destination: string, options?: StorageOptions): Promise<void>;
     static delete(path: string): Promise<any>;
 }
