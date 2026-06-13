@@ -1,3 +1,4 @@
+import type {Stats} from "fs";
 import type {StorageDriver, StorageOptions} from "@/types/storage";
 import Logger from "@bejibun/logger";
 import {isEmpty} from "@bejibun/utils";
@@ -27,6 +28,30 @@ export default class StorageLocalBuilder implements StorageDriver {
         if (isEmpty(filepath)) throw new DiskException("The file path is required.");
 
         return !await this.exists(filepath);
+    }
+
+    public async metadata(filepath: string): Promise<Stats> {
+        if (isEmpty(filepath)) throw new DiskException("The file path is required.");
+
+        return await (await this.get(filepath)).stat();
+    }
+
+    public async size(filepath: string): Promise<number> {
+        if (isEmpty(filepath)) throw new DiskException("The file path is required.");
+
+        return (await this.metadata(filepath)).size;
+    }
+
+    public async mimeType(filepath: string): Promise<string> {
+        if (isEmpty(filepath)) throw new DiskException("The file path is required.");
+
+        return (await this.get(filepath)).type;
+    }
+
+    public async lastModified(filepath: string): Promise<Date> {
+        if (isEmpty(filepath)) throw new DiskException("The file path is required.");
+
+        return (await this.metadata(filepath)).mtime;
     }
 
     public async get(filepath: string): Promise<Bun.BunFile> {

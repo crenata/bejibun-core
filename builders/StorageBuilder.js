@@ -62,6 +62,26 @@ export default class StorageBuilder {
             throw new DiskException("The file path is required.");
         return !await this.driver.missing(filepath);
     }
+    async metadata(filepath) {
+        if (isEmpty(filepath))
+            throw new DiskException("The file path is required.");
+        return await this.driver.metadata(filepath);
+    }
+    async size(filepath) {
+        if (isEmpty(filepath))
+            throw new DiskException("The file path is required.");
+        return await this.driver.size(filepath);
+    }
+    async mimeType(filepath) {
+        if (isEmpty(filepath))
+            throw new DiskException("The file path is required.");
+        return await this.driver.mimeType(filepath);
+    }
+    async lastModified(filepath) {
+        if (isEmpty(filepath))
+            throw new DiskException("The file path is required.");
+        return await this.driver.lastModified(filepath);
+    }
     async get(filepath) {
         if (isEmpty(filepath))
             throw new DiskException("The file path is required.");

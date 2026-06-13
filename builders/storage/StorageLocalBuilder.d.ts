@@ -1,3 +1,4 @@
+import type { Stats } from "fs";
 import type { StorageDriver, StorageOptions } from "../../types/storage";
 export default class StorageLocalBuilder implements StorageDriver {
     protected _config: Record<string, any>;
@@ -5,6 +6,10 @@ export default class StorageLocalBuilder implements StorageDriver {
     private get config();
     exists(filepath: string): Promise<boolean>;
     missing(filepath: string): Promise<boolean>;
+    metadata(filepath: string): Promise<Stats>;
+    size(filepath: string): Promise<number>;
+    mimeType(filepath: string): Promise<string>;
+    lastModified(filepath: string): Promise<Date>;
     get(filepath: string): Promise<Bun.BunFile>;
     put(filepath: string, content: any, options?: StorageOptions): Promise<void>;
     copy(source: string, destination: string, options?: StorageOptions): Promise<void>;

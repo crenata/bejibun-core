@@ -12,6 +12,18 @@ export default class Storage {
     static async missing(path) {
         return await new StorageBuilder().missing(path);
     }
+    static async metadata(path) {
+        return await new StorageBuilder().metadata(path);
+    }
+    static async size(path) {
+        return await new StorageBuilder().size(path);
+    }
+    static async mimeType(path) {
+        return await new StorageBuilder().mimeType(path);
+    }
+    static async lastModified(path) {
+        return await new StorageBuilder().lastModified(path);
+    }
     static async get(path) {
         return await new StorageBuilder().get(path);
     }

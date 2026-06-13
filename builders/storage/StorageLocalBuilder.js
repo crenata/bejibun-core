@@ -22,6 +22,26 @@ export default class StorageLocalBuilder {
             throw new DiskException("The file path is required.");
         return !await this.exists(filepath);
     }
+    async metadata(filepath) {
+        if (isEmpty(filepath))
+            throw new DiskException("The file path is required.");
+        return await (await this.get(filepath)).stat();
+    }
+    async size(filepath) {
+        if (isEmpty(filepath))
+            throw new DiskException("The file path is required.");
+        return (await this.metadata(filepath)).size;
+    }
+    async mimeType(filepath) {
+        if (isEmpty(filepath))
+            throw new DiskException("The file path is required.");
+        return (await this.get(filepath)).type;
+    }
+    async lastModified(filepath) {
+        if (isEmpty(filepath))
+            throw new DiskException("The file path is required.");
+        return (await this.metadata(filepath)).mtime;
+    }
     async get(filepath) {
         if (isEmpty(filepath))
             throw new DiskException("The file path is required.");

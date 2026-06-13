@@ -38,6 +38,30 @@ export default class StorageS3Builder implements StorageDriver {
         return !await this.exists(filepath);
     }
 
+    public async metadata(filepath: string): Promise<Bun.S3Stats> {
+        if (isEmpty(filepath)) throw new DiskException("The file path is required.");
+
+        return await (await this.get(filepath)).stat();
+    }
+
+    public async size(filepath: string): Promise<number> {
+        if (isEmpty(filepath)) throw new DiskException("The file path is required.");
+
+        return (await this.metadata(filepath)).size;
+    }
+
+    public async mimeType(filepath: string): Promise<string> {
+        if (isEmpty(filepath)) throw new DiskException("The file path is required.");
+
+        return (await this.metadata(filepath)).type;
+    }
+
+    public async lastModified(filepath: string): Promise<Date> {
+        if (isEmpty(filepath)) throw new DiskException("The file path is required.");
+
+        return (await this.metadata(filepath)).lastModified;
+    }
+
     public async get(filepath: string): Promise<Bun.S3File> {
         if (isEmpty(filepath)) throw new DiskException("The file path is required.");
 
