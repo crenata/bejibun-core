@@ -3,22 +3,25 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [v0.4.25](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.4.24...v0.4.25) - 2026-06-13
+## [v0.4.25](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.4.24...v0.4.25) - 2026-06-17
 
 ### 🩹 Fixes
 
 ### 📖 Changes
+#### Global Utilities
+- Added default value for `env(key: string, defaultValue: any = null)` - Return default value when given key is empty
+
 #### Storage Management Utilities
 This release introduces built-in helpers for retrieving file metadata and storage information across supported Storage drivers.
 
 #### Storage Utilities
-Added new storage helper methods :
+Added new storage helper methods:
 - Added `.metadata()` - Retrieve complete file metadata and statistics
 - Added `.size()` - Get the file size in bytes
 - Added `.mimeType()` - Get the file MIME type
 - Added `.lastModified()` - Get the file's last modification date
 
-#### Example :
+**Example:**
 ```ts
 const metadata = await Storage.metadata("uploads/avatar.png");
 

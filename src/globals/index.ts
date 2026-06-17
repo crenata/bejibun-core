@@ -1,5 +1,5 @@
 import App from "@bejibun/app";
-import {isEmpty, isNotEmpty} from "@bejibun/utils";
+import {defineValue, isEmpty, isNotEmpty} from "@bejibun/utils";
 import fs from "fs";
 import RuntimeException from "@/exceptions/RuntimeException";
 
@@ -29,4 +29,4 @@ import RuntimeException from "@/exceptions/RuntimeException";
 
     return value;
 };
-(globalThis as any).env = (key: string): string | undefined => Bun.env[key];
+(globalThis as any).env = (key: string, defaultValue: any = null): string | undefined => defineValue(Bun.env[key], defaultValue);
