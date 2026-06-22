@@ -1,5 +1,5 @@
-import type {TFacilitator, TPaywall, TX402Config} from "@bejibun/x402";
 import type {EnumItem} from "@bejibun/utils/facades/Enum";
+import type {TFacilitator, TRoutePaymentConfig} from "@bejibun/x402/types/x402";
 import type {ApiDocConfig} from "@/decorators/ApiDocDecorator";
 import type {IMiddleware} from "@/types/middleware";
 import type {
@@ -56,11 +56,11 @@ export default class RouterBuilder {
         return this;
     }
 
-    public x402(config?: TX402Config, facilitatorConfig?: TFacilitator, paywallConfig?: TPaywall): RouterBuilder {
+    public x402(facilitator?: TFacilitator, routePayment?: TRoutePaymentConfig): RouterBuilder {
         if (!isModuleExists("@bejibun/x402")) throw new RouterException("@bejibun/x402 is not installed.");
 
         const X402Middleware = require("@/middlewares/X402Middleware").default;
-        this.middlewares.push(new X402Middleware(config, facilitatorConfig, paywallConfig));
+        this.middlewares.push(new X402Middleware(facilitator, routePayment));
 
         return this;
     }

@@ -1,4 +1,4 @@
-import type { TFacilitator, TPaywall, TX402Config } from "@bejibun/x402";
+import type { TFacilitator, TRoutePaymentConfig } from "@bejibun/x402/types/x402";
 import type { ApiDocConfig } from "../decorators/ApiDocDecorator";
 import type { IMiddleware } from "../types/middleware";
 import type { HandlerType, RawsRoute, ResourceAction, Route, RouterGroup } from "../types/router";
@@ -17,7 +17,7 @@ export default class RouterBuilder {
     prefix(basePath: string): RouterBuilder;
     middleware(...middlewares: Array<IMiddleware>): RouterBuilder;
     namespace(baseNamespace: string): RouterBuilder;
-    x402(config?: TX402Config, facilitatorConfig?: TFacilitator, paywallConfig?: TPaywall): RouterBuilder;
+    x402(facilitator?: TFacilitator, routePayment?: TRoutePaymentConfig): RouterBuilder;
     group(routes: Route | Array<Route> | RouterGroup): RouterGroup | Array<RouterGroup>;
     resource(path: string, controller: typeof BaseController, options?: ResourceOptions): RouterGroup;
     buildSingle(method: HttpMethodEnum, path: string, handler: string | HandlerType): Route;
