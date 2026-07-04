@@ -845,7 +845,7 @@ Options:
   -h, --help                   display help for command
 
 Commands:
-  db:seed                      Run database seeders
+  db:seed [options]            Run database seeders
   hello:world                  Run hello world
   install <packages...>        Install package dependencies
   maintenance:down [options]   Turn app into maintenance mode
@@ -866,6 +866,8 @@ Commands:
   queue:flush                  Flush all of the failed queue jobs
   queue:retry                  Retry a failed queue job
   queue:work                   Start processing jobs on the queue as a daemon
+  route:list                   List all registered routes
+  schedule:work                Start the schedule worker
   help [command]               display help for command
 
 Examples:
