@@ -1,8 +1,8 @@
-import type { TFacilitator, TRoutePaymentConfig } from "@bejibun/x402/types/x402";
+import type { TFacilitator, TRoutePayment } from "@bejibun/x402/types";
 import type { HandlerType } from "../types/router";
 export default class X402Middleware {
     protected facilitator?: TFacilitator;
-    protected routePayment?: TRoutePaymentConfig;
-    constructor(facilitator?: TFacilitator, routePayment?: TRoutePaymentConfig);
+    protected routePayment?: TRoutePayment;
+    constructor(facilitator?: TFacilitator, routePayment?: TRoutePayment);
     handle(handler: HandlerType): HandlerType;
 }

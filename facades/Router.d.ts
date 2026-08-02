@@ -1,4 +1,4 @@
-import type { TFacilitator, TRoutePaymentConfig } from "@bejibun/x402/types/x402";
+import type { TFacilitator, TRoutePayment } from "@bejibun/x402/types";
 import type { ResourceOptions } from "../builders/RouterBuilder";
 import type { IMiddleware } from "../types/middleware";
 import type { HandlerType, RouterGroup } from "../types/router";
@@ -10,7 +10,7 @@ export default class Router {
     static prefix(basePath: string): RouterBuilder;
     static middleware(...middlewares: Array<IMiddleware>): RouterBuilder;
     static namespace(baseNamespace: string): RouterBuilder;
-    static x402(facilitator?: TFacilitator, routePayment?: TRoutePaymentConfig): RouterBuilder;
+    static x402(facilitator?: TFacilitator, routePayment?: TRoutePayment): RouterBuilder;
     static resource(path: string, controller: typeof BaseController, options?: ResourceOptions): RouterGroup;
     static group(routes: Route | Array<Route> | RouterGroup): RouterGroup | Array<RouterGroup>;
     static connect(path: string, handler: string | HandlerType): Route;

@@ -10,24 +10,24 @@
     "module": "index.js",
     "dependencies": {
         "@bejibun/app": "^0.1.24",
-        "@bejibun/cache": "^0.1.23",
+        "@bejibun/cache": "^0.1.24",
         "@bejibun/cors": "^0.1.17",
         "@bejibun/database": "^0.1.21",
         "@bejibun/logger": "^0.1.22",
         "@bejibun/utils": "^0.1.28",
         "@vinejs/vine": "^4.4.0",
-        "commander": "^14.0.3",
-        "cron-parser": "^5.6.1",
+        "commander": "^15.0.0",
+        "cron-parser": "^5.7.0",
         "luxon": "^3.7.2",
         "objection": "^3.1.5",
         "reflect-metadata": "^0.2.2"
     },
     "devDependencies": {
-        "@bejibun/x402": "^0.1.1",
+        "@bejibun/x402": "^0.2.1",
         "@types/bun": "latest",
-        "@types/luxon": "^3.7.2",
+        "@types/luxon": "^3.7.3",
         "@types/reflect-metadata": "^0.1.0",
-        "tsc-alias": "^1.8.17"
+        "tsc-alias": "^1.9.1"
     },
     "bugs": {
         "url": "https://github.com/Bejibun-Framework/bejibun-core/issues"
