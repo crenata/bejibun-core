@@ -1,5 +1,5 @@
 import App from "@bejibun/app";
-import { isEmpty, isNotEmpty } from "@bejibun/utils";
+import { defineValue, isEmpty, isNotEmpty } from "@bejibun/utils";
 import fs from "fs";
 import RuntimeException from "../exceptions/RuntimeException";
 globalThis.config = (key, defaultValue = null) => {
@@ -24,4 +24,4 @@ globalThis.config = (key, defaultValue = null) => {
     }
     return value;
 };
-globalThis.env = (key) => Bun.env[key];
+globalThis.env = (key, defaultValue = null) => defineValue(Bun.env[key], defaultValue);

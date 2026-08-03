@@ -1,10 +1,12 @@
-import type {StorageDisk, StorageOptions} from "@/types/storage";
+import type {Stats} from "fs";
+import type {StorageDisk, StorageDriver, StorageOptions} from "@/types/storage";
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
 import {defineValue, isEmpty} from "@bejibun/utils";
 import Enum from "@bejibun/utils/facades/Enum";
-import path from "path";
 import fs from "fs";
+import StorageLocalBuilder from "@/builders/storage/StorageLocalBuilder";
+import StorageS3Builder from "@/builders/storage/StorageS3Builder";
 import DiskConfig from "@/config/disk";
 import DiskException from "@/exceptions/DiskException";
 import DiskDriverEnum from "@/enums/DiskDriverEnum";
@@ -35,7 +37,7 @@ export default class StorageBuilder {
         return defineValue(this.overrideDisk, this.config.disks[defineValue(this.drive, this.config.default)]);
     }
 
-    private get driver(): any {
+    private get driver(): StorageDriver {
         const driver: string | null = defineValue(this.currentDisk?.driver);
 
         if (isEmpty(driver)) throw new DiskException(`Missing "driver" on disk config.`);
@@ -44,30 +46,12 @@ export default class StorageBuilder {
 
         switch (driver) {
             case DiskDriverEnum.Local:
-                if (isEmpty(this.currentDisk?.root)) throw new DiskException(`Missing "root" for "local" disk configuration.`);
-                break;
+                return new StorageLocalBuilder(this.currentDisk);
             case DiskDriverEnum.S3:
-                if (isEmpty(this.currentDisk?.endpoint)) throw new DiskException(`Missing "endpoint" for "s3" disk configuration.`);
-                if (isEmpty(this.currentDisk?.access_key_id)) throw new DiskException(`Missing "access_key_id" for "s3" disk configuration.`);
-                if (isEmpty(this.currentDisk?.secret_access_key)) throw new DiskException(`Missing "secret_access_key" for "s3" disk configuration.`);
-                break;
+                return new StorageS3Builder(this.currentDisk);
             default:
-                break;
+                throw new DiskException(`Not supported "driver" disk.`);
         }
-
-        return driver;
-    }
-
-    private get s3(): Bun.S3Client {
-        if (this.driver !== DiskDriverEnum.S3) throw new DiskException(`Driver is not "s3".`);
-
-        return new Bun.S3Client({
-            endpoint: this.currentDisk?.endpoint,
-            region: this.currentDisk?.region,
-            bucket: this.currentDisk?.bucket,
-            accessKeyId: this.currentDisk?.access_key_id,
-            secretAccessKey: this.currentDisk?.secret_access_key
-        });
     }
 
     public build(overrideDisk: StorageDisk): StorageBuilder {
@@ -85,39 +69,43 @@ export default class StorageBuilder {
     public async exists(filepath: string): Promise<boolean> {
         if (isEmpty(filepath)) throw new DiskException("The file path is required.");
 
-        switch (this.driver) {
-            case DiskDriverEnum.Local:
-                return await Bun.file(path.resolve(this.currentDisk.root, filepath)).exists();
-            case DiskDriverEnum.S3:
-                return await this.s3.file(filepath).exists();
-            default:
-                return false;
-        }
+        return await this.driver.exists(filepath);
     }
 
     public async missing(filepath: string): Promise<boolean> {
         if (isEmpty(filepath)) throw new DiskException("The file path is required.");
 
-        return !await this.exists(filepath);
+        return !await this.driver.missing(filepath);
     }
 
-    public async get(filepath: string): Promise<any> {
+    public async metadata(filepath: string): Promise<Stats | Bun.S3Stats> {
         if (isEmpty(filepath)) throw new DiskException("The file path is required.");
 
-        let data: any = null;
+        return await this.driver.metadata(filepath);
+    }
 
-        switch (this.driver) {
-            case DiskDriverEnum.Local:
-                data = await Bun.file(path.resolve(this.currentDisk.root, filepath)).text();
-                break;
-            case DiskDriverEnum.S3:
-                data = await this.s3.file(filepath).text();
-                break;
-            default:
-                break;
-        }
+    public async size(filepath: string): Promise<number> {
+        if (isEmpty(filepath)) throw new DiskException("The file path is required.");
 
-        return data;
+        return await this.driver.size(filepath);
+    }
+
+    public async mimeType(filepath: string): Promise<string> {
+        if (isEmpty(filepath)) throw new DiskException("The file path is required.");
+
+        return await this.driver.mimeType(filepath);
+    }
+
+    public async lastModified(filepath: string): Promise<Date> {
+        if (isEmpty(filepath)) throw new DiskException("The file path is required.");
+
+        return await this.driver.lastModified(filepath);
+    }
+
+    public async get(filepath: string): Promise<Bun.BunFile | Bun.S3File> {
+        if (isEmpty(filepath)) throw new DiskException("The file path is required.");
+
+        return await this.driver.get(filepath);
     }
 
     public async put(filepath: string, content: any, options?: StorageOptions): Promise<void> {
@@ -125,33 +113,37 @@ export default class StorageBuilder {
         if (isEmpty(content)) throw new DiskException("The content is required.");
 
         try {
-            switch (this.driver) {
-                case DiskDriverEnum.Local:
-                    await Bun.write(path.resolve(this.currentDisk.root, filepath), content, options);
-                    break;
-                case DiskDriverEnum.S3:
-                    await this.s3.write(filepath, content, options);
-                    break;
-                default:
-                    break;
-            }
+            await this.driver.put(filepath, content, options);
         } catch (error: any) {
             Logger.setContext("Storage").error("Something went wrong when saving file.").trace(error);
+        }
+    }
+
+    public async copy(source: string, destination: string, options?: StorageOptions): Promise<void> {
+        if (isEmpty(source)) throw new DiskException("The source file path is required.");
+        if (isEmpty(destination)) throw new DiskException("The destination file path is required.");
+
+        try {
+            await this.driver.copy(source, destination, options);
+        } catch (error: any) {
+            Logger.setContext("Storage").error("Something went wrong when copying file.").trace(error);
+        }
+    }
+
+    public async move(source: string, destination: string, options?: StorageOptions): Promise<void> {
+        if (isEmpty(source)) throw new DiskException("The source file path is required.");
+        if (isEmpty(destination)) throw new DiskException("The destination file path is required.");
+
+        try {
+            await this.driver.move(source, destination, options);
+        } catch (error: any) {
+            Logger.setContext("Storage").error("Something went wrong when moving file.").trace(error);
         }
     }
 
     public async delete(filepath: string): Promise<void> {
         if (isEmpty(filepath)) throw new DiskException("The file path is required.");
 
-        switch (this.driver) {
-            case DiskDriverEnum.Local:
-                await Bun.file(path.resolve(this.currentDisk.root, filepath)).delete();
-                break;
-            case DiskDriverEnum.S3:
-                await this.s3.file(filepath).delete();
-                break;
-            default:
-                break;
-        }
+        await this.driver.delete(filepath);
     }
 }

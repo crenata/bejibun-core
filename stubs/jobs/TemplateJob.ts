@@ -7,6 +7,6 @@ export default class TemplateJob extends BaseJob {
      * @var $arguments Array<any>
      */
     public async handle(args: Array<any>): Promise<void> {
-        //
+        // Your code goes here
     }
 }

@@ -3,6 +3,85 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.4.25](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.4.24...v0.4.25) - 2026-08-03
+
+### 🩹 Fixes
+
+### 📖 Changes
+#### Global Utilities
+- Added default value for `env(key: string, defaultValue: any = null)` - Return default value when given key is empty
+
+#### Storage Management Utilities
+This release introduces built-in helpers for retrieving file metadata and storage information across supported Storage drivers.
+
+#### Storage Utilities
+Added new storage helper methods:
+- Added `.metadata()` - Retrieve complete file metadata and statistics
+- Added `.size()` - Get the file size in bytes
+- Added `.mimeType()` - Get the file MIME type
+- Added `.lastModified()` - Get the file's last modification date
+
+**Example:**
+```ts
+const metadata = await Storage.metadata("uploads/avatar.png");
+
+const size = await Storage.size("uploads/avatar.png");
+
+const mimeType = await Storage.mimeType("uploads/avatar.png");
+
+const lastModified = await Storage.lastModified("uploads/avatar.png");
+```
+
+#### Method Signatures
+```ts
+export interface StorageDriver {
+    // ...
+    
+    /**
+     * Retrieve metadata for a file.
+     *
+     * @param filepath The path to the file.
+     * @returns File metadata and statistics.
+     */
+    metadata(filepath: string): Promise<Stats | Bun.S3Stats>;
+
+    /**
+     * Get the file size in bytes.
+     *
+     * @param filepath The path to the file.
+     * @returns The file size in bytes.
+     */
+    size(filepath: string): Promise<number>;
+
+    /**
+     * Get the file MIME type.
+     *
+     * @param filepath The path to the file.
+     * @returns The detected MIME type.
+     */
+    mimeType(filepath: string): Promise<string>;
+
+    /**
+     * Get the file's last modification date.
+     *
+     * @param filepath The path to the file.
+     * @returns The last modified timestamp.
+     */
+    lastModified(filepath: string): Promise<Date>;
+}
+```
+
+These helpers provide a simple and consistent API for inspecting files and retrieving metadata without requiring direct access to the underlying storage provider implementation.
+
+### 📦 Dependencies
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.4.24](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.4.23...v0.4.24) - 2026-06-02
 
 ### 🩹 Fixes
