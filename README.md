@@ -681,6 +681,10 @@ await Storage.put("path/to/your/file.ext", "content"); // Store content to file
 await Storage.copy("source/file.ext", "destination/file.ext"); // Copy file
 await Storage.move("source/file.ext", "destination/file.ext"); // Move file
 await Storage.delete("path/to/your/file.ext"); // Delete file
+await Storage.metadata("path/to/your/file.ext"); // Retrieve complete file metadata and statistics
+await Storage.size("path/to/your/file.ext"); // Get the file size in bytes
+await Storage.mimeType("path/to/your/file.ext"); // Get the file MIME type
+await Storage.lastModified("path/to/your/file.ext"); // Get the file's last modification date
 ```
 
 - With Specified Disk
@@ -694,6 +698,10 @@ await Storage.disk("public").put("path/to/your/file.ext", "content");
 await Storage.disk("public").copy("source/file.ext", "destination/file.ext");
 await Storage.disk("public").move("source/file.ext", "destination/file.ext");
 await Storage.disk("public").delete("path/to/your/file.ext");
+await Storage.disk("public").metadata("path/to/your/file.ext");
+await Storage.disk("public").size("path/to/your/file.ext");
+await Storage.disk("public").mimeType("path/to/your/file.ext");
+await Storage.disk("public").lastModified("path/to/your/file.ext");
 ```
 
 - New Disk at Runtime
@@ -728,6 +736,22 @@ await Storage.build({
     driver: "local",
     root: App.Path.storagePath("custom")
 }).delete("path/to/your/file.ext");
+await Storage.build({
+    driver: "local",
+    root: App.Path.storagePath("custom")
+}).metadata("path/to/your/file.ext");
+await Storage.build({
+    driver: "local",
+    root: App.Path.storagePath("custom")
+}).size("path/to/your/file.ext");
+await Storage.build({
+    driver: "local",
+    root: App.Path.storagePath("custom")
+}).mimeType("path/to/your/file.ext");
+await Storage.build({
+    driver: "local",
+    root: App.Path.storagePath("custom")
+}).lastModified("path/to/your/file.ext");
 ```
 
 ### Queue
