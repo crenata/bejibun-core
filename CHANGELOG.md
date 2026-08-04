@@ -3,13 +3,28 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [v0.4.27](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.4.26...v0.4.27) - 2026-08-04
+## [v0.5.0](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.4.26...v0.5.0) - 2026-08-04
 
 ### 🩹 Fixes
 
 ### 📖 Changes
+#### Storage moved to `@bejibun/storage`
+The built-in `Storage` facade, disk driver builders, and disk config have been removed from `bejibun-core` and replaced with the new standalone [`@bejibun/storage`](https://github.com/Bejibun-Framework/bejibun-storage) package.
+
+- Removed `Storage` facade, `StorageBuilder`, `StorageLocalBuilder`/`StorageS3Builder`, `DiskException`, `DiskDriverEnum`, and `config/disk.ts` from `bejibun-core`
+- `@bejibun/storage ^0.1.0` added as a dependency -- import `Storage` from `@bejibun/storage` going forward instead of `@bejibun/core/facades/Storage`
+- `src/enums/index.ts` no longer re-exported from the package root (it only contained the disk enum)
+> ⚠️ **Breaking change**: if you're using `Storage` from `@bejibun/core`, switch to the `@bejibun/storage` package and move your disk config from `config/disk.ts` to `config/storage.ts` (see the [`@bejibun/storage` README](https://github.com/Bejibun-Framework/bejibun-storage#readme) for the new config shape).
+
+#### Newly exported: RateLimiter & EpochTimestamps
+`RateLimiter` and `EpochTimestamps` existed internally but weren't part of the public API -- they're now exported from the package root.
+
+- `RateLimiter` facade, `RateLimiterBuilder`, `RateLimiterMiddleware`, and `RateLimiterException` are now exported from `@bejibun/core`
+- `EpochTimestamps` model is now exported from `@bejibun/core`
+- `RuntimeException` is now exported from `@bejibun/core`
 
 ### 📦 Dependencies
+- Added `@bejibun/storage ^0.1.0`
 
 ### ❤️Contributors
 - Havea Crenata ([@crenata](https://github.com/crenata))
