@@ -668,11 +668,13 @@ CorsLoader.set(Cors.init);
 ```
 
 ### Storage
+Documentation: [@bejibun/storage](https://github.com/Bejibun-Framework/bejibun-storage/blob/master/README.md)
+
 A filesystem facade, with built-in disk management including disks configuration and build disk at runtime.
 
 - Standard Use
 ```ts
-import Storage from "@bejibun/core/facades/Storage";
+import Storage from "@bejibun/storage";
 
 await Storage.exists("path/to/your/file.ext"); // Check if the file exists
 await Storage.missing("path/to/your/file.ext"); // Check if the file doesn't exists
@@ -689,7 +691,7 @@ await Storage.lastModified("path/to/your/file.ext"); // Get the file's last modi
 
 - With Specified Disk
 ```ts
-import Storage from "@bejibun/core/facades/Storage";
+import Storage from "@bejibun/storage";
 
 await Storage.disk("public").exists("path/to/your/file.ext");
 await Storage.disk("public").missing("path/to/your/file.ext");
@@ -706,10 +708,10 @@ await Storage.disk("public").lastModified("path/to/your/file.ext");
 
 - New Disk at Runtime
 ```ts
-import Storage from "@bejibun/core/facades/Storage";
+import Storage from "@bejibun/storage";
 
 await Storage.build({
-    driver: "local", // "local" | DiskDriverEnum.Local
+    driver: "local", // "local" | StorageDiskDriverEnum.Local
     root: App.Path.storagePath("custom")
 }).exists("path/to/your/file.ext");
 await Storage.build({
@@ -847,13 +849,98 @@ env("APP_KEY");
 ```
 
 ### Redis
-Documentation : [@bejibun/redis](https://github.com/Bejibun-Framework/bejibun-redis/blob/master/README.md)
+Documentation: [@bejibun/redis](https://github.com/Bejibun-Framework/bejibun-redis/blob/master/README.md)
+
+```ts
+import type {RedisPipeline} from "@bejibun/redis/types";
+import BaseController from "@bejibun/core/bases/BaseController";
+import Logger from "@bejibun/logger";
+import Redis from "@bejibun/redis";
+
+export default class TestController extends BaseController {
+    public async redis(request: Bun.BunRequest): Promise<Response> {
+        await Redis.set("redis", {hello: "world"});
+        
+        const keys = await Redis.keys("pattern");
+        
+        const redis = await Redis.get("redis");
+
+        await Redis.connection("local").set("connection", "This is using custom connection.");
+        const connection = await Redis.connection("local").get("connection");
+
+        await Redis.setClient({
+            host: "127.0.0.1",
+            port: 6379,
+            password: "",
+            database: 0,
+            maxRetries: 10
+        }, "optional-connection-name").set("redis", {hello: "world"});
+        // for publish and subscibe recommended using custom connection name to make sure connection matched
+
+        const pipeline = await Redis.pipeline((pipe: RedisPipeline) => {
+            pipe.set("redis-pipeline-1", "This is redis pipeline 1");
+            pipe.set("redis-pipeline-2", "This is redis pipeline 2");
+
+            pipe.get("redis-pipeline-1");
+            pipe.get("redis-pipeline-2");
+        });
+
+        const subscriber = await Redis.subscribe("redis-subscribe", (message: string, channel: string) => {
+            Logger.setContext(channel).debug(message);
+        });
+        await Redis.publish("redis-subscribe", "Hai redis subscriber!");
+
+        await Bun.sleep(500);
+
+        await subscriber.unsubscribe();
+
+        await Redis.exists("visitors");
+
+        await Redis.incr("visitors");
+        await Redis.decr("visitors");
+
+        await Redis.incrBy("visitors", 10);
+        await Redis.decrBy("visitors", 5);
+
+        return super.response.setData({redis, connection, pipeline}).send();
+    }
+}
+```
 
 ### Cors
-Documentation : [@bejibun/cors](https://github.com/Bejibun-Framework/bejibun-cors/blob/master/README.md)
+Documentation: [@bejibun/cors](https://github.com/Bejibun-Framework/bejibun-cors/blob/master/README.md)
+
+```ts
+const config: Record<string, any> = {
+    allowedHeaders: "*",
+    credentials: false,
+    exposedHeaders: [],
+    maxAge: 86400,
+    methods: "*",
+    origin: "*"
+};
+
+export default config;
+```
 
 ### Cache
-Documentation : [@bejibun/cache](https://github.com/Bejibun-Framework/bejibun-cache/blob/master/README.md)
+Documentation: [@bejibun/cache](https://github.com/Bejibun-Framework/bejibun-cache/blob/master/README.md)
+
+```ts
+import Cache from "@bejibun/cache";
+
+Cache.connection();
+await Cache.remember("key", () => {}, 60 /* seconds */); // any
+await Cache.has("key"); // boolean
+await Cache.get("key"); // any
+await Cache.add("key", "Hello world", 60 /* seconds */); // boolean
+await Cache.put("key", "Lorem ipsum", 60 /* seconds */); // boolean
+await Cache.forget("key"); // void
+await Cache.increment("key"); // number
+await Cache.decrement("key"); // number
+await Cache.incrementBy("key", 5); // number
+await Cache.decrementBy("key", 5); // number
+```
 
 ### Ace
 Any commands for development
