@@ -3,6 +3,21 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.4.27](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.4.26...v0.4.27) - 2026-08-04
+
+### 🩹 Fixes
+
+### 📖 Changes
+
+### 📦 Dependencies
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.4.26](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.4.25...v0.4.26) - 2026-08-03
 
 ### 🩹 Fixes

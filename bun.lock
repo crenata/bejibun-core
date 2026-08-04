@@ -10,6 +10,7 @@
         "@bejibun/cors": "^0.1.17",
         "@bejibun/database": "^0.1.21",
         "@bejibun/logger": "^0.1.22",
+        "@bejibun/storage": "^0.1.0",
         "@bejibun/utils": "^0.1.28",
         "@vinejs/vine": "^4.4.0",
         "commander": "^15.0.0",
@@ -41,6 +42,8 @@
     "@bejibun/logger": ["@bejibun/logger@0.1.22", "", { "dependencies": { "@bejibun/utils": "^0.1.18", "chalk": "^5.6.2" } }, "sha512-wME87l5gLKyg3H5Gi7K+Epb4pccHOXQKpq7EngJOmE4NJF8YLeWIRwG/M3KDT5zcwnyFKMkQUlfmdaasOqcNqA=="],
 
     "@bejibun/redis": ["@bejibun/redis@0.1.46", "", { "dependencies": { "@bejibun/app": "^0.1.24", "@bejibun/logger": "^0.1.22", "@bejibun/utils": "^0.1.28" } }, "sha512-Qa4jP607g1aOMsc/e5jq2j1JcSm64B83CGu92LJjgDA/GoyEoo8JI4M02QNFNLnPGaqa8cLA7XpFM3D2S7cDyQ=="],
+
+    "@bejibun/storage": ["@bejibun/storage@0.1.0", "", { "dependencies": { "@bejibun/app": "^0.1.24", "@bejibun/logger": "^0.1.22", "@bejibun/utils": "^0.1.28" } }, "sha512-SrZ8AMp0I52rDwhCOhNB/qhigiW3J2znWysYCCkpZufaVPu0kDtEf0qK5ZYqxC+Iowx2IJvbRNqb4gs/0XGsFQ=="],
 
     "@bejibun/utils": ["@bejibun/utils@0.1.28", "", { "dependencies": { "@bejibun/logger": "^0.1.18", "luxon": "^3.7.2" } }, "sha512-0EWXVcQ4JspwRIVfYkuLoGsrD92zgMLITNifchOALIBQ7B5Q8nfIUmAS0oRU0tbQHLGWjDMOjWWKZ2KiITqmYQ=="],
 
