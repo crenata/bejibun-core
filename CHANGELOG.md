@@ -25,7 +25,7 @@ The built-in `Storage` facade, disk driver builders, and disk config have been r
 - `RuntimeException` is now exported from `@bejibun/core`
 
 ### 📦 Dependencies
-- Added `@bejibun/storage ^0.1.0`
+- Added [`@bejibun/storage`](https://github.com/Bejibun-Framework/bejibun-storage) ^0.1.0
 
 ### ❤️Contributors
 - Havea Crenata ([@crenata](https://github.com/crenata))
@@ -85,8 +85,8 @@ Router.x402(
 - Simplified the "Support / Donate" section in the README (replaced crypto address table with a donate badge/link) and removed the Contributors section
 
 ### 📦 Dependencies
-- Bumped `@bejibun/cache` from `^0.1.23` to `^0.1.24`
-- Bumped `@bejibun/x402` (devDependency) from `^0.1.1` to `^0.2.1`
+- Bumped [`@bejibun/cache`](https://github.com/Bejibun-Framework/bejibun-cache) from `^0.1.23` to `^0.1.24`
+- Bumped [`@bejibun/x402`](https://github.com/Bejibun-Framework/bejibun-x402) (devDependency) from `^0.1.1` to `^0.2.1`
 - Bumped `commander` from `^14.0.3` to `^15.0.0`
 - Bumped `cron-parser` from `^5.5.0` to `^5.7.0`
 - Bumped `@types/luxon` from `^3.7.1` to `^3.7.3`
