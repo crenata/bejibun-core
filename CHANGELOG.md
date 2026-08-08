@@ -3,6 +3,68 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.5.0](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.4.25...v0.5.0) - 2026-08-08
+
+### 🩹 Fixes
+
+### 📖 Changes
+#### X402 Middleware Refactor -- `@bejibun/x402` v0.2.0
+Bumped `@bejibun/x402` from `^0.1.1` to `^0.2.1` and updated the `.x402()` route middleware to match its new multi-network payment API.
+
+**What changed under the hood ([`@bejibun/x402` v0.2.0](https://github.com/Bejibun-Framework/bejibun-x402/compare/v0.1.0...v0.2.0)):**
+- **Multi-network support (EVM + SVM)** -- routes can now accept payment from both EVM chains (Base, etc.) and Solana simultaneously, matching `@x402/express` behavior, instead of the old single-network setup
+- Payment resolution follows a 4-level priority cascade: explicit `accepts` array → route-level `network` + `payTo` shorthand → config-wide `networks` block → built-in defaults (Base, Polygon, Arbitrum, World Chain for EVM; Solana mainnet for SVM)
+- New **`BunAdapter`** implements `@x402/core`'s `HTTPAdapter` directly against `Bun.BunRequest`
+- Payment verification/settlement now delegates to `@x402/core`'s `x402HTTPResourceServer` instead of the old hand-rolled verify/settle/decode chain, and initializes each route's server only once via a static cache
+- Underlying dependency swapped from `x402` to `@coinbase/x402`, `@x402/core`, `@x402/evm`, and `@x402/svm`
+  **How this surfaces in `bejibun-core`:**
+- **`Router.x402()` / `RouterBuilder.x402()`** -- signature changed from `x402(config?, facilitatorConfig?, paywallConfig?)` to `x402(facilitator?: TFacilitator, routePayment?: TRoutePayment)`
+    - `TRoutePayment` replaces `TX402Config` and supports the new `accepts` array for full multi-network control (per-network `scheme`, `price`, `network`, `payTo`, `description`, `mimeType`)
+    - `TFacilitator` is now a plain `{ url?, createAuthHeaders? }` object; defaults to the Coinbase facilitator
+- **`X402Middleware`** -- constructor and internal `X402` calls updated to use `.setFacilitator()` and `.setRoutePayment()`, replacing the removed `.setConfig()` and `.setPaywall()`
+- Types now imported from `@bejibun/x402/types` instead of `@bejibun/x402`
+> ⚠️ **Breaking change**: existing calls to `Router.x402(config, facilitatorConfig, paywallConfig)` must be updated to `Router.x402(facilitator, routePayment)`.
+
+**Example:**
+```ts
+Router.x402(
+    {
+        url: "https://facilitator.example.com"
+    },
+    {
+        accepts: [
+            {
+                network: "eip155:8453",
+                price: "$1.00",
+                payTo: "0x..."
+            }
+        ]
+    }
+);
+```
+
+#### CLI
+- Documented new `route:list` and `schedule:work` ace commands in the README
+- `db:seed` help output now shows `[options]`
+
+#### Misc
+- Simplified the "Support / Donate" section in the README (replaced crypto address table with a donate badge/link) and removed the Contributors section
+
+### 📦 Dependencies
+- Bumped `@bejibun/cache` from `^0.1.23` to `^0.1.24`
+- Bumped `@bejibun/x402` (devDependency) from `^0.1.1` to `^0.2.1`
+- Bumped `commander` from `^14.0.3` to `^15.0.0`
+- Bumped `cron-parser` from `^5.5.0` to `^5.7.0`
+- Bumped `@types/luxon` from `^3.7.1` to `^3.7.3`
+- Bumped `tsc-alias` (devDependency) from `^1.8.17` to `^1.9.1`
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.4.25](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.4.24...v0.4.25) - 2026-08-03
 
 ### 🩹 Fixes

@@ -869,7 +869,7 @@ Options:
   -h, --help                   display help for command
 
 Commands:
-  db:seed                      Run database seeders
+  db:seed [options]            Run database seeders
   hello:world                  Run hello world
   install <packages...>        Install package dependencies
   maintenance:down [options]   Turn app into maintenance mode
@@ -890,6 +890,8 @@ Commands:
   queue:flush                  Flush all of the failed queue jobs
   queue:retry                  Retry a failed queue job
   queue:work                   Start processing jobs on the queue as a daemon
+  route:list                   List all registered routes
+  schedule:work                Start the schedule worker
   help [command]               display help for command
 
 Examples:
@@ -898,16 +900,10 @@ Examples:
   $ bun ace migrate:latest
 ```
 
-## Contributors
-- [Havea Crenata](mailto:havea.crenata@gmail.com)
-
 ## ☕ Support / Donate
 
-If you find this project helpful and want to support it, you can donate via crypto :
+If you find this project helpful and want to support it:
 
-| EVM                                                                                                     | Solana                                                                                                  |
-| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| <img src="https://github.com/Bejibun-Framework/bejibun/blob/master/public/images/EVM.png?raw=true" width="150" /> | <img src="https://github.com/Bejibun-Framework/bejibun/blob/master/public/images/SOL.png?raw=true" width="150" /> |
-| 0xdABe8750061410D35cE52EB2a418c8cB004788B3                                                              | GAnoyvy9p3QFyxikWDh9hA3fmSk2uiPLNWyQ579cckMn                                                            |
+[![Donate](https://img.shields.io/badge/Donate-Support%20Me-orange?style=for-the-badge)](https://donate.bejibun.com)
 
-Or you can buy this `$BJBN (Bejibun)` tokens [here](https://pump.fun/coin/CQhbNnCGKfDaKXt8uE61i5DrBYJV7NPsCDD9vQgypump), beware of bots.
+Or you can buy this `$BJBN (Bejibun)` tokens [here](https://pump.fun/coin/CQhbNnCGKfDaKXt8uE61i5DrBYJV7NPsCDD9vQgypump).

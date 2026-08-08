@@ -30,11 +30,11 @@ export default class RouterBuilder {
         this.baseNamespace = baseNamespace;
         return this;
     }
-    x402(config, facilitatorConfig, paywallConfig) {
+    x402(facilitator, routePayment) {
         if (!isModuleExists("@bejibun/x402"))
             throw new RouterException("@bejibun/x402 is not installed.");
         const X402Middleware = require("../middlewares/X402Middleware").default;
-        this.middlewares.push(new X402Middleware(config, facilitatorConfig, paywallConfig));
+        this.middlewares.push(new X402Middleware(facilitator, routePayment));
         return this;
     }
     group(routes) {

@@ -1,3 +1,4 @@
+import type {TFacilitator, TRoutePayment} from "@bejibun/x402/types";
 import type {ResourceOptions} from "@/builders/RouterBuilder";
 import type {IMiddleware} from "@/types/middleware";
 import type {HandlerType, RouterGroup} from "@/types/router";
@@ -19,8 +20,8 @@ export default class Router {
         return new RouterBuilder().namespace(baseNamespace);
     }
 
-    public static x402(): RouterBuilder {
-        return new RouterBuilder().x402();
+    public static x402(facilitator?: TFacilitator, routePayment?: TRoutePayment): RouterBuilder {
+        return new RouterBuilder().x402(facilitator, routePayment);
     }
 
     public static resource(
