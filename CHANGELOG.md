@@ -13,11 +13,13 @@ Bumped `@bejibun/x402` from `^0.1.1` to `^0.2.1` and updated the `.x402()` route
 
 **What changed under the hood ([`@bejibun/x402` v0.2.0](https://github.com/Bejibun-Framework/bejibun-x402/compare/v0.1.0...v0.2.0)):**
 - **Multi-network support (EVM + SVM)** -- routes can now accept payment from both EVM chains (Base, etc.) and Solana simultaneously, matching `@x402/express` behavior, instead of the old single-network setup
-- Payment resolution follows a 4-level priority cascade: explicit `accepts` array → route-level `network` + `payTo` shorthand → config-wide `networks` block → built-in defaults (Base, Polygon, Arbitrum, World Chain for EVM; Solana mainnet for SVM)
+- Payment resolution follows a 4-level priority cascade: explicit `accepts` array -> route-level `network` + `payTo` shorthand -> config-wide `networks` block -> built-in defaults (Base, Polygon, Arbitrum, World Chain for EVM; Solana mainnet for SVM)
 - New **`BunAdapter`** implements `@x402/core`'s `HTTPAdapter` directly against `Bun.BunRequest`
 - Payment verification/settlement now delegates to `@x402/core`'s `x402HTTPResourceServer` instead of the old hand-rolled verify/settle/decode chain, and initializes each route's server only once via a static cache
 - Underlying dependency swapped from `x402` to `@coinbase/x402`, `@x402/core`, `@x402/evm`, and `@x402/svm`
-  **How this surfaces in `bejibun-core`:**
+  
+
+**How this surfaces in `@bejibun/core`:**
 - **`Router.x402()` / `RouterBuilder.x402()`** -- signature changed from `x402(config?, facilitatorConfig?, paywallConfig?)` to `x402(facilitator?: TFacilitator, routePayment?: TRoutePayment)`
     - `TRoutePayment` replaces `TX402Config` and supports the new `accepts` array for full multi-network control (per-network `scheme`, `price`, `network`, `payTo`, `description`, `mimeType`)
     - `TFacilitator` is now a plain `{ url?, createAuthHeaders? }` object; defaults to the Coinbase facilitator
