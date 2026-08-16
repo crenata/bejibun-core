@@ -9,13 +9,23 @@ All notable changes to this project will be documented in this file.
 
 ### 📖 Changes
 #### Storage moved to `@bejibun/storage`
-The built-in `Storage` facade, disk driver builders, and disk config have been removed from `bejibun-core` and replaced with the new standalone [`@bejibun/storage`](https://github.com/Bejibun-Framework/bejibun-storage) package.
+The built-in `Storage` facade, disk driver builders, and disk config have been removed from `@bejibun/core` and replaced with the new standalone [`@bejibun/storage`](https://github.com/Bejibun-Framework/bejibun-storage) package.
 
-- Removed `Storage` facade, `StorageBuilder`, `StorageLocalBuilder`/`StorageS3Builder`, `DiskException`, `DiskDriverEnum`, and `config/disk.ts` from `bejibun-core`
+- Removed `Storage` facade, `StorageBuilder`, `StorageLocalBuilder`/`StorageS3Builder`, `DiskException`, `DiskDriverEnum`, and `config/disk.ts` from `@bejibun/core`
 - `@bejibun/storage ^0.1.0` added as a dependency -- import `Storage` from `@bejibun/storage` going forward instead of `@bejibun/core/facades/Storage`
 - `src/enums/index.ts` no longer re-exported from the package root (it only contained the disk enum)
 
 > ⚠️ **Breaking change**: if you're using `Storage` from `@bejibun/core`, switch to the `@bejibun/storage` package and move your disk config from `config/disk.ts` to `config/storage.ts` (see the [`@bejibun/storage` README](https://github.com/Bejibun-Framework/bejibun-storage#readme) for the new config shape).
+
+#### RateLimiter moved to `@bejibun/limiter`
+The built-in `RateLimiter` facade, `RateLimiterBuilder`, and `RateLimiterException` have been removed from `@bejibun/core` and replaced with the new standalone [`@bejibun/limiter`](https://github.com/Bejibun-Framework/bejibun-limiter) package.
+
+- Removed `RateLimiter` facade, `RateLimiterBuilder`, and `RateLimiterException` from `@bejibun/core`
+- `@bejibun/limiter ^0.1.1` added as a dependency -- import `RateLimiter` from `@bejibun/limiter` going forward instead of `@bejibun/core/facades/RateLimiter`
+- `RateLimiterMiddleware` now imports `RateLimiter` and its config from `@bejibun/limiter` internally; the middleware itself is still exported from `@bejibun/core` and its usage is unchanged
+- `config/limiter.ts` shape (`limit` / `duration`) is unchanged, now sourced from `@bejibun/limiter`'s default config
+
+> ⚠️ **Breaking change**: if you're using `RateLimiter` from `@bejibun/core`, switch to the `@bejibun/limiter` package (`import RateLimiter from "@bejibun/limiter"`). `RateLimiterMiddleware` keeps working as-is.
 
 #### Newly exported: RateLimiter & EpochTimestamps
 `RateLimiter` and `EpochTimestamps` existed internally but weren't part of the public API -- they're now exported from the package root.
