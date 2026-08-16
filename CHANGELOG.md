@@ -35,6 +35,7 @@ The built-in `RateLimiter` facade, `RateLimiterBuilder`, and `RateLimiterExcepti
 
 ### 📦 Dependencies
 - Added [`@bejibun/storage`](https://github.com/Bejibun-Framework/bejibun-storage) ^0.1.0
+- Added [`@bejibun/limiter`](https://github.com/Bejibun-Framework/bejibun-limiter) ^0.1.1
 
 ### ❤️Contributors
 - Havea Crenata ([@crenata](https://github.com/crenata))
