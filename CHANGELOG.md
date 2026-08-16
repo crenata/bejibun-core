@@ -27,10 +27,9 @@ The built-in `RateLimiter` facade, `RateLimiterBuilder`, and `RateLimiterExcepti
 
 > ⚠️ **Breaking change**: if you're using `RateLimiter` from `@bejibun/core`, switch to the `@bejibun/limiter` package (`import RateLimiter from "@bejibun/limiter"`). `RateLimiterMiddleware` keeps working as-is.
 
-#### Newly exported: RateLimiter & EpochTimestamps
-`RateLimiter` and `EpochTimestamps` existed internally but weren't part of the public API -- they're now exported from the package root.
+#### Newly exported: EpochTimestamps
+`EpochTimestamps` existed internally but wasn't part of the public API -- it's now exported from the package root.
 
-- `RateLimiter` facade, `RateLimiterBuilder`, `RateLimiterMiddleware`, and `RateLimiterException` are now exported from `@bejibun/core`
 - `EpochTimestamps` model is now exported from `@bejibun/core`
 - `RuntimeException` is now exported from `@bejibun/core`
 
