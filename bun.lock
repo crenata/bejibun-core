@@ -9,12 +9,13 @@
         "@bejibun/cache": "^0.1.24",
         "@bejibun/cors": "^0.1.17",
         "@bejibun/database": "^0.1.21",
+        "@bejibun/limiter": "^0.1.1",
         "@bejibun/logger": "^0.1.22",
         "@bejibun/storage": "^0.1.0",
         "@bejibun/utils": "^0.1.28",
         "@vinejs/vine": "^4.4.0",
         "commander": "^15.0.0",
-        "cron-parser": "^5.7.0",
+        "cron-parser": "^5.10.0",
         "luxon": "^3.7.2",
         "objection": "^3.1.5",
         "reflect-metadata": "^0.2.2",
@@ -38,6 +39,8 @@
     "@bejibun/cors": ["@bejibun/cors@0.1.17", "", { "dependencies": { "@bejibun/app": "^0.1.22", "@bejibun/utils": "^0.1.28" } }, "sha512-c7HIHJggxiC5IHypNV0rdGVi8Hym7rYi6zrqAecrzStgNMmyrn1eyJm6rHMEx38S/BgpvywVsaWm1nWIz8qd0g=="],
 
     "@bejibun/database": ["@bejibun/database@0.1.21", "", { "dependencies": { "@bejibun/app": "^0.1.24", "@bejibun/logger": "^0.1.22", "@bejibun/utils": "^0.1.28", "knex": "^3.2.10", "ora": "^9.4.0", "pg": "^8.21.0" } }, "sha512-dyIcIIBP5I4iRtNwGyjs304sIgCjCQ73Tau273RLOIl6gBzfWLXEcYljRDmZlZ7OOG1+FGfzxJlJ/eHvXFya8w=="],
+
+    "@bejibun/limiter": ["@bejibun/limiter@0.1.1", "", { "dependencies": { "@bejibun/app": "^0.1.24", "@bejibun/cache": "^0.1.24", "@bejibun/logger": "^0.1.22", "@bejibun/utils": "^0.1.28" } }, "sha512-YPC8MEKnrlxxFVwDee77y64t25v5/XmeWjgublRaO9ogw9C5JH0FZ9l9NZ+xJ8yrwJzdabPi9YHlRR44A7yVJA=="],
 
     "@bejibun/logger": ["@bejibun/logger@0.1.22", "", { "dependencies": { "@bejibun/utils": "^0.1.18", "chalk": "^5.6.2" } }, "sha512-wME87l5gLKyg3H5Gi7K+Epb4pccHOXQKpq7EngJOmE4NJF8YLeWIRwG/M3KDT5zcwnyFKMkQUlfmdaasOqcNqA=="],
 
@@ -233,7 +236,7 @@
 
     "commander": ["commander@15.0.0", "", {}, "sha512-z67u4ZhzCL/Tydu1lJARtEZYWbWaN7oYLHbsuzocr6y4N6WZAagG3RQ4FW61V1/0+jImpj293XfrcYnd1qxtPg=="],
 
-    "cron-parser": ["cron-parser@5.7.0", "", { "dependencies": { "luxon": "^3.7.2" } }, "sha512-iSpDHpwwW/GhIg4JVODYlWUEpMNSimaHvqOhHpOz1W+Y97z1lL1nf+dpcF17cNwFRpTtKN9devgi1fxflp3Phw=="],
+    "cron-parser": ["cron-parser@5.10.0", "", { "dependencies": { "luxon": "^3.7.2" } }, "sha512-izNAxJyRWUP8ljBoDSub5WyrVOUlT4SLGShswE7eoRBpp6QUsSycYxLBMJlbshgPBMcPT/nrfgjNY2918ayv2A=="],
 
     "crypt": ["crypt@0.0.2", "", {}, "sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow=="],
 

@@ -1,8 +1,8 @@
 import App from "@bejibun/app";
+import RateLimiter from "@bejibun/limiter";
+import LimiterConfig from "@bejibun/limiter/config/limiter";
 import { defineValue } from "@bejibun/utils";
 import Str from "@bejibun/utils/facades/Str";
-import LimiterConfig from "../config/limiter";
-import RateLimiter from "../facades/RateLimiter";
 export default class RateLimiterMiddleware {
     handle(handler) {
         return async (request, server) => {

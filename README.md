@@ -756,6 +756,21 @@ await Storage.build({
 }).lastModified("path/to/your/file.ext");
 ```
 
+### Rate Limiter
+Documentation: [@bejibun/limiter](https://github.com/Bejibun-Framework/bejibun-limiter/blob/master/README.md)
+
+Throttle repeated actions -- login attempts, API calls, anything you need to cap -- with a simple key-based counter.
+
+```ts
+import RateLimiter from "@bejibun/limiter";
+
+await RateLimiter.attempt(`user:${user.id}`, 60 /* limit */, () => {
+    //
+}, 60 /* duration (optional) */);
+await RateLimiter.tooManyAttempts(`user:${user.id}`, 60 /* limit */, 60 /* duration (optional) */);
+await RateLimiter.clear(`user:${user.id}`);
+```
+
 ### Queue
 Run processes at background.
 

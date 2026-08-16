@@ -1,10 +1,10 @@
 import App from "@bejibun/app";
+import RateLimiterException from "@bejibun/limiter/exceptions/RateLimiterException";
 import Logger from "@bejibun/logger";
 import { defineValue } from "@bejibun/utils";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import { ValidationError } from "objection";
 import ModelNotFoundException from "../exceptions/ModelNotFoundException";
-import RateLimiterException from "../exceptions/RateLimiterException";
 import RouterException from "../exceptions/RouterException";
 import RuntimeException from "../exceptions/RuntimeException";
 import ValidatorException from "../exceptions/ValidatorException";
