@@ -1,8 +1,11 @@
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
 import {defineValue, isEmpty} from "@bejibun/utils";
+import QueueConfig from "@/config/queue";
+import QueueException from "@/exceptions/QueueException";
 import RuntimeException from "@/exceptions/RuntimeException";
 import JobModel from "@/models/JobModel";
+import fs from "fs";
 
 export default class QueueWorkCommand {
     /**
@@ -34,6 +37,17 @@ export default class QueueWorkCommand {
     protected $arguments: Array<Array<string>> = [];
 
     public async handle(options: any, args: string): Promise<void> {
+        const configPath = App.Path.configPath("queue.ts");
+
+        let config: any;
+
+        if (fs.existsSync(configPath)) config = require(configPath).default;
+        else config = QueueConfig;
+
+        if (isEmpty(config)) throw new QueueException("There is no config provided.");
+
+        const currentConnection: Record<string, any> = config.connections[config.default];
+
         let running: boolean = true;
 
         process.on("exit", async (): Promise<void> => {
@@ -55,7 +69,7 @@ export default class QueueWorkCommand {
             const job: any = await JobModel.query().where("attempts", "<", 3).orderBy("id", "asc").first();
 
             if (isEmpty(job?.id)) {
-                await Bun.sleep(1000);
+                await Bun.sleep(defineValue(Number(currentConnection?.retry_after), 60) * 1000);
             } else {
                 const handler: Function = async () => {
                     const module = await import(App.Path.rootPath(job.queue));
@@ -76,6 +90,8 @@ export default class QueueWorkCommand {
                     await JobModel.query().findById(job.id).update({
                         attempts: defineValue(Number(job.attempts), 0) + 1
                     });
+
+                    await Bun.sleep(defineValue(Number(currentConnection?.retry_after), 60) * 1000);
                 }
             }
         }
