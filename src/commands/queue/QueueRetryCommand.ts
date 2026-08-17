@@ -1,6 +1,7 @@
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
 import {defineValue, isEmpty} from "@bejibun/utils";
+import Luxon from "@bejibun/utils/facades/Luxon";
 import RuntimeException from "@/exceptions/RuntimeException";
 import JobModel from "@/models/JobModel";
 
@@ -50,11 +51,24 @@ export default class QueueRetryCommand {
         });
 
         while (running) {
-            const job: any = await JobModel.query().where("attempts", ">=", 3).orderBy("id", "asc").first();
+            const job: any = await JobModel.query()
+                .where("attempts", ">=", 3)
+                .whereNull("reserved_at")
+                .orderBy("id", "asc")
+                .first();
 
             if (isEmpty(job?.id)) {
                 running = false;
             } else {
+                const claimed: any = await JobModel.query()
+                    .where("id", job.id)
+                    .where("attempts", ">=", 3)
+                    .whereNull("reserved_at")
+                    .update({
+                        reserved_at: Luxon.DateTime.now().toUnixInteger()
+                    });
+                if (isEmpty(claimed)) continue;
+
                 const handler: Function = async () => {
                     const module = await import(App.Path.rootPath(job.queue));
 
@@ -72,7 +86,8 @@ export default class QueueRetryCommand {
                     await JobModel.query().findById(job.id).delete();
                 } catch {
                     await JobModel.query().findById(job.id).update({
-                        attempts: defineValue(Number(job.attempts), 0) + 1
+                        attempts: defineValue(Number(job.attempts), 0) + 1,
+                        reserved_at: null
                     });
                 }
             }

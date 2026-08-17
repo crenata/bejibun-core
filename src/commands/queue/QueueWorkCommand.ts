@@ -1,6 +1,7 @@
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
 import {defineValue, isEmpty} from "@bejibun/utils";
+import Luxon from "@bejibun/utils/facades/Luxon";
 import QueueConfig from "@/config/queue";
 import QueueException from "@/exceptions/QueueException";
 import RuntimeException from "@/exceptions/RuntimeException";
@@ -47,6 +48,7 @@ export default class QueueWorkCommand {
         if (isEmpty(config)) throw new QueueException("There is no config provided.");
 
         const currentConnection: Record<string, any> = config.connections[config.default];
+        const retryAfter: number = defineValue(Number(currentConnection?.retry_after), 60);
 
         let running: boolean = true;
 
@@ -66,11 +68,32 @@ export default class QueueWorkCommand {
         Logger.setContext("Queue").info("Queue worker started.");
 
         while (running) {
-            const job: any = await JobModel.query().where("attempts", "<", 3).orderBy("id", "asc").first();
+            const staleBefore: number = Luxon.DateTime.now().toUnixInteger() - retryAfter;
+
+            const job: any = await JobModel.query()
+                .where("attempts", "<", 3)
+                .where((builder: any) =>
+                    builder.whereNull("reserved_at")
+                        .orWhere("reserved_at", "<", staleBefore)
+                )
+                .orderBy("id", "asc")
+                .first();
 
             if (isEmpty(job?.id)) {
-                await Bun.sleep(defineValue(Number(currentConnection?.retry_after), 60) * 1000);
+                await Bun.sleep(retryAfter * 1000);
             } else {
+                const claimed: any = await JobModel.query()
+                    .where("id", job.id)
+                    .where("attempts", "<", 3)
+                    .where((builder: any) =>
+                        builder.whereNull("reserved_at")
+                            .orWhere("reserved_at", "<", staleBefore)
+                    )
+                    .update({
+                        reserved_at: Luxon.DateTime.now().toUnixInteger()
+                    });
+                if (isEmpty(claimed)) continue;
+
                 const handler: Function = async () => {
                     const module = await import(App.Path.rootPath(job.queue));
 
@@ -88,10 +111,11 @@ export default class QueueWorkCommand {
                     await JobModel.query().findById(job.id).delete();
                 } catch {
                     await JobModel.query().findById(job.id).update({
-                        attempts: defineValue(Number(job.attempts), 0) + 1
+                        attempts: defineValue(Number(job.attempts), 0) + 1,
+                        reserved_at: null
                     });
 
-                    await Bun.sleep(defineValue(Number(currentConnection?.retry_after), 60) * 1000);
+                    await Bun.sleep(retryAfter * 1000);
                 }
             }
         }

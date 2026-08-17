@@ -3,6 +3,64 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.6.1](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.6.0...v0.6.1) - 2026-08-17
+
+### 🩹 Fixes
+- Fixed a race condition in `queue:work` and `queue:retry` where multiple concurrent workers could pick up and process the same job simultaneously
+
+### 📖 Changes
+#### Response Cookies
+`ResponseBuilder` and the `Response` facade can now set and delete cookies on outgoing responses, on top of Bun's native `CookieMap`.
+Cookies are automatically applied as `Set-Cookie` headers on both `.send()` and `.stream()`.
+
+- Added `Response.setCookie(key, value, options?)` / `ResponseBuilder.setCookie()` -- set a single cookie
+- Added `Response.setCookies(cookies, options?)` / `ResponseBuilder.setCookies()` -- set multiple cookies in one call, each with its own optional `Bun.CookieInit`
+- Added `Response.deleteCookie(key, options?)` / `ResponseBuilder.deleteCookie()` -- expire a single cookie (`domain` / `path` only)
+- Added `Response.deleteCookies(cookies, options?)` / `ResponseBuilder.deleteCookies()` -- expire multiple cookies in one call, each with its own optional `domain` / `path`
+- `ResponseBuilder` now holds an internal `Bun.CookieMap`; `.send()` and `.stream()` merge `Set-Cookie` headers in via a new `applyCookies()` helper alongside existing CORS headers
+  
+**Example:**
+```ts
+return Response
+    .setData(user)
+    .setCookie("sessionId", sessionId, {httpOnly: true, sameSite: "strict", path: "/"})
+    .send();
+ 
+return Response
+    .setMessage("Signed out")
+    .deleteCookie("sessionId")
+    .send();
+ 
+return Response
+    .setCookies([
+        {key: "sessionId", value: sessionId, options: {httpOnly: true}},
+        {key: "theme", value: "dark", options: {maxAge: 60 * 60 * 24 * 30}}
+    ])
+    .send();
+```
+
+#### Queue System
+Added a configurable `queue` config file, plus a dedicated `QueueException` for queue-related failures.
+`queue:work` now reads its retry/poll interval from config instead of a hardcoded value, and jobs are now reserved before processing
+so concurrent workers don't step on each other.
+
+- Added `config/queue.ts` -- defines the default connection and per-connection `driver` / `table` / `retry_after`, loaded from the app's own `config/queue.ts` when present, falling back to the package default
+- Added `QueueDriverEnum` (`src/enums`), currently exposing `Database`
+- Added `QueueException`, registered in `ExceptionHandler` alongside the other framework exceptions
+- `QueueWorkCommand` now sleeps for `connections[default].retry_after` seconds (default `60`) both when polling finds no job and after a failed job attempt, instead of the previous hardcoded `1000`ms poll delay
+- `QueueWorkCommand` and `QueueRetryCommand` now use `JobModel`'s `reserved_at` column to atomically claim a job (via a conditional `update()`) before processing it, closing a race where multiple workers could pick up the same job
+- `QueueWorkCommand` treats a reservation older than `retry_after` seconds as stale and eligible for reclaim, so a job doesn't stay locked forever if the worker holding it crashes mid-processing
+- A job's reservation is cleared (`reserved_at: null`) if its handler throws, so it becomes claimable again on the next pass instead of staying locked until attempts increment
+
+### 📦 Dependencies
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.6.0](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.5.0...v0.6.0) - 2026-08-16
 
 ### 🩹 Fixes
