@@ -1,16 +1,10 @@
+import type {ExtendOptions} from "@/types/vine";
 import {defineValue, isEmpty} from "@bejibun/utils";
 import vine, {VineNumber, VineString} from "@vinejs/vine";
 import {QueryBuilderType} from "objection";
 import BaseModel from "@/bases/BaseModel";
 
-type Options = {
-    table: typeof BaseModel;
-    column?: string;
-    withTrashed?: boolean;
-    nullable?: boolean;
-};
-
-const exists = async (value: unknown, options: Options, field: any): Promise<void> => {
+const exists = async (value: unknown, options: ExtendOptions, field: any): Promise<void> => {
     if (!field.isValid) return;
     if (options.nullable) return;
 
@@ -28,12 +22,12 @@ const exists = async (value: unknown, options: Options, field: any): Promise<voi
 const existsRule = vine.createRule(exists, {isAsync: true});
 
 const registerExistsMacro = (Type: any): void => {
-    Type.macro("exists", function (this: typeof Type, tableOrOptions: typeof BaseModel | Options, column?: string, withTrashed?: boolean, nullable?: boolean) {
+    Type.macro("exists", function (this: typeof Type, tableOrOptions: typeof BaseModel | ExtendOptions, column?: string, withTrashed?: boolean, nullable?: boolean) {
         const isModel = typeof tableOrOptions === "function" && Object.prototype.isPrototypeOf.call(BaseModel, tableOrOptions);
 
-        const options: Options = isModel
+        const options: ExtendOptions = isModel
             ? {table: tableOrOptions as typeof BaseModel, column, withTrashed, nullable}
-            : tableOrOptions as Options;
+            : tableOrOptions as ExtendOptions;
 
         return this.use(existsRule(options));
     });

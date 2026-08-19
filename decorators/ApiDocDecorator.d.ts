@@ -9,7 +9,7 @@ export type ApiDocConfig = {
             in: "header" | "path" | "query";
             required: boolean;
             schema: {
-                type: "string";
+                type: "string" | "number" | "integer" | "boolean" | "array" | "object";
             };
         }>;
     };
