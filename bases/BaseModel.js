@@ -5,6 +5,9 @@ import ModelNotFoundException from "../exceptions/ModelNotFoundException";
 import SoftDeletes from "../facades/SoftDeletes";
 import RuntimeException from "../exceptions/RuntimeException";
 class BunQueryBuilder extends SoftDeletes {
+    constructor(modelClass) {
+        super(modelClass);
+    }
     // @ts-ignore
     async update(payload) {
         const cloneQuery = this.clone();
@@ -24,6 +27,8 @@ export default class BaseModel extends Model {
     static updatedColumn = "updated_at";
     static deletedColumn = "deleted_at";
     static QueryBuilder = BunQueryBuilder;
+    // @ts-ignore - BunQueryBuilder's update() intentionally diverges from Objection's chainable QueryBuilder shape for soft-delete semantics.
+    QueryBuilderType;
     static get namespace() {
         if (isEmpty(this._namespace))
             throw new RuntimeException(`Model namespace not registered for [${this.name}].`);
@@ -49,7 +54,6 @@ export default class BaseModel extends Model {
     static query(trxOrKnex) {
         return super.query(trxOrKnex);
     }
-    ;
     static withTrashed(trxOrKnex) {
         return this.query(trxOrKnex).withTrashed();
     }
