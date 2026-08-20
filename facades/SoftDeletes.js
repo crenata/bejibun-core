@@ -3,7 +3,7 @@ import { QueryBuilder } from "objection";
 export default class SoftDeletes extends QueryBuilder {
     hasFilterApplied = false;
     constructor(modelClass) {
-        // @ts-ignore
+        // @ts-expect-error - QueryBuilder's constructor is protected/internal in Objection's types; subclassing requires bypassing that.
         super(modelClass);
         this.onBuild((builder) => {
             const context = this.context();

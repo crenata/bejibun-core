@@ -8,7 +8,7 @@ class BunQueryBuilder extends SoftDeletes {
     constructor(modelClass) {
         super(modelClass);
     }
-    // @ts-ignore
+    // @ts-expect-error - BunQueryBuilder's update() intentionally diverges from Objection's chainable QueryBuilder shape for soft-delete semantics.
     async update(payload) {
         const cloneQuery = this.clone();
         const beforeRows = await cloneQuery;
@@ -18,7 +18,6 @@ class BunQueryBuilder extends SoftDeletes {
         return cloneQuery;
     }
 }
-// @ts-ignore
 export default class BaseModel extends Model {
     static _namespace;
     static tableName;
@@ -27,14 +26,12 @@ export default class BaseModel extends Model {
     static updatedColumn = "updated_at";
     static deletedColumn = "deleted_at";
     static QueryBuilder = BunQueryBuilder;
-    // @ts-ignore - BunQueryBuilder's update() intentionally diverges from Objection's chainable QueryBuilder shape for soft-delete semantics.
-    QueryBuilderType;
     static get namespace() {
         if (isEmpty(this._namespace))
             throw new RuntimeException(`Model namespace not registered for [${this.name}].`);
         return this._namespace;
     }
-    $beforeInsert(queryContext) {
+    $beforeInsert() {
         const now = Luxon.DateTime.now();
         if (isNotEmpty(this[this.constructor.createdColumn])) {
             this[this.constructor.createdColumn] = now;
@@ -43,7 +40,7 @@ export default class BaseModel extends Model {
             this[this.constructor.updatedColumn] = now;
         }
     }
-    $beforeUpdate(opt, queryContext) {
+    $beforeUpdate() {
         if (isNotEmpty(this[this.constructor.updatedColumn])) {
             this[this.constructor.updatedColumn] = Luxon.DateTime.now();
         }

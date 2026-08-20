@@ -23,5 +23,5 @@ export default class RouteListCommand {
      * @var $arguments Array<Array<string>>
      */
     protected $arguments: Array<Array<string>>;
-    handle(options: any, args: string): Promise<void>;
+    handle(): Promise<void>;
 }

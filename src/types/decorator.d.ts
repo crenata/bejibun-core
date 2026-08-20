@@ -1,7 +1,7 @@
 import type {ApiDocConfig} from "@/decorators/ApiDocDecorator";
 
 declare global {
-    function ApiDoc(config: ApiDocConfig): Function;
+    function ApiDoc(config: ApiDocConfig): any;
 }
 
 export {};

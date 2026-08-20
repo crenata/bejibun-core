@@ -23,20 +23,36 @@ const unique = async (value: unknown, options: Options, field: any): Promise<voi
     const row = await (query as QueryBuilderType<any>).where(column, value).first();
 
     if (isNotEmpty(row)) field.report("The {{ field }} field is already exists", "unique", field);
-}
+};
 
 const uniqueRule = vine.createRule(unique, {isAsync: true});
 
 const registerUniqueMacro = (Type: any): void => {
-    Type.macro("unique", function (this: typeof Type, tableOrOptions: typeof BaseModel | Options, column?: string, withTrashed?: boolean, nullable?: boolean) {
-        const isModel = typeof tableOrOptions === "function" && Object.prototype.isPrototypeOf.call(BaseModel, tableOrOptions);
+    Type.macro(
+        "unique",
+        function (
+            this: typeof Type,
+            tableOrOptions: typeof BaseModel | Options,
+            column?: string,
+            withTrashed?: boolean,
+            nullable?: boolean
+        ) {
+            const isModel =
+                typeof tableOrOptions === "function" &&
+                Object.prototype.isPrototypeOf.call(BaseModel, tableOrOptions);
 
-        const options: Options = isModel
-            ? {table: tableOrOptions as typeof BaseModel, column, withTrashed, nullable}
-            : tableOrOptions as Options;
+            const options: Options = isModel
+                ? {
+                      table: tableOrOptions as typeof BaseModel,
+                      column,
+                      withTrashed,
+                      nullable
+                  }
+                : (tableOrOptions as Options);
 
-        return this.use(uniqueRule(options));
-    });
+            return this.use(uniqueRule(options));
+        }
+    );
 };
 
 registerUniqueMacro(VineString);

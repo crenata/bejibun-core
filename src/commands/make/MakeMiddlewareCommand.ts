@@ -31,9 +31,7 @@ export default class MakeMiddlewareCommand {
      *
      * @var $arguments Array<Array<string>>
      */
-    protected $arguments: Array<Array<string>> = [
-        ["<file>", "The name of the middleware file"]
-    ];
+    protected $arguments: Array<Array<string>> = [["<file>", "The name of the middleware file"]];
 
     public async handle(options: any, args: string): Promise<void> {
         if (isEmpty(args)) {
@@ -43,10 +41,14 @@ export default class MakeMiddlewareCommand {
 
         const file: string = args;
         const middlewaresDirectory: string = "middlewares";
-        const template: Bun.BunFile = Bun.file(path.resolve(__dirname, `../../stubs/${middlewaresDirectory}/TemplateMiddleware.ts`));
+        const template: Bun.BunFile = Bun.file(
+            path.resolve(__dirname, `../../stubs/${middlewaresDirectory}/TemplateMiddleware.ts`)
+        );
 
-        if (!await template.exists()) {
-            Logger.setContext("APP").error("Whoops, something went wrong, the middleware template not found.");
+        if (!(await template.exists())) {
+            Logger.setContext("APP").error(
+                "Whoops, something went wrong, the middleware template not found."
+            );
             return;
         }
 
@@ -54,8 +56,13 @@ export default class MakeMiddlewareCommand {
         const destination: string = `${name}Middleware.ts`;
         const content: string = await template.text();
 
-        await Bun.write(App.Path.middlewaresPath(destination), content.replace(/template/gi, name as string));
+        await Bun.write(
+            App.Path.middlewaresPath(destination),
+            content.replace(/template/gi, name as string)
+        );
 
-        Logger.setContext("APP").info(`Middleware [app/middlewares/${destination}] created successfully.`);
+        Logger.setContext("APP").info(
+            `Middleware [app/middlewares/${destination}] created successfully.`
+        );
     }
 }

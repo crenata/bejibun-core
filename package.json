@@ -1,6 +1,6 @@
 {
     "name": "@bejibun/core",
-    "version": "0.6.1",
+    "version": "0.6.11",
     "author": "Havea Crenata <havea.crenata@gmail.com>",
     "repository": {
         "type": "git",
@@ -8,28 +8,19 @@
     },
     "main": "index.js",
     "module": "index.js",
-    "dependencies": {
-        "@bejibun/app": "^0.1.24",
-        "@bejibun/cache": "^0.1.24",
-        "@bejibun/cors": "^0.1.17",
-        "@bejibun/database": "^0.1.21",
-        "@bejibun/limiter": "^0.1.1",
-        "@bejibun/logger": "^0.1.22",
-        "@bejibun/storage": "^0.1.0",
-        "@bejibun/utils": "^0.1.28",
-        "@vinejs/vine": "^4.4.0",
-        "commander": "^15.0.0",
-        "cron-parser": "^5.10.0",
-        "luxon": "^3.7.2",
-        "objection": "^3.1.5",
-        "reflect-metadata": "^0.2.2"
-    },
     "devDependencies": {
-        "@bejibun/x402": "^0.2.1",
-        "@types/bun": "latest",
+        "@bejibun/x402": "^0.2.11",
+        "@eslint/js": "^10.0.1",
+        "@types/bun": "^1.3.14",
         "@types/luxon": "^3.7.4",
         "@types/reflect-metadata": "^0.1.0",
-        "tsc-alias": "^1.9.1"
+        "eslint": "^10.8.1",
+        "eslint-config-prettier": "^10.1.8",
+        "globals": "^17.11.0",
+        "prettier": "^3.9.6",
+        "tsc-alias": "^1.9.2",
+        "typescript": "^6.0.3",
+        "typescript-eslint": "^8.67.0"
     },
     "bugs": {
         "url": "https://github.com/Bejibun-Framework/bejibun-core/issues"
@@ -45,15 +36,34 @@
     ],
     "license": "MIT",
     "scripts": {
-        "alias": "bunx tsc-alias -p tsconfig.json",
-        "clean-dist": "rm -rf dist",
-        "clean-stubs": "rm -rf stubs",
+        "alias": "tsc-alias -p tsconfig.json",
         "stubs": "cp -rf src/stubs dist",
+        "stubs-clean": "rm -rf stubs",
         "types": "cp -rf src/types dist",
         "rsync": "rsync -a dist/ ./",
-        "build": "bun run clean-dist && bun run clean-stubs && bunx tsc -p tsconfig.json && bun run types && bun run alias && bun run stubs && bun run rsync && bun run clean-dist",
+        "clean": "rm -rf dist",
+        "format": "prettier --write src --log-level=silent",
+        "eslint": "eslint src",
+        "lint": "bun run format && bun run eslint",
+        "build": "bun run clean && bun run stubs-clean && bun run lint && tsc -p tsconfig.json && bun run types && bun run alias && bun run stubs && bun run rsync && bun run clean",
         "deploy": "bun run build && bun publish --access public"
     },
     "type": "module",
-    "types": "index.d.ts"
+    "types": "index.d.ts",
+    "dependencies": {
+        "@bejibun/app": "^0.1.25",
+        "@bejibun/cache": "^0.1.25",
+        "@bejibun/cors": "^0.1.18",
+        "@bejibun/database": "^0.1.22",
+        "@bejibun/limiter": "^0.1.11",
+        "@bejibun/logger": "^0.1.23",
+        "@bejibun/storage": "^0.1.1",
+        "@bejibun/utils": "^0.1.29",
+        "@vinejs/vine": "^4.4.0",
+        "commander": "^15.0.0",
+        "cron-parser": "^5.10.0",
+        "luxon": "^3.7.2",
+        "objection": "^3.1.5",
+        "reflect-metadata": "^0.2.2"
+    }
 }

@@ -1,3 +1,3 @@
 import {SchemaTypes, VineValidator} from "@vinejs/vine";
 
-export type ValidatorType<T extends SchemaTypes = SchemaTypes> = VineValidator<SchemaTypes, Record<string, any> | undefined>;
+export type ValidatorType = VineValidator<SchemaTypes, Record<string, any> | undefined>;

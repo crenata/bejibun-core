@@ -9,10 +9,11 @@ export default class BaseController {
         const contentType: string = defineValue(request.headers.get("content-type"), "");
         const formData: FormData = new FormData();
 
-        let data: Record<string, any> = {};
+        const data: Record<string, any> = {};
 
         try {
-            if (contentType.includes("application/json")) Object.assign(data, Bobject.serialize(await request.json()));
+            if (contentType.includes("application/json"))
+                Object.assign(data, Bobject.serialize(await request.json()));
 
             for (const [key, value] of Object.entries(request.params)) {
                 formData.append(key, value as string);
@@ -47,15 +48,18 @@ export default class BaseController {
         return Response;
     }
 
-    public async validate(validator: VineValidator<any, Record<string, any> | undefined>, body: Record<string, any>): Promise<any> {
+    public async validate(
+        validator: VineValidator<any, Record<string, any> | undefined>,
+        body: Record<string, any>
+    ): Promise<any> {
         try {
             return await validator.validate(body);
-        } catch (error: typeof errors.E_VALIDATION_ERROR | any) {
-            const defaultMessage: string = "Invalid syntax validation.";
-            let message: string = defaultMessage;
+        } catch (error: any) {
+            let message: string;
 
-            if (isNotEmpty(error?.messages)) message = defineValue(error?.messages[0]?.message, defaultMessage);
-            else message = defineValue(error?.message, defaultMessage);
+            if (error instanceof errors.E_VALIDATION_ERROR && isNotEmpty(error.messages))
+                message = error.messages[0]?.message;
+            else message = defineValue(error?.message, "Invalid syntax validation.");
 
             throw new ValidatorException(message);
         }

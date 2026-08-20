@@ -8,8 +8,7 @@ export default class MaintenanceMiddleware {
             if (await App.Maintenance.isMaintenanceMode()) {
                 const maintenance = await App.Maintenance.getData();
 
-                return Response
-                    .setMessage(maintenance.message)
+                return Response.setMessage(maintenance.message)
                     .setStatus(maintenance.status)
                     .send();
             }

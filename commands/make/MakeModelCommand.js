@@ -27,9 +27,7 @@ export default class MakeModelCommand {
      *
      * @var $arguments Array<Array<string>>
      */
-    $arguments = [
-        ["<file>", "The name of the model file"]
-    ];
+    $arguments = [["<file>", "The name of the model file"]];
     async handle(options, args) {
         if (isEmpty(args)) {
             Logger.setContext("APP").error("There is no filename provided.");
@@ -38,7 +36,7 @@ export default class MakeModelCommand {
         const file = args;
         const modelsDirectory = "models";
         const template = Bun.file(path.resolve(__dirname, `../../stubs/${modelsDirectory}/TemplateModel.ts`));
-        if (!await template.exists()) {
+        if (!(await template.exists())) {
             Logger.setContext("APP").error("Whoops, something went wrong, the model template not found.");
             return;
         }

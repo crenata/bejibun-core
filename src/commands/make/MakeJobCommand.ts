@@ -31,9 +31,7 @@ export default class MakeJobCommand {
      *
      * @var $arguments Array<Array<string>>
      */
-    protected $arguments: Array<Array<string>> = [
-        ["<file>", "The name of the job file"]
-    ];
+    protected $arguments: Array<Array<string>> = [["<file>", "The name of the job file"]];
 
     public async handle(options: any, args: string): Promise<void> {
         if (isEmpty(args)) {
@@ -43,10 +41,14 @@ export default class MakeJobCommand {
 
         const file: string = args;
         const jobsDirectory: string = "jobs";
-        const template: Bun.BunFile = Bun.file(path.resolve(__dirname, `../../stubs/${jobsDirectory}/TemplateJob.ts`));
+        const template: Bun.BunFile = Bun.file(
+            path.resolve(__dirname, `../../stubs/${jobsDirectory}/TemplateJob.ts`)
+        );
 
-        if (!await template.exists()) {
-            Logger.setContext("APP").error("Whoops, something went wrong, the job template not found.");
+        if (!(await template.exists())) {
+            Logger.setContext("APP").error(
+                "Whoops, something went wrong, the job template not found."
+            );
             return;
         }
 
@@ -54,7 +56,10 @@ export default class MakeJobCommand {
         const destination: string = `${name}Job.ts`;
         const content: string = await template.text();
 
-        await Bun.write(App.Path.jobsPath(destination), content.replace(/template/gi, name as string));
+        await Bun.write(
+            App.Path.jobsPath(destination),
+            content.replace(/template/gi, name as string)
+        );
 
         Logger.setContext("APP").info(`Job [app/jobs/${destination}] created successfully.`);
     }

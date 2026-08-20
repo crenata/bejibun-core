@@ -12,8 +12,7 @@ export default class RateLimiterMiddleware {
                 config = require(configPath).default;
             else
                 config = LimiterConfig;
-            return await RateLimiter
-                .attempt(`rate-limiter/${Str.ipToFileName(defineValue(server.requestIP(request)?.address, ""))}`, defineValue(config?.limit, 60), () => {
+            return await RateLimiter.attempt(`rate-limiter/${Str.ipToFileName(defineValue(server.requestIP(request)?.address, ""))}`, defineValue(config?.limit, 60), () => {
                 return handler(request, server);
             });
         };

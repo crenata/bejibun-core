@@ -32,7 +32,7 @@ export default class QueueWorkCommand {
      * @var $arguments Array<Array<string>>
      */
     $arguments = [];
-    async handle(options, args) {
+    async handle() {
         const configPath = App.Path.configPath("queue.ts");
         let config;
         if (fs.existsSync(configPath))
@@ -61,8 +61,7 @@ export default class QueueWorkCommand {
             const staleBefore = Luxon.DateTime.now().toUnixInteger() - retryAfter;
             const job = await JobModel.query()
                 .where("attempts", "<", 3)
-                .where((builder) => builder.whereNull("reserved_at")
-                .orWhere("reserved_at", "<", staleBefore))
+                .where((builder) => builder.whereNull("reserved_at").orWhere("reserved_at", "<", staleBefore))
                 .orderBy("id", "asc")
                 .first();
             if (isEmpty(job?.id)) {
@@ -72,8 +71,7 @@ export default class QueueWorkCommand {
                 const claimed = await JobModel.query()
                     .where("id", job.id)
                     .where("attempts", "<", 3)
-                    .where((builder) => builder.whereNull("reserved_at")
-                    .orWhere("reserved_at", "<", staleBefore))
+                    .where((builder) => builder.whereNull("reserved_at").orWhere("reserved_at", "<", staleBefore))
                     .update({
                     reserved_at: Luxon.DateTime.now().toUnixInteger()
                 });
@@ -94,7 +92,9 @@ export default class QueueWorkCommand {
                     await JobModel.query().findById(job.id).delete();
                 }
                 catch {
-                    await JobModel.query().findById(job.id).update({
+                    await JobModel.query()
+                        .findById(job.id)
+                        .update({
                         attempts: defineValue(Number(job.attempts), 0) + 1,
                         reserved_at: null
                     });

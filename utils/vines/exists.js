@@ -19,9 +19,15 @@ const exists = async (value, options, field) => {
 const existsRule = vine.createRule(exists, { isAsync: true });
 const registerExistsMacro = (Type) => {
     Type.macro("exists", function (tableOrOptions, column, withTrashed, nullable) {
-        const isModel = typeof tableOrOptions === "function" && Object.prototype.isPrototypeOf.call(BaseModel, tableOrOptions);
+        const isModel = typeof tableOrOptions === "function" &&
+            Object.prototype.isPrototypeOf.call(BaseModel, tableOrOptions);
         const options = isModel
-            ? { table: tableOrOptions, column, withTrashed, nullable }
+            ? {
+                table: tableOrOptions,
+                column,
+                withTrashed,
+                nullable
+            }
             : tableOrOptions;
         return this.use(existsRule(options));
     });

@@ -12,13 +12,16 @@ export default class NamespaceBuilder {
     }
     async walk(directory) {
         try {
-            const entries = readdirSync(directory, { withFileTypes: true });
+            const entries = readdirSync(directory, {
+                withFileTypes: true
+            });
             const files = await Promise.all(entries.map((entry) => {
                 const fullPath = join(directory, entry.name);
-                return entry.isDirectory() ?
-                    this.walk(fullPath) :
-                    ((fullPath.endsWith(".ts") ||
-                        fullPath.endsWith(".js")) ? [fullPath] : []);
+                return entry.isDirectory()
+                    ? this.walk(fullPath)
+                    : fullPath.endsWith(".ts") || fullPath.endsWith(".js")
+                        ? [fullPath]
+                        : [];
             }));
             return files.flat();
         }

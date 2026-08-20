@@ -37,7 +37,7 @@ export default class QueueWorkCommand {
      */
     protected $arguments: Array<Array<string>> = [];
 
-    public async handle(options: any, args: string): Promise<void> {
+    public async handle(): Promise<void> {
         const configPath = App.Path.configPath("queue.ts");
 
         let config: any;
@@ -73,8 +73,7 @@ export default class QueueWorkCommand {
             const job: any = await JobModel.query()
                 .where("attempts", "<", 3)
                 .where((builder: any) =>
-                    builder.whereNull("reserved_at")
-                        .orWhere("reserved_at", "<", staleBefore)
+                    builder.whereNull("reserved_at").orWhere("reserved_at", "<", staleBefore)
                 )
                 .orderBy("id", "asc")
                 .first();
@@ -86,22 +85,25 @@ export default class QueueWorkCommand {
                     .where("id", job.id)
                     .where("attempts", "<", 3)
                     .where((builder: any) =>
-                        builder.whereNull("reserved_at")
-                            .orWhere("reserved_at", "<", staleBefore)
+                        builder.whereNull("reserved_at").orWhere("reserved_at", "<", staleBefore)
                     )
                     .update({
                         reserved_at: Luxon.DateTime.now().toUnixInteger()
                     });
                 if (isEmpty(claimed)) continue;
 
-                const handler: Function = async () => {
+                const handler: any = async () => {
                     const module = await import(App.Path.rootPath(job.queue));
 
                     const Class = module.default;
-                    if (isEmpty(Class)) throw new RuntimeException(`Job class not found [${job.queue}].`);
+                    if (isEmpty(Class))
+                        throw new RuntimeException(`Job class not found [${job.queue}].`);
 
                     const instance = new Class();
-                    if (typeof instance.handle !== "function") throw new RuntimeException(`Job class has no handle function in [${job.queue}].`);
+                    if (typeof instance.handle !== "function")
+                        throw new RuntimeException(
+                            `Job class has no handle function in [${job.queue}].`
+                        );
 
                     instance.handle(Bun.JSON5.parse(job.payload));
                 };
@@ -110,10 +112,12 @@ export default class QueueWorkCommand {
                     await handler();
                     await JobModel.query().findById(job.id).delete();
                 } catch {
-                    await JobModel.query().findById(job.id).update({
-                        attempts: defineValue(Number(job.attempts), 0) + 1,
-                        reserved_at: null
-                    });
+                    await JobModel.query()
+                        .findById(job.id)
+                        .update({
+                            attempts: defineValue(Number(job.attempts), 0) + 1,
+                            reserved_at: null
+                        });
 
                     await Bun.sleep(retryAfter * 1000);
                 }

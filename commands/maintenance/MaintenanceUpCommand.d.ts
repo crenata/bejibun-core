@@ -23,5 +23,5 @@ export default class MaintenanceUpCommand {
      * @var $arguments Array<Array<any>>
      */
     protected $arguments: Array<Array<any>>;
-    handle(options: any, args: Array<string>): Promise<void>;
+    handle(): Promise<void>;
 }

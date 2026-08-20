@@ -5,8 +5,7 @@ export default class MaintenanceMiddleware {
         return async (request, server) => {
             if (await App.Maintenance.isMaintenanceMode()) {
                 const maintenance = await App.Maintenance.getData();
-                return Response
-                    .setMessage(maintenance.message)
+                return Response.setMessage(maintenance.message)
                     .setStatus(maintenance.status)
                     .send();
             }

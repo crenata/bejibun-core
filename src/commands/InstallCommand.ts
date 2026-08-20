@@ -29,9 +29,7 @@ export default class InstallCommand {
      *
      * @var $arguments Array<Array<any>>
      */
-    protected $arguments: Array<Array<any>> = [
-        ["<packages...>", "Install package dependencies"]
-    ];
+    protected $arguments: Array<Array<any>> = [["<packages...>", "Install package dependencies"]];
 
     public async handle(options: any, args: Array<string>): Promise<void> {
         if (isEmpty(args)) {

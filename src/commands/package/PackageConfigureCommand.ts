@@ -33,7 +33,7 @@ export default class PackageConfigureCommand {
      */
     protected $arguments: Array<Array<any>> = [];
 
-    public async handle(options: any, args: Array<string>): Promise<void> {
+    public async handle(options: any): Promise<void> {
         if (isEmpty(options.package)) {
             Logger.setContext("APP").error("Package is not provided, please use --package.");
             return;
@@ -46,7 +46,9 @@ export default class PackageConfigureCommand {
         } catch (error: any) {
             if (error?.message.includes("Cannot find module")) return;
 
-            Logger.setContext("APP").error(defineValue(error?.message, "Whoops, something went wrong.")).trace(error);
+            Logger.setContext("APP")
+                .error(defineValue(error?.message, "Whoops, something went wrong."))
+                .trace(error);
         }
     }
 }

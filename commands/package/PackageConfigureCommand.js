@@ -28,7 +28,7 @@ export default class PackageConfigureCommand {
      * @var $arguments Array<Array<any>>
      */
     $arguments = [];
-    async handle(options, args) {
+    async handle(options) {
         if (isEmpty(options.package)) {
             Logger.setContext("APP").error("Package is not provided, please use --package.");
             return;
@@ -40,7 +40,9 @@ export default class PackageConfigureCommand {
         catch (error) {
             if (error?.message.includes("Cannot find module"))
                 return;
-            Logger.setContext("APP").error(defineValue(error?.message, "Whoops, something went wrong.")).trace(error);
+            Logger.setContext("APP")
+                .error(defineValue(error?.message, "Whoops, something went wrong."))
+                .trace(error);
         }
     }
 }

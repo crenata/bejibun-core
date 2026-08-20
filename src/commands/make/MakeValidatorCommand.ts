@@ -31,9 +31,7 @@ export default class MakeValidatorCommand {
      *
      * @var $arguments Array<Array<string>>
      */
-    protected $arguments: Array<Array<string>> = [
-        ["<file>", "The name of the validator file"]
-    ];
+    protected $arguments: Array<Array<string>> = [["<file>", "The name of the validator file"]];
 
     public async handle(options: any, args: string): Promise<void> {
         if (isEmpty(args)) {
@@ -43,10 +41,14 @@ export default class MakeValidatorCommand {
 
         const file: string = args;
         const validatorsDirectory: string = "validators";
-        const template: Bun.BunFile = Bun.file(path.resolve(__dirname, `../../stubs/${validatorsDirectory}/TemplateValidator.ts`));
+        const template: Bun.BunFile = Bun.file(
+            path.resolve(__dirname, `../../stubs/${validatorsDirectory}/TemplateValidator.ts`)
+        );
 
-        if (!await template.exists()) {
-            Logger.setContext("APP").error("Whoops, something went wrong, the validator template not found.");
+        if (!(await template.exists())) {
+            Logger.setContext("APP").error(
+                "Whoops, something went wrong, the validator template not found."
+            );
             return;
         }
 
@@ -54,8 +56,13 @@ export default class MakeValidatorCommand {
         const destination: string = `${name}Validator.ts`;
         const content: string = await template.text();
 
-        await Bun.write(App.Path.validatorsPath(destination), content.replace(/template/gi, name as string));
+        await Bun.write(
+            App.Path.validatorsPath(destination),
+            content.replace(/template/gi, name as string)
+        );
 
-        Logger.setContext("APP").info(`Validator [app/validators/${destination}] created successfully.`);
+        Logger.setContext("APP").info(
+            `Validator [app/validators/${destination}] created successfully.`
+        );
     }
 }

@@ -46,7 +46,9 @@ export default class ResponseBuilder {
         return this;
     }
 
-    public setCookies(cookies: Array<{key: string, value: string, options?: Bun.CookieInit}>): ResponseBuilder {
+    public setCookies(
+        cookies: Array<{key: string; value: string; options?: Bun.CookieInit}>
+    ): ResponseBuilder {
         for (const cookie of cookies) {
             this.cookies.set(cookie.key, cookie.value, cookie.options);
         }
@@ -54,14 +56,22 @@ export default class ResponseBuilder {
         return this;
     }
 
-    public deleteCookie(key: string, options?: Pick<Bun.CookieInit, "domain" | "path">): ResponseBuilder {
+    public deleteCookie(
+        key: string,
+        options?: Pick<Bun.CookieInit, "domain" | "path">
+    ): ResponseBuilder {
         if (isNotEmpty(options)) this.cookies.delete(key, options as any);
         else this.cookies.delete(key);
 
         return this;
     }
 
-    public deleteCookies(cookies: Array<{key: string, options?: Pick<Bun.CookieInit, "domain" | "path">}>): ResponseBuilder {
+    public deleteCookies(
+        cookies: Array<{
+            key: string;
+            options?: Pick<Bun.CookieInit, "domain" | "path">;
+        }>
+    ): ResponseBuilder {
         for (const cookie of cookies) {
             if (isNotEmpty(cookie.options)) this.cookies.delete(cookie.key, cookie.options as any);
             else this.cookies.delete(cookie.key);
@@ -71,17 +81,20 @@ export default class ResponseBuilder {
     }
 
     public send(): globalThis.Response {
-        return globalThis.Response.json({
-            data: this.data,
-            message: this.message,
-            status: this.status,
-            ...this.custom
-        }, {
-            headers: this.applyCookies({
-                ...CorsLoader.cors
-            }),
-            status: this.status
-        });
+        return globalThis.Response.json(
+            {
+                data: this.data,
+                message: this.message,
+                status: this.status,
+                ...this.custom
+            },
+            {
+                headers: this.applyCookies({
+                    ...CorsLoader.cors
+                }),
+                status: this.status
+            }
+        );
     }
 
     public stream(options: ResponseInit = {}): globalThis.Response {

@@ -17,20 +17,36 @@ const exists = async (value: unknown, options: ExtendOptions, field: any): Promi
     const row = await (query as QueryBuilderType<any>).where(column, value).first();
 
     if (isEmpty(row)) field.report("The {{ field }} field doesn't exists", "exists", field);
-}
+};
 
 const existsRule = vine.createRule(exists, {isAsync: true});
 
 const registerExistsMacro = (Type: any): void => {
-    Type.macro("exists", function (this: typeof Type, tableOrOptions: typeof BaseModel | ExtendOptions, column?: string, withTrashed?: boolean, nullable?: boolean) {
-        const isModel = typeof tableOrOptions === "function" && Object.prototype.isPrototypeOf.call(BaseModel, tableOrOptions);
+    Type.macro(
+        "exists",
+        function (
+            this: typeof Type,
+            tableOrOptions: typeof BaseModel | ExtendOptions,
+            column?: string,
+            withTrashed?: boolean,
+            nullable?: boolean
+        ) {
+            const isModel =
+                typeof tableOrOptions === "function" &&
+                Object.prototype.isPrototypeOf.call(BaseModel, tableOrOptions);
 
-        const options: ExtendOptions = isModel
-            ? {table: tableOrOptions as typeof BaseModel, column, withTrashed, nullable}
-            : tableOrOptions as ExtendOptions;
+            const options: ExtendOptions = isModel
+                ? {
+                      table: tableOrOptions as typeof BaseModel,
+                      column,
+                      withTrashed,
+                      nullable
+                  }
+                : (tableOrOptions as ExtendOptions);
 
-        return this.use(existsRule(options));
-    });
+            return this.use(existsRule(options));
+        }
+    );
 };
 
 registerExistsMacro(VineString);

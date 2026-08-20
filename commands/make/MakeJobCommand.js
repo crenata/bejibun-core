@@ -27,9 +27,7 @@ export default class MakeJobCommand {
      *
      * @var $arguments Array<Array<string>>
      */
-    $arguments = [
-        ["<file>", "The name of the job file"]
-    ];
+    $arguments = [["<file>", "The name of the job file"]];
     async handle(options, args) {
         if (isEmpty(args)) {
             Logger.setContext("APP").error("There is no filename provided.");
@@ -38,7 +36,7 @@ export default class MakeJobCommand {
         const file = args;
         const jobsDirectory = "jobs";
         const template = Bun.file(path.resolve(__dirname, `../../stubs/${jobsDirectory}/TemplateJob.ts`));
-        if (!await template.exists()) {
+        if (!(await template.exists())) {
             Logger.setContext("APP").error("Whoops, something went wrong, the job template not found.");
             return;
         }

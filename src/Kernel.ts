@@ -9,7 +9,9 @@ import WebSocketLoader from "@/loader/WebSocketLoader";
 
 export default class Kernel {
     public static registerCommands(program: Command): void {
-        const rootCommands: Array<{ path: string }> = require(App.Path.configPath("command.ts")).default;
+        const rootCommands: Array<{path: string}> = require(
+            App.Path.configPath("command.ts")
+        ).default;
         const paths: Array<Record<string, any>> = [
             {
                 absolute: true,
@@ -23,21 +25,28 @@ export default class Kernel {
                 absolute: true,
                 cwd: "node_modules/@bejibun/database/commands"
             }
-        ].concat(rootCommands.map(value => ({
-            absolute: true,
-            cwd: `node_modules/${value.path}`
-        })));
+        ].concat(
+            rootCommands.map((value) => ({
+                absolute: true,
+                cwd: `node_modules/${value.path}`
+            }))
+        );
         const files: Array<string> = paths
-            .map(value => Array.from(new Bun.Glob("**/*").scanSync({
-                absolute: value.absolute,
-                cwd: value.cwd
-            })))
+            .map((value) =>
+                Array.from(
+                    new Bun.Glob("**/*").scanSync({
+                        absolute: value.absolute,
+                        cwd: value.cwd
+                    })
+                )
+            )
             .flat()
-            .filter(value => (
-                /\.(m?js|ts)$/.test(value) &&
-                !value.endsWith(".d.ts") &&
-                !value.includes("Kernel")
-            ));
+            .filter(
+                (value) =>
+                    /\.(m?js|ts)$/.test(value) &&
+                    !value.endsWith(".d.ts") &&
+                    !value.includes("Kernel")
+            );
 
         const instances: Array<any> = [];
 
@@ -70,7 +79,8 @@ export default class Kernel {
 
             cmd.action(async (...args: Array<any>) => {
                 const commandObj = args[args.length - 1];
-                const options = typeof commandObj.opts === "function" ? commandObj.opts() : commandObj;
+                const options =
+                    typeof commandObj.opts === "function" ? commandObj.opts() : commandObj;
                 const positionalArgs = args[0];
                 try {
                     await instance.handle(options, positionalArgs);
@@ -88,7 +98,8 @@ export default class Kernel {
         if (isEmpty(Kernel)) throw new RuntimeException(`Kernel class not found [${kernelPath}].`);
 
         const instance = new Kernel();
-        if (typeof instance.schedule !== "function") throw new RuntimeException(`Kernel class has no schedule function in [${kernelPath}].`);
+        if (typeof instance.schedule !== "function")
+            throw new RuntimeException(`Kernel class has no schedule function in [${kernelPath}].`);
 
         instance.schedule(Schedule);
     }
@@ -101,37 +112,41 @@ export default class Kernel {
             }
         ];
         const files: Array<string> = paths
-            .map(value => Array.from(new Bun.Glob("**/*").scanSync({
-                absolute: value.absolute,
-                cwd: value.cwd
-            })))
+            .map((value) =>
+                Array.from(
+                    new Bun.Glob("**/*").scanSync({
+                        absolute: value.absolute,
+                        cwd: value.cwd
+                    })
+                )
+            )
             .flat()
-            .filter(value => (
-                /\.(m?js|ts)$/.test(value) &&
-                !value.endsWith(".d.ts") &&
-                !value.includes("Kernel")
-            ));
+            .filter(
+                (value) =>
+                    /\.(m?js|ts)$/.test(value) &&
+                    !value.endsWith(".d.ts") &&
+                    !value.includes("Kernel")
+            );
 
         for (const file of files) {
             const {default: decorator} = require(file);
 
             if (typeof decorator !== "function") continue;
 
-            if (isNotEmpty(decorator.name)) (globalThis as any)[decorator.name.replace("Decorator", "")] = decorator;
+            if (isNotEmpty(decorator.name))
+                (globalThis as any)[decorator.name.replace("Decorator", "")] = decorator;
         }
     }
 
     public static registerWebSockets(): void {
-        const files: Array<string> = Array.from(new Bun.Glob("**/*")
-            .scanSync({
+        const files: Array<string> = Array.from(
+            new Bun.Glob("**/*").scanSync({
                 absolute: true,
                 cwd: App.Path.appPath("websockets")
-            }))
+            })
+        )
             .flat()
-            .filter(value => (
-                /\.(m?js|ts)$/.test(value) &&
-                !value.endsWith(".d.ts")
-            ));
+            .filter((value) => /\.(m?js|ts)$/.test(value) && !value.endsWith(".d.ts"));
 
         for (const file of files) {
             const {default: WebSocketClass} = require(file);

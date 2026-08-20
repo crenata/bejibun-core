@@ -41,21 +41,28 @@ export default class RouterBuilder {
         const rawGroups = [];
         let routeGroups = {};
         if (this.hasRaws(routes)) {
-            const routeList = Array.isArray(routes) ? routes.flat() : [routes];
+            const routeList = Array.isArray(routes)
+                ? routes.flat()
+                : [routes];
             const routerGroups = routeList.filter((value) => !this.hasRaws(value) && !this.hasRaw(value));
-            const rawRoutes = routeList.filter((value) => this.hasRaws(value)).map((value) => value.raws).flat();
+            const rawRoutes = routeList
+                .filter((value) => this.hasRaws(value))
+                .map((value) => value.raws)
+                .flat();
             const newRoutes = {};
             for (const route of rawRoutes) {
                 const middlewares = this.middlewares.concat(defineValue(route.raw.middlewares, []));
-                const effectiveNamespace = route.raw.websocket ?
-                    defineValue("app/websockets", route.raw.namespace) :
-                    defineValue(this.baseNamespace, route.raw.namespace);
+                const effectiveNamespace = route.raw.websocket
+                    ? defineValue("app/websockets", route.raw.namespace)
+                    : defineValue(this.baseNamespace, route.raw.namespace);
                 const cleanPath = this.joinPaths(defineValue(route.raw.prefix, this.basePath), route.raw.path);
-                let resolvedHandler = typeof route.raw.handler === "string" ?
-                    this.resolveControllerString(route.raw.handler, effectiveNamespace, route.raw.websocket ? {
-                        path: cleanPath
-                    } : undefined) :
-                    route.raw.handler;
+                let resolvedHandler = typeof route.raw.handler === "string"
+                    ? this.resolveControllerString(route.raw.handler, effectiveNamespace, route.raw.websocket
+                        ? {
+                            path: cleanPath
+                        }
+                        : undefined)
+                    : route.raw.handler;
                 for (const middleware of [...middlewares].reverse()) {
                     resolvedHandler = middleware.handle(resolvedHandler);
                 }
@@ -77,21 +84,25 @@ export default class RouterBuilder {
             routeGroups = Object.assign({}, ...routerGroups.map((value) => this.applyGroup(value)), newRoutes);
         }
         if (this.hasRaw(routes)) {
-            const routeList = Array.isArray(routes) ? routes.flat() : [routes];
+            const routeList = Array.isArray(routes)
+                ? routes.flat()
+                : [routes];
             const routerGroups = routeList.filter((value) => !this.hasRaws(value) && !this.hasRaw(value));
             const rawRoutes = routeList.filter((value) => this.hasRaw(value));
             const newRoutes = {};
             for (const route of rawRoutes) {
                 const middlewares = this.middlewares.concat(defineValue(route.raw.middlewares, []));
-                const effectiveNamespace = route.raw.websocket ?
-                    defineValue("app/websockets", route.raw.namespace) :
-                    defineValue(this.baseNamespace, route.raw.namespace);
+                const effectiveNamespace = route.raw.websocket
+                    ? defineValue("app/websockets", route.raw.namespace)
+                    : defineValue(this.baseNamespace, route.raw.namespace);
                 const cleanPath = this.joinPaths(defineValue(route.raw.prefix, this.basePath), route.raw.path);
-                let resolvedHandler = typeof route.raw.handler === "string" ?
-                    this.resolveControllerString(route.raw.handler, effectiveNamespace, route.raw.websocket ? {
-                        path: cleanPath
-                    } : undefined) :
-                    route.raw.handler;
+                let resolvedHandler = typeof route.raw.handler === "string"
+                    ? this.resolveControllerString(route.raw.handler, effectiveNamespace, route.raw.websocket
+                        ? {
+                            path: cleanPath
+                        }
+                        : undefined)
+                    : route.raw.handler;
                 for (const middleware of [...middlewares].reverse()) {
                     resolvedHandler = middleware.handle(resolvedHandler);
                 }
@@ -120,7 +131,8 @@ export default class RouterBuilder {
         if (isEmpty(routes))
             return {};
         if (Array.isArray(routes)) {
-            return routes.map((value) => {
+            return routes
+                .map((value) => {
                 if (isNotEmpty(value.raws))
                     return value.raws;
                 return value;
@@ -152,7 +164,7 @@ export default class RouterBuilder {
             const methodMap = {};
             for (const method in methods) {
                 const action = methods[method];
-                let handler = ClassController[action];
+                const handler = ClassController[action];
                 if (includedActions.has(action) && isNotEmpty(handler)) {
                     raws.push({
                         raw: {
@@ -183,9 +195,7 @@ export default class RouterBuilder {
     }
     buildSingle(method, path, handler) {
         const cleanPath = this.joinPaths(this.basePath, path);
-        let resolvedHandler = typeof handler === "string" ?
-            this.resolveControllerString(handler) :
-            handler;
+        let resolvedHandler = typeof handler === "string" ? this.resolveControllerString(handler) : handler;
         for (const middleware of [...this.middlewares].reverse()) {
             resolvedHandler = middleware.handle(resolvedHandler);
         }
@@ -241,7 +251,9 @@ export default class RouterBuilder {
         return this.group(routers);
     }
     any(path, handler) {
-        return this.match(Enum.setEnums(HttpMethodEnum).toArray().map((value) => value.value), path, handler);
+        return this.match(Enum.setEnums(HttpMethodEnum)
+            .toArray()
+            .map((value) => value.value), path, handler);
     }
     websocket(path, handler) {
         const cleanPath = this.joinPaths(this.basePath, path);
@@ -292,9 +304,9 @@ export default class RouterBuilder {
     }
     mergeRoutes(routes) {
         const merged = {};
-        const routeEntries = Array.isArray(routes) ?
-            routes :
-            Object.entries(routes).map(([path, methods]) => ({
+        const routeEntries = Array.isArray(routes)
+            ? routes
+            : Object.entries(routes).map(([path, methods]) => ({
                 [path]: methods
             }));
         for (const route of routeEntries) {
@@ -366,23 +378,19 @@ export default class RouterBuilder {
             return new Set(options.only);
         }
         if (options?.except) {
-            return new Set(all.filter(action => !options.except.includes(action)));
+            return new Set(all.filter((action) => !options.except.includes(action)));
         }
         return new Set(all);
     }
     hasRaw(routes) {
         if (Array.isArray(routes))
-            return routes.flat().some(route => isNotEmpty(route) && "raw" in route);
-        return (isNotEmpty(routes) &&
-            typeof routes === "object" &&
-            "raw" in routes);
+            return routes.flat().some((route) => isNotEmpty(route) && "raw" in route);
+        return isNotEmpty(routes) && typeof routes === "object" && "raw" in routes;
     }
     hasRaws(routes) {
         if (Array.isArray(routes))
-            return routes.flat().some(route => isNotEmpty(route) && "raws" in route);
-        return (isNotEmpty(routes) &&
-            typeof routes === "object" &&
-            "raws" in routes);
+            return routes.flat().some((route) => isNotEmpty(route) && "raws" in route);
+        return isNotEmpty(routes) && typeof routes === "object" && "raws" in routes;
     }
     isMethodMap(value) {
         return (isNotEmpty(value) &&
@@ -393,25 +401,25 @@ export default class RouterBuilder {
         if (isEmpty(route))
             return route;
         if (this.hasRaw(route)) {
-            const routeList = Array.isArray(route) ? route.flat() : [route];
+            const routeList = Array.isArray(route)
+                ? route.flat()
+                : [route];
             const rawRoutes = routeList.filter((value) => this.hasRaw(value));
             const newRoutes = {};
             const rawGroups = [];
             for (const route of rawRoutes) {
                 const middlewares = route.raw.middlewares.concat(defineValue(this.middlewares, []));
                 const cleanPath = this.joinPaths(defineValue(route.raw.prefix, this.basePath), route.raw.path);
-                const effectiveNamespace = route.raw.websocket ?
-                    defineValue(this.baseNamespace === "app/websockets" ?
-                        null :
-                        this.baseNamespace, route.raw.namespace) :
-                    defineValue(this.baseNamespace === "app/controllers" ?
-                        null :
-                        this.baseNamespace, route.raw.namespace);
-                let resolvedHandler = typeof route.raw.handler === "string" ?
-                    this.resolveControllerString(route.raw.handler, effectiveNamespace, route.raw.websocket ? {
-                        path: cleanPath
-                    } : undefined) :
-                    route.raw.handler;
+                const effectiveNamespace = route.raw.websocket
+                    ? defineValue(this.baseNamespace === "app/websockets" ? null : this.baseNamespace, route.raw.namespace)
+                    : defineValue(this.baseNamespace === "app/controllers" ? null : this.baseNamespace, route.raw.namespace);
+                let resolvedHandler = typeof route.raw.handler === "string"
+                    ? this.resolveControllerString(route.raw.handler, effectiveNamespace, route.raw.websocket
+                        ? {
+                            path: cleanPath
+                        }
+                        : undefined)
+                    : route.raw.handler;
                 for (const middleware of [...middlewares].reverse()) {
                     resolvedHandler = middleware.handle(resolvedHandler);
                 }

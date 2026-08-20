@@ -31,9 +31,7 @@ export default class MakeCommandCommand {
      *
      * @var $arguments Array<Array<string>>
      */
-    protected $arguments: Array<Array<string>> = [
-        ["<file>", "The name of the command file"]
-    ];
+    protected $arguments: Array<Array<string>> = [["<file>", "The name of the command file"]];
 
     public async handle(options: any, args: string): Promise<void> {
         if (isEmpty(args)) {
@@ -43,10 +41,14 @@ export default class MakeCommandCommand {
 
         const file: string = args;
         const commandsDirectory: string = "commands";
-        const template: Bun.BunFile = Bun.file(path.resolve(__dirname, `../../stubs/${commandsDirectory}/TemplateCommand.ts`));
+        const template: Bun.BunFile = Bun.file(
+            path.resolve(__dirname, `../../stubs/${commandsDirectory}/TemplateCommand.ts`)
+        );
 
-        if (!await template.exists()) {
-            Logger.setContext("APP").error("Whoops, something went wrong, the command template not found.");
+        if (!(await template.exists())) {
+            Logger.setContext("APP").error(
+                "Whoops, something went wrong, the command template not found."
+            );
             return;
         }
 
@@ -54,7 +56,10 @@ export default class MakeCommandCommand {
         const destination: string = `${name}Command.ts`;
         const content: string = await template.text();
 
-        await Bun.write(App.Path.commandsPath(destination), content.replace(/template/gi, name as string));
+        await Bun.write(
+            App.Path.commandsPath(destination),
+            content.replace(/template/gi, name as string)
+        );
 
         Logger.setContext("APP").info(`Command [commands/${destination}] created successfully.`);
     }

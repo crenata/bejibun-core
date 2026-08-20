@@ -27,9 +27,7 @@ export default class MakeControllerCommand {
      *
      * @var $arguments Array<Array<string>>
      */
-    $arguments = [
-        ["<file>", "The name of the controller file"]
-    ];
+    $arguments = [["<file>", "The name of the controller file"]];
     async handle(options, args) {
         if (isEmpty(args)) {
             Logger.setContext("APP").error("There is no filename provided.");
@@ -38,7 +36,7 @@ export default class MakeControllerCommand {
         const file = args;
         const controllersDirectory = "controllers";
         const template = Bun.file(path.resolve(__dirname, `../../stubs/${controllersDirectory}/TemplateController.ts`));
-        if (!await template.exists()) {
+        if (!(await template.exists())) {
             Logger.setContext("APP").error("Whoops, something went wrong, the controller template not found.");
             return;
         }

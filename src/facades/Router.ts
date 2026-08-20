@@ -32,7 +32,9 @@ export default class Router {
         return new RouterBuilder().resource(path, controller, options);
     }
 
-    public static group(routes: Route | Array<Route> | RouterGroup): RouterGroup | Array<RouterGroup> {
+    public static group(
+        routes: Route | Array<Route> | RouterGroup
+    ): RouterGroup | Array<RouterGroup> {
         return new RouterBuilder().group(routes);
     }
 
@@ -72,7 +74,11 @@ export default class Router {
         return new RouterBuilder().trace(path, handler);
     }
 
-    public static match(methods: Array<HttpMethodEnum>, path: string, handler: string | HandlerType): RouterGroup {
+    public static match(
+        methods: Array<HttpMethodEnum>,
+        path: string,
+        handler: string | HandlerType
+    ): RouterGroup {
         return new RouterBuilder().match(methods, path, handler);
     }
 
@@ -84,7 +90,9 @@ export default class Router {
         return new RouterBuilder().websocket(path, handler);
     }
 
-    public static serialize(routes: Route | Array<Route> | RouterGroup | Array<RouterGroup>): RouterGroup {
+    public static serialize(
+        routes: Route | Array<Route> | RouterGroup | Array<RouterGroup>
+    ): RouterGroup {
         return new RouterBuilder().serialize(routes);
     }
 }

@@ -21,19 +21,19 @@ export default class Kernel {
                 absolute: true,
                 cwd: "node_modules/@bejibun/database/commands"
             }
-        ].concat(rootCommands.map(value => ({
+        ].concat(rootCommands.map((value) => ({
             absolute: true,
             cwd: `node_modules/${value.path}`
         })));
         const files = paths
-            .map(value => Array.from(new Bun.Glob("**/*").scanSync({
+            .map((value) => Array.from(new Bun.Glob("**/*").scanSync({
             absolute: value.absolute,
             cwd: value.cwd
         })))
             .flat()
-            .filter(value => (/\.(m?js|ts)$/.test(value) &&
+            .filter((value) => /\.(m?js|ts)$/.test(value) &&
             !value.endsWith(".d.ts") &&
-            !value.includes("Kernel")));
+            !value.includes("Kernel"));
         const instances = [];
         for (const file of files) {
             const { default: CommandClass } = require(file);
@@ -87,14 +87,14 @@ export default class Kernel {
             }
         ];
         const files = paths
-            .map(value => Array.from(new Bun.Glob("**/*").scanSync({
+            .map((value) => Array.from(new Bun.Glob("**/*").scanSync({
             absolute: value.absolute,
             cwd: value.cwd
         })))
             .flat()
-            .filter(value => (/\.(m?js|ts)$/.test(value) &&
+            .filter((value) => /\.(m?js|ts)$/.test(value) &&
             !value.endsWith(".d.ts") &&
-            !value.includes("Kernel")));
+            !value.includes("Kernel"));
         for (const file of files) {
             const { default: decorator } = require(file);
             if (typeof decorator !== "function")
@@ -104,14 +104,12 @@ export default class Kernel {
         }
     }
     static registerWebSockets() {
-        const files = Array.from(new Bun.Glob("**/*")
-            .scanSync({
+        const files = Array.from(new Bun.Glob("**/*").scanSync({
             absolute: true,
             cwd: App.Path.appPath("websockets")
         }))
             .flat()
-            .filter(value => (/\.(m?js|ts)$/.test(value) &&
-            !value.endsWith(".d.ts")));
+            .filter((value) => /\.(m?js|ts)$/.test(value) && !value.endsWith(".d.ts"));
         for (const file of files) {
             const { default: WebSocketClass } = require(file);
             WebSocketLoader.add(WebSocketClass);

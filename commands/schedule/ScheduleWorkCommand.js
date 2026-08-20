@@ -33,7 +33,7 @@ export default class ScheduleWorkCommand {
     running = new Set();
     interval = null;
     schedules = [];
-    async handle(options, args) {
+    async handle() {
         process.on("exit", async () => {
             this.stopSchedule();
             Logger.setContext("Schedule").info("Schedule worker stopped.");
@@ -60,7 +60,7 @@ export default class ScheduleWorkCommand {
                 const timezone = defineValue(schedule.timezone, "UTC");
                 const now = Luxon.DateTime.now().setZone(timezone).toJSDate();
                 const expression = CronExpressionParser.parse(schedule.cron, {
-                    currentDate: now,
+                    currentDate: now
                 });
                 const nextRun = expression.next().getTime();
                 this.schedules.push({
@@ -71,7 +71,9 @@ export default class ScheduleWorkCommand {
                 Logger.setContext("Schedule").info(`Registered schedule for command [${schedule.command}].`);
             }
             catch (error) {
-                Logger.setContext("Schedule").error(`Invalid cron for [${schedule.command}]: ${schedule.cron}.`).trace(error);
+                Logger.setContext("Schedule")
+                    .error(`Invalid cron for [${schedule.command}]: ${schedule.cron}.`)
+                    .trace(error);
             }
         }
     }
@@ -110,7 +112,9 @@ export default class ScheduleWorkCommand {
             await proc.exited;
         }
         catch (error) {
-            Logger.setContext("Schedule").error(`Error running command [${task.command}].`).trace(error);
+            Logger.setContext("Schedule")
+                .error(`Error running command [${task.command}].`)
+                .trace(error);
         }
         finally {
             this.running.delete(task.command);

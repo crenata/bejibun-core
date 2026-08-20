@@ -26,7 +26,7 @@ export default class MaintenanceUpCommand {
      * @var $arguments Array<Array<any>>
      */
     $arguments = [];
-    async handle(options, args) {
+    async handle() {
         if (await App.Maintenance.isMaintenanceMode())
             await Bun.file(AppConfig.maintenance.file).delete();
         Logger.setContext("APP").info("Application turned into live mode.");

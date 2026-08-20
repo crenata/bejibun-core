@@ -16,11 +16,7 @@ import RuntimeException from "@/exceptions/RuntimeException";
     let value: any = config;
 
     for (const segment of keys) {
-        if (
-            isNotEmpty(value) &&
-            typeof value === "object" &&
-            segment in value
-        ) {
+        if (isNotEmpty(value) && typeof value === "object" && segment in value) {
             value = value[segment];
         } else {
             return defaultValue;
@@ -29,4 +25,5 @@ import RuntimeException from "@/exceptions/RuntimeException";
 
     return value;
 };
-(globalThis as any).env = (key: string, defaultValue: any = null): string | undefined => defineValue(Bun.env[key], defaultValue);
+(globalThis as any).env = (key: string, defaultValue: any = null): string | undefined =>
+    defineValue(Bun.env[key], defaultValue);

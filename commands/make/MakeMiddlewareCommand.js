@@ -27,9 +27,7 @@ export default class MakeMiddlewareCommand {
      *
      * @var $arguments Array<Array<string>>
      */
-    $arguments = [
-        ["<file>", "The name of the middleware file"]
-    ];
+    $arguments = [["<file>", "The name of the middleware file"]];
     async handle(options, args) {
         if (isEmpty(args)) {
             Logger.setContext("APP").error("There is no filename provided.");
@@ -38,7 +36,7 @@ export default class MakeMiddlewareCommand {
         const file = args;
         const middlewaresDirectory = "middlewares";
         const template = Bun.file(path.resolve(__dirname, `../../stubs/${middlewaresDirectory}/TemplateMiddleware.ts`));
-        if (!await template.exists()) {
+        if (!(await template.exists())) {
             Logger.setContext("APP").error("Whoops, something went wrong, the middleware template not found.");
             return;
         }

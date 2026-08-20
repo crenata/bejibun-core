@@ -45,7 +45,7 @@ export default class ScheduleWorkCommand {
     protected interval: NodeJS.Timeout | null = null;
     protected schedules: Array<TPreparedSchedule> = [];
 
-    public async handle(options: any, args: string): Promise<void> {
+    public async handle(): Promise<void> {
         process.on("exit", async (): Promise<void> => {
             this.stopSchedule();
             Logger.setContext("Schedule").info("Schedule worker stopped.");
@@ -79,7 +79,7 @@ export default class ScheduleWorkCommand {
                 const now: Date = Luxon.DateTime.now().setZone(timezone).toJSDate();
 
                 const expression: CronExpression = CronExpressionParser.parse(schedule.cron, {
-                    currentDate: now,
+                    currentDate: now
                 });
 
                 const nextRun: number = expression.next().getTime();
@@ -90,9 +90,13 @@ export default class ScheduleWorkCommand {
                     nextRun
                 });
 
-                Logger.setContext("Schedule").info(`Registered schedule for command [${schedule.command}].`);
+                Logger.setContext("Schedule").info(
+                    `Registered schedule for command [${schedule.command}].`
+                );
             } catch (error: any) {
-                Logger.setContext("Schedule").error(`Invalid cron for [${schedule.command}]: ${schedule.cron}.`).trace(error);
+                Logger.setContext("Schedule")
+                    .error(`Invalid cron for [${schedule.command}]: ${schedule.cron}.`)
+                    .trace(error);
             }
         }
     }
@@ -143,7 +147,9 @@ export default class ScheduleWorkCommand {
 
             await proc.exited;
         } catch (error: any) {
-            Logger.setContext("Schedule").error(`Error running command [${task.command}].`).trace(error);
+            Logger.setContext("Schedule")
+                .error(`Error running command [${task.command}].`)
+                .trace(error);
         } finally {
             this.running.delete(task.command);
         }

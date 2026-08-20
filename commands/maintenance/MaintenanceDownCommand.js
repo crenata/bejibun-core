@@ -20,7 +20,12 @@ export default class MaintenanceDownCommand {
      * @var $options Array<Array<any>>
      */
     $options = [
-        ["-a, --allows <ips>", "Whitelist IPs from accessing application in maintenance mode. e.g. --allows=127.0.0.1,127.0.0.2", (value) => value.split(","), []]
+        [
+            "-a, --allows <ips>",
+            "Whitelist IPs from accessing application in maintenance mode. e.g. --allows=127.0.0.1,127.0.0.2",
+            (value) => value.split(","),
+            []
+        ]
     ];
     /**
      * The arguments of the console command.
@@ -28,7 +33,7 @@ export default class MaintenanceDownCommand {
      * @var $arguments Array<Array<any>>
      */
     $arguments = [];
-    async handle(options, args) {
+    async handle(options) {
         await Bun.write(AppConfig.maintenance.file, JSON.stringify({
             message: "🚧 We're doing maintenance. Please check back soon.",
             status: 503,

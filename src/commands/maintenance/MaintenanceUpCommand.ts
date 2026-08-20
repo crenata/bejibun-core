@@ -31,8 +31,9 @@ export default class MaintenanceUpCommand {
      */
     protected $arguments: Array<Array<any>> = [];
 
-    public async handle(options: any, args: Array<string>): Promise<void> {
-        if (await App.Maintenance.isMaintenanceMode()) await Bun.file(AppConfig.maintenance.file).delete();
+    public async handle(): Promise<void> {
+        if (await App.Maintenance.isMaintenanceMode())
+            await Bun.file(AppConfig.maintenance.file).delete();
 
         Logger.setContext("APP").info("Application turned into live mode.");
     }

@@ -23,7 +23,12 @@ export default class MaintenanceDownCommand {
      * @var $options Array<Array<any>>
      */
     protected $options: Array<Array<any>> = [
-        ["-a, --allows <ips>", "Whitelist IPs from accessing application in maintenance mode. e.g. --allows=127.0.0.1,127.0.0.2", (value: string): Array<string> => value.split(","), []]
+        [
+            "-a, --allows <ips>",
+            "Whitelist IPs from accessing application in maintenance mode. e.g. --allows=127.0.0.1,127.0.0.2",
+            (value: string): Array<string> => value.split(","),
+            []
+        ]
     ];
 
     /**
@@ -33,13 +38,20 @@ export default class MaintenanceDownCommand {
      */
     protected $arguments: Array<Array<any>> = [];
 
-    public async handle(options: any, args: Array<string>): Promise<void> {
-        await Bun.write(AppConfig.maintenance.file, JSON.stringify({
-            message: "🚧 We're doing maintenance. Please check back soon.",
-            status: 503,
-            allows: options.allows,
-            unix: Luxon.DateTime.now().toUnixInteger()
-        }, null, 2));
+    public async handle(options: any): Promise<void> {
+        await Bun.write(
+            AppConfig.maintenance.file,
+            JSON.stringify(
+                {
+                    message: "🚧 We're doing maintenance. Please check back soon.",
+                    status: 503,
+                    allows: options.allows,
+                    unix: Luxon.DateTime.now().toUnixInteger()
+                },
+                null,
+                2
+            )
+        );
 
         Logger.setContext("APP").info("Application turned into maintenance mode.");
     }

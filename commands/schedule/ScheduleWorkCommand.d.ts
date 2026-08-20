@@ -32,7 +32,7 @@ export default class ScheduleWorkCommand {
     protected running: Set<string>;
     protected interval: NodeJS.Timeout | null;
     protected schedules: Array<TPreparedSchedule>;
-    handle(options: any, args: string): Promise<void>;
+    handle(): Promise<void>;
     private prepareSchedules;
     private startSchedule;
     private stopSchedule;

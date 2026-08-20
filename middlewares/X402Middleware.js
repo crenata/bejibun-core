@@ -8,8 +8,7 @@ export default class X402Middleware {
     }
     handle(handler) {
         return async (request, server) => {
-            return X402
-                .setFacilitator(this.facilitator)
+            return X402.setFacilitator(this.facilitator)
                 .setRoutePayment(this.routePayment)
                 .setRequest(request)
                 .middleware(() => {

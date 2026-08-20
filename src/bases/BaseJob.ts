@@ -6,7 +6,8 @@ export default class BaseJob {
     protected static _namespace: string;
 
     public static get namespace(): string {
-        if (isEmpty(this._namespace)) throw new RuntimeException(`Job namespace not registered for [${this.name}].`);
+        if (isEmpty(this._namespace))
+            throw new RuntimeException(`Job namespace not registered for [${this.name}].`);
 
         return this._namespace;
     }

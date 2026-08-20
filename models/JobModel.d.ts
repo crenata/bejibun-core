@@ -1,4 +1,4 @@
-import { ModelOptions, QueryBuilder, QueryContext } from "objection";
+import { QueryBuilder } from "objection";
 declare const JobModel_base: any;
 export default class JobModel extends JobModel_base {
     static tableName: string;
@@ -6,7 +6,7 @@ export default class JobModel extends JobModel_base {
     static updatedColumn: null;
     static deletedColumn: null;
     static QueryBuilder: typeof QueryBuilder;
-    $beforeUpdate(opt: ModelOptions, queryContext: QueryContext): void;
+    $beforeUpdate(): void;
     id: bigint;
     queue: string;
     payload: string;

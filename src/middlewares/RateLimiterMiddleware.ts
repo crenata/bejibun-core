@@ -15,13 +15,13 @@ export default class RateLimiterMiddleware {
             if (await Bun.file(configPath).exists()) config = require(configPath).default;
             else config = LimiterConfig;
 
-            return await RateLimiter
-                .attempt(
-                    `rate-limiter/${Str.ipToFileName(defineValue(server.requestIP(request)?.address, ""))}`,
-                    defineValue(config?.limit, 60),
-                    () => {
-                        return handler(request, server);
-                    });
+            return await RateLimiter.attempt(
+                `rate-limiter/${Str.ipToFileName(defineValue(server.requestIP(request)?.address, ""))}`,
+                defineValue(config?.limit, 60),
+                () => {
+                    return handler(request, server);
+                }
+            );
         };
     }
 }

@@ -31,9 +31,7 @@ export default class MakeModelCommand {
      *
      * @var $arguments Array<Array<string>>
      */
-    protected $arguments: Array<Array<string>> = [
-        ["<file>", "The name of the model file"]
-    ];
+    protected $arguments: Array<Array<string>> = [["<file>", "The name of the model file"]];
 
     public async handle(options: any, args: string): Promise<void> {
         if (isEmpty(args)) {
@@ -43,10 +41,14 @@ export default class MakeModelCommand {
 
         const file: string = args;
         const modelsDirectory: string = "models";
-        const template: Bun.BunFile = Bun.file(path.resolve(__dirname, `../../stubs/${modelsDirectory}/TemplateModel.ts`));
+        const template: Bun.BunFile = Bun.file(
+            path.resolve(__dirname, `../../stubs/${modelsDirectory}/TemplateModel.ts`)
+        );
 
-        if (!await template.exists()) {
-            Logger.setContext("APP").error("Whoops, something went wrong, the model template not found.");
+        if (!(await template.exists())) {
+            Logger.setContext("APP").error(
+                "Whoops, something went wrong, the model template not found."
+            );
             return;
         }
 
@@ -54,7 +56,10 @@ export default class MakeModelCommand {
         const destination: string = `${name}Model.ts`;
         const content: string = await template.text();
 
-        await Bun.write(App.Path.modelsPath(destination), content.replace(/template/gi, name as string));
+        await Bun.write(
+            App.Path.modelsPath(destination),
+            content.replace(/template/gi, name as string)
+        );
 
         Logger.setContext("APP").info(`Model [app/models/${destination}] created successfully.`);
     }

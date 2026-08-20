@@ -21,15 +21,25 @@ export default class Response {
         return new ResponseBuilder().setCookie(key, value, options);
     }
 
-    public static setCookies(cookies: Array<{key: string, value: string, options?: Bun.CookieInit}>): ResponseBuilder {
+    public static setCookies(
+        cookies: Array<{key: string; value: string; options?: Bun.CookieInit}>
+    ): ResponseBuilder {
         return new ResponseBuilder().setCookies(cookies);
     }
 
-    public static deleteCookie(key: string, options?: Pick<Bun.CookieInit, "domain" | "path">): ResponseBuilder {
+    public static deleteCookie(
+        key: string,
+        options?: Pick<Bun.CookieInit, "domain" | "path">
+    ): ResponseBuilder {
         return new ResponseBuilder().deleteCookie(key, options);
     }
 
-    public static deleteCookies(cookies: Array<{key: string, options?: Pick<Bun.CookieInit, "domain" | "path">}>): ResponseBuilder {
+    public static deleteCookies(
+        cookies: Array<{
+            key: string;
+            options?: Pick<Bun.CookieInit, "domain" | "path">;
+        }>
+    ): ResponseBuilder {
         return new ResponseBuilder().deleteCookies(cookies);
     }
 }

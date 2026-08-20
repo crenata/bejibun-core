@@ -25,7 +25,7 @@ export default class QueueFlushCommand {
      * @var $arguments Array<Array<string>>
      */
     $arguments = [];
-    async handle(options, args) {
+    async handle() {
         await JobModel.query().where("attempts", ">=", 3).delete();
         Logger.setContext("Queue").info("All failed jobs deleted successfully.");
     }

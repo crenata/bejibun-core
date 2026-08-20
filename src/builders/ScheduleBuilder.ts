@@ -239,7 +239,7 @@ export default class ScheduleBuilder {
         });
     }
 
-    private timeToParts(time: string): { h: number, m: number } {
+    private timeToParts(time: string): {h: number; m: number} {
         const [h, m] = time.split(":").map(Number);
 
         return {h, m};

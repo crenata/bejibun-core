@@ -25,7 +25,9 @@ export default class BaseWebSocket {
 
     public static removeClient(path: string, client: any): void {
         if (isNotEmpty(BaseWebSocket.clients[path])) {
-            BaseWebSocket.clients[path] = BaseWebSocket.clients[path].filter((connection: any) => connection !== client);
+            BaseWebSocket.clients[path] = BaseWebSocket.clients[path].filter(
+                (connection: any) => connection !== client
+            );
         }
     }
 

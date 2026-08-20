@@ -25,9 +25,7 @@ export default class InstallCommand {
      *
      * @var $arguments Array<Array<any>>
      */
-    $arguments = [
-        ["<packages...>", "Install package dependencies"]
-    ];
+    $arguments = [["<packages...>", "Install package dependencies"]];
     async handle(options, args) {
         if (isEmpty(args)) {
             Logger.setContext("APP").error("There is no packages provided.");

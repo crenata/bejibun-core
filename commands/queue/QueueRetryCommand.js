@@ -29,7 +29,7 @@ export default class QueueRetryCommand {
      * @var $arguments Array<Array<string>>
      */
     $arguments = [];
-    async handle(options, args) {
+    async handle() {
         let running = true;
         process.on("exit", async () => {
             running = false;
@@ -77,7 +77,9 @@ export default class QueueRetryCommand {
                     await JobModel.query().findById(job.id).delete();
                 }
                 catch {
-                    await JobModel.query().findById(job.id).update({
+                    await JobModel.query()
+                        .findById(job.id)
+                        .update({
                         attempts: defineValue(Number(job.attempts), 0) + 1,
                         reserved_at: null
                     });

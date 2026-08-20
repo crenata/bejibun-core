@@ -1,12 +1,13 @@
 import { defineValue, isNotEmpty } from "@bejibun/utils";
 import { default as Bobject } from "@bejibun/utils/facades/Object";
+import { errors } from "@vinejs/vine";
 import ValidatorException from "../exceptions/ValidatorException";
 import Response from "../facades/Response";
 export default class BaseController {
     async parse(request) {
         const contentType = defineValue(request.headers.get("content-type"), "");
         const formData = new FormData();
-        let data = {};
+        const data = {};
         try {
             if (contentType.includes("application/json"))
                 Object.assign(data, Bobject.serialize(await request.json()));
@@ -41,12 +42,11 @@ export default class BaseController {
             return await validator.validate(body);
         }
         catch (error) {
-            const defaultMessage = "Invalid syntax validation.";
-            let message = defaultMessage;
-            if (isNotEmpty(error?.messages))
-                message = defineValue(error?.messages[0]?.message, defaultMessage);
+            let message;
+            if (error instanceof errors.E_VALIDATION_ERROR && isNotEmpty(error.messages))
+                message = error.messages[0]?.message;
             else
-                message = defineValue(error?.message, defaultMessage);
+                message = defineValue(error?.message, "Invalid syntax validation.");
             throw new ValidatorException(message);
         }
     }

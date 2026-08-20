@@ -24,7 +24,7 @@ export default class RouteListCommand {
      * @var $arguments Array<Array<string>>
      */
     $arguments = [];
-    async handle(options, args) {
+    async handle() {
         const url = defineValue(`${Bun.env.APP_URL}/apis`, "http://localhost:3000/apis");
         let proc;
         switch (process.platform) {

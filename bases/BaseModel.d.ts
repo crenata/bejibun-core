@@ -1,5 +1,5 @@
 import Luxon from "@bejibun/utils/facades/Luxon";
-import { Model, ModelClass, ModelOptions, PartialModelObject, QueryBuilder, QueryBuilderType, QueryContext, TransactionOrKnex } from "objection";
+import { Model, ModelClass, PartialModelObject, QueryBuilder, QueryBuilderType, TransactionOrKnex } from "objection";
 import SoftDeletes from "../facades/SoftDeletes";
 export type Timestamp = typeof Luxon.DateTime | Date | string;
 export type NullableTimestamp = Timestamp | null;
@@ -18,8 +18,8 @@ export default class BaseModel extends Model {
     QueryBuilderType: BunQueryBuilder<this, this[]>;
     id: number | bigint;
     static get namespace(): string;
-    $beforeInsert(queryContext: QueryContext): void;
-    $beforeUpdate(opt: ModelOptions, queryContext: QueryContext): void;
+    $beforeInsert(): void;
+    $beforeUpdate(): void;
     static setNamespace(namespace: string): void;
     static query<T extends typeof BaseModel>(this: T, trxOrKnex?: TransactionOrKnex): QueryBuilderType<InstanceType<T>>;
     static withTrashed<T extends typeof BaseModel>(this: T, trxOrKnex?: TransactionOrKnex): QueryBuilderType<InstanceType<T>>;

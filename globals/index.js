@@ -13,9 +13,7 @@ globalThis.config = (key, defaultValue = null) => {
     const config = require(configPath).default;
     let value = config;
     for (const segment of keys) {
-        if (isNotEmpty(value) &&
-            typeof value === "object" &&
-            segment in value) {
+        if (isNotEmpty(value) && typeof value === "object" && segment in value) {
             value = value[segment];
         }
         else {

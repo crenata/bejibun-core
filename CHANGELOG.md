@@ -3,6 +3,42 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.6.11](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.6.0...v0.6.11) - 2026-08-20
+
+### 🩹 Fixes
+
+### 📖 Changes
+#### Tooling
+- Added `prettier` + `.prettierrc.json` / `.prettierignore` and an `eslint.config.js` (flat config, `typescript-eslint`) for consistent formatting/linting across `src`
+- Added `bun run format`, `bun run eslint`, and `bun run lint` scripts; `bun run build` now runs `lint` before compiling
+- `alias` script now runs `tsc-alias` directly instead of via `bunx`
+
+### 📦 Dependencies
+- Bumped [`@bejibun/app`](https://github.com/Bejibun-Framework/bejibun-app) from `^0.1.24` to `^0.1.25`
+- Bumped [`@bejibun/cache`](https://github.com/Bejibun-Framework/bejibun-cache) from `^0.1.24` to `^0.1.25`
+- Bumped [`@bejibun/cors`](https://github.com/Bejibun-Framework/bejibun-cors) from `^0.1.17` to `^0.1.18`
+- Bumped [`@bejibun/database`](https://github.com/Bejibun-Framework/bejibun-database) from `^0.1.21` to `^0.1.22`
+- Bumped [`@bejibun/limiter`](https://github.com/Bejibun-Framework/bejibun-limiter) from `^0.1.1` to `^0.1.11`
+- Bumped [`@bejibun/logger`](https://github.com/Bejibun-Framework/bejibun-logger) from `^0.1.22` to `^0.1.23`
+- Bumped [`@bejibun/storage`](https://github.com/Bejibun-Framework/bejibun-storage) from `^0.1.0` to `^0.1.1`
+- Bumped [`@bejibun/utils`](https://github.com/Bejibun-Framework/bejibun-utils) from `^0.1.28` to `^0.1.29`
+- Bumped [`@bejibun/x402`](https://github.com/Bejibun-Framework/bejibun-x402) (devDependency) from `^0.2.1` to `^0.2.11`
+- Bumped `tsc-alias` (devDependency) from `^1.9.1` to `^1.9.2`
+- Added `@eslint/js` (devDependency) `^10.0.1`
+- Added `eslint` (devDependency) `^10.8.1`
+- Added `eslint-config-prettier` (devDependency) `^10.1.8`
+- Added `globals` (devDependency) `^17.11.0`
+- Added `prettier` (devDependency) `^3.9.6`
+- Added `typescript` (devDependency) `^6.0.3`
+- Added `typescript-eslint` (devDependency) `^8.67.0`
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.6.1](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.6.0...v0.6.1) - 2026-08-17
 
 ### 🩹 Fixes

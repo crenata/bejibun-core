@@ -27,9 +27,7 @@ export default class MakeValidatorCommand {
      *
      * @var $arguments Array<Array<string>>
      */
-    $arguments = [
-        ["<file>", "The name of the validator file"]
-    ];
+    $arguments = [["<file>", "The name of the validator file"]];
     async handle(options, args) {
         if (isEmpty(args)) {
             Logger.setContext("APP").error("There is no filename provided.");
@@ -38,7 +36,7 @@ export default class MakeValidatorCommand {
         const file = args;
         const validatorsDirectory = "validators";
         const template = Bun.file(path.resolve(__dirname, `../../stubs/${validatorsDirectory}/TemplateValidator.ts`));
-        if (!await template.exists()) {
+        if (!(await template.exists())) {
             Logger.setContext("APP").error("Whoops, something went wrong, the validator template not found.");
             return;
         }

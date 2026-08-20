@@ -13,14 +13,15 @@ import Response from "@/facades/Response";
 
 export default class ExceptionHandler {
     public handle(
-        error: Bun.ErrorLike |
-            ModelNotFoundException |
-            QueueException |
-            RateLimiterException |
-            RouterException |
-            RuntimeException |
-            ValidatorException |
-            ValidationError
+        error:
+            | Bun.ErrorLike
+            | ModelNotFoundException
+            | QueueException
+            | RateLimiterException
+            | RouterException
+            | RuntimeException
+            | ValidatorException
+            | ValidationError
     ): globalThis.Response {
         Logger.setContext("APP").error(error.message).trace(error.stack);
 
@@ -31,18 +32,13 @@ export default class ExceptionHandler {
             error instanceof RouterException ||
             error instanceof RuntimeException ||
             error instanceof ValidatorException
-        ) return Response
-            .setMessage(error.message)
-            .setStatus(error.code)
-            .send();
+        )
+            return Response.setMessage(error.message).setStatus(error.code).send();
 
-        if (error instanceof ValidationError) return Response
-            .setMessage(error.message)
-            .setStatus(error.statusCode)
-            .send();
+        if (error instanceof ValidationError)
+            return Response.setMessage(error.message).setStatus(error.statusCode).send();
 
-        return Response
-            .setMessage(defineValue(error.message, "Internal server error."))
+        return Response.setMessage(defineValue(error.message, "Internal server error."))
             .setStatus(500)
             .send();
     }
@@ -53,8 +49,7 @@ export default class ExceptionHandler {
 
         if (await file.exists()) return new globalThis.Response(file);
 
-        return Response
-            .setMessage("What are you looking for doesn't exists.")
+        return Response.setMessage("What are you looking for doesn't exists.")
             .setStatus(request.method === HttpMethodEnum.Options ? 204 : 404)
             .send();
     }

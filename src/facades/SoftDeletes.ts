@@ -10,7 +10,7 @@ export default class SoftDeletes<M extends Model, R = M[]> extends QueryBuilder<
     private hasFilterApplied = false;
 
     constructor(modelClass: ModelClass<M>) {
-        // @ts-ignore
+        // @ts-expect-error - QueryBuilder's constructor is protected/internal in Objection's types; subclassing requires bypassing that.
         super(modelClass);
 
         (this as any).onBuild((builder: QueryBuilder<M, R>): void => {
@@ -20,9 +20,13 @@ export default class SoftDeletes<M extends Model, R = M[]> extends QueryBuilder<
                 const tableName = (this as any).modelClass().tableName;
 
                 if (context.onlyTrashed) {
-                    builder.whereNotNull(`${tableName}.${((this as any).modelClass() as any).deletedColumn}`);
+                    builder.whereNotNull(
+                        `${tableName}.${((this as any).modelClass() as any).deletedColumn}`
+                    );
                 } else if (!context.withTrashed) {
-                    builder.whereNull(`${tableName}.${((this as any).modelClass() as any).deletedColumn}`);
+                    builder.whereNull(
+                        `${tableName}.${((this as any).modelClass() as any).deletedColumn}`
+                    );
                 }
 
                 this.hasFilterApplied = true;

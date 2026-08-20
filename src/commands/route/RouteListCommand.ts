@@ -29,7 +29,7 @@ export default class RouteListCommand {
      */
     protected $arguments: Array<Array<string>> = [];
 
-    public async handle(options: any, args: string): Promise<void> {
+    public async handle(): Promise<void> {
         const url: string = defineValue(`${Bun.env.APP_URL}/apis`, "http://localhost:3000/apis");
 
         let proc: Bun.Subprocess;

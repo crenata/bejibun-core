@@ -9,13 +9,33 @@ export type ExtendOptions = {
 
 declare module "@vinejs/vine" {
     interface VineNumber {
-        exists(tableOrOptions: typeof BaseModel | ExtendOptions, column?: string, withTrashed?: boolean, nullable?: boolean): this;
-        unique(tableOrOptions: typeof BaseModel | ExtendOptions, column?: string, withTrashed?: boolean, nullable?: boolean): this;
+        exists(
+            tableOrOptions: typeof BaseModel | ExtendOptions,
+            column?: string,
+            withTrashed?: boolean,
+            nullable?: boolean
+        ): this;
+        unique(
+            tableOrOptions: typeof BaseModel | ExtendOptions,
+            column?: string,
+            withTrashed?: boolean,
+            nullable?: boolean
+        ): this;
     }
 
     interface VineString {
-        exists(tableOrOptions: typeof BaseModel | ExtendOptions, column?: string, withTrashed?: boolean, nullable?: boolean): this;
-        unique(tableOrOptions: typeof BaseModel | ExtendOptions, column?: string, withTrashed?: boolean, nullable?: boolean): this;
+        exists(
+            tableOrOptions: typeof BaseModel | ExtendOptions,
+            column?: string,
+            withTrashed?: boolean,
+            nullable?: boolean
+        ): this;
+        unique(
+            tableOrOptions: typeof BaseModel | ExtendOptions,
+            column?: string,
+            withTrashed?: boolean,
+            nullable?: boolean
+        ): this;
     }
 }
 

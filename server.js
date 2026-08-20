@@ -150,7 +150,7 @@ export default class Server {
                     const Controller = WebSocketLoader.controllers.find((controller) => controller.path === ws.data.path);
                     if (isEmpty(Controller))
                         throw new RuntimeException(`WebSocket controller not found for route [${ws.data.path}].`);
-                    let route = null;
+                    let route;
                     if (Array.isArray(this.webSocketRoutes)) {
                         route = this.webSocketRoutes.find((route) => route.raw.path === ws.data.path);
                     }

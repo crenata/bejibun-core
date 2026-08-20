@@ -7,7 +7,7 @@ export default class JobModel extends EpochTimestamps(BaseModel) {
     static updatedColumn = null;
     static deletedColumn = null;
     static QueryBuilder = QueryBuilder;
-    $beforeUpdate(opt, queryContext) {
+    $beforeUpdate() {
         // do nothing
     }
 }

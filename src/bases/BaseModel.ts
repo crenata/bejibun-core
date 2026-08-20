@@ -3,11 +3,9 @@ import Luxon from "@bejibun/utils/facades/Luxon";
 import {
     Model,
     ModelClass,
-    ModelOptions,
     PartialModelObject,
     QueryBuilder,
     QueryBuilderType,
-    QueryContext,
     TransactionOrKnex
 } from "objection";
 import ModelNotFoundException from "@/exceptions/ModelNotFoundException";
@@ -22,7 +20,7 @@ class BunQueryBuilder<M extends Model, R = M[]> extends SoftDeletes<M, R> {
         super(modelClass as ModelClass<M>);
     }
 
-    // @ts-ignore
+    // @ts-expect-error - BunQueryBuilder's update() intentionally diverges from Objection's chainable QueryBuilder shape for soft-delete semantics.
     async update(payload: PartialModelObject<M>): Promise<QueryBuilder<M, R>> {
         const cloneQuery: QueryBuilder<M, R> = (this as any).clone();
 
@@ -36,7 +34,6 @@ class BunQueryBuilder<M extends Model, R = M[]> extends SoftDeletes<M, R> {
     }
 }
 
-// @ts-ignore
 export default class BaseModel extends Model {
     protected static _namespace: string;
 
@@ -48,18 +45,19 @@ export default class BaseModel extends Model {
 
     public static QueryBuilder = BunQueryBuilder as unknown as typeof QueryBuilder;
 
-    // @ts-ignore - BunQueryBuilder's update() intentionally diverges from Objection's chainable QueryBuilder shape for soft-delete semantics.
-    QueryBuilderType!: BunQueryBuilder<this, this[]>;
+    // @ts-expect-error - BunQueryBuilder's update() intentionally diverges from Objection's chainable QueryBuilder shape for soft-delete semantics.
+    declare QueryBuilderType: BunQueryBuilder<this, this[]>;
 
     declare id: number | bigint;
 
     public static get namespace(): string {
-        if (isEmpty(this._namespace)) throw new RuntimeException(`Model namespace not registered for [${this.name}].`);
+        if (isEmpty(this._namespace))
+            throw new RuntimeException(`Model namespace not registered for [${this.name}].`);
 
         return this._namespace;
     }
 
-    $beforeInsert(queryContext: QueryContext): void {
+    $beforeInsert(): void {
         const now = Luxon.DateTime.now() as any;
         if (isNotEmpty((this as any)[(this.constructor as any).createdColumn])) {
             (this as any)[(this.constructor as any).createdColumn] = now;
@@ -69,7 +67,7 @@ export default class BaseModel extends Model {
         }
     }
 
-    $beforeUpdate(opt: ModelOptions, queryContext: QueryContext): void {
+    $beforeUpdate(): void {
         if (isNotEmpty((this as any)[(this.constructor as any).updatedColumn])) {
             (this as any)[(this.constructor as any).updatedColumn] = Luxon.DateTime.now() as any;
         }
@@ -79,34 +77,61 @@ export default class BaseModel extends Model {
         this._namespace = namespace;
     }
 
-    public static query<T extends typeof BaseModel>(this: T, trxOrKnex?: TransactionOrKnex): QueryBuilderType<InstanceType<T>> {
+    public static query<T extends typeof BaseModel>(
+        this: T,
+        trxOrKnex?: TransactionOrKnex
+    ): QueryBuilderType<InstanceType<T>> {
         return super.query(trxOrKnex) as unknown as QueryBuilderType<InstanceType<T>>;
     }
 
-    public static withTrashed<T extends typeof BaseModel>(this: T, trxOrKnex?: TransactionOrKnex): QueryBuilderType<InstanceType<T>> {
+    public static withTrashed<T extends typeof BaseModel>(
+        this: T,
+        trxOrKnex?: TransactionOrKnex
+    ): QueryBuilderType<InstanceType<T>> {
         return (this as any).query(trxOrKnex).withTrashed();
     }
 
-    public static onlyTrashed<T extends typeof BaseModel>(this: T, trxOrKnex?: TransactionOrKnex): QueryBuilderType<InstanceType<T>> {
+    public static onlyTrashed<T extends typeof BaseModel>(
+        this: T,
+        trxOrKnex?: TransactionOrKnex
+    ): QueryBuilderType<InstanceType<T>> {
         return (this as any).query(trxOrKnex).onlyTrashed();
     }
 
-    public static all<T extends typeof BaseModel>(this: T, trxOrKnex?: TransactionOrKnex): QueryBuilderType<InstanceType<T>> {
+    public static all<T extends typeof BaseModel>(
+        this: T,
+        trxOrKnex?: TransactionOrKnex
+    ): QueryBuilderType<InstanceType<T>> {
         return (this as any).query(trxOrKnex).select();
     }
 
-    public static create<T extends typeof BaseModel>(this: T, payload: Record<string, any>, trxOrKnex?: TransactionOrKnex): QueryBuilderType<InstanceType<T>> {
+    public static create<T extends typeof BaseModel>(
+        this: T,
+        payload: Record<string, any>,
+        trxOrKnex?: TransactionOrKnex
+    ): QueryBuilderType<InstanceType<T>> {
         return (this as any).query(trxOrKnex).insert(payload);
     }
 
-    public static find<T extends typeof BaseModel>(this: T, id: bigint | number | string, trxOrKnex?: TransactionOrKnex): QueryBuilderType<InstanceType<T>> {
+    public static find<T extends typeof BaseModel>(
+        this: T,
+        id: bigint | number | string,
+        trxOrKnex?: TransactionOrKnex
+    ): QueryBuilderType<InstanceType<T>> {
         return (this as any).query(trxOrKnex).findById(id);
     }
 
-    public static async findOrFail<T extends typeof BaseModel>(this: T, id: bigint | number | string, trxOrKnex?: TransactionOrKnex): Promise<InstanceType<T>> {
+    public static async findOrFail<T extends typeof BaseModel>(
+        this: T,
+        id: bigint | number | string,
+        trxOrKnex?: TransactionOrKnex
+    ): Promise<InstanceType<T>> {
         const result: InstanceType<T> = await (this as any).query(trxOrKnex).findById(id);
 
-        if (isEmpty(result)) throw new ModelNotFoundException(`No query results for model [${(this as any).namespace}] [${id}].`);
+        if (isEmpty(result))
+            throw new ModelNotFoundException(
+                `No query results for model [${(this as any).namespace}] [${id}].`
+            );
 
         return result;
     }
