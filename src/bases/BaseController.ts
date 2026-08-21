@@ -1,49 +1,9 @@
 import {defineValue, isNotEmpty} from "@bejibun/utils";
-import {default as Bobject} from "@bejibun/utils/facades/Object";
 import {errors, VineValidator} from "@vinejs/vine";
 import ValidatorException from "@/exceptions/ValidatorException";
 import Response from "@/facades/Response";
 
 export default class BaseController {
-    public async parse(request: BejibunRequest): Promise<Record<string, any>> {
-        const contentType: string = defineValue(request.headers.get("content-type"), "");
-        const formData: FormData = new FormData();
-
-        const data: Record<string, any> = {};
-
-        try {
-            if (contentType.includes("application/json"))
-                Object.assign(data, Bobject.serialize(await request.json()));
-
-            for (const [key, value] of Object.entries(request.params)) {
-                formData.append(key, value as string);
-            }
-
-            const url = new URL(request.url);
-            for (const [key, value] of url.searchParams) {
-                formData.append(key, value);
-            }
-
-            if (
-                contentType.includes("multipart/form-data") ||
-                contentType.includes("application/x-www-form-urlencoded")
-            ) {
-                const body = await request.formData();
-
-                for (const [key, value] of body) {
-                    formData.append(key, value);
-                }
-            }
-
-            const text = await request.text();
-            if (isNotEmpty(text)) formData.append("text", text);
-        } catch {
-            // do nothing
-        }
-
-        return Object.assign(data, Bobject.parseFormData(formData));
-    }
-
     public get response(): typeof Response {
         return Response;
     }

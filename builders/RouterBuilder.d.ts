@@ -35,6 +35,21 @@ export default class RouterBuilder {
     websocket(path: string, handler: string | HandlerType): Route;
     serialize(routes: Route | Array<Route> | RouterGroup | Array<RouterGroup> | Array<RawsRoute>): RouterGroup;
     private mergeRoutes;
+    /**
+     * Wraps a handler so every request arriving at it has the predefined
+     * BejibunRequest accessor methods (`get`, `set`, `array`, `boolean`,
+     * `float`, `integer`, `object`, `string`) available - regardless of
+     * whether `RequestMiddleware` (or any other middleware) was attached
+     * to the route.
+     *
+     * Applied as the outermost wrap around every resolved handler, so it
+     * runs before any user middleware and the controller itself. The
+     * accessors read `request.payload` lazily at call time, so it doesn't
+     * matter that `payload` may not be populated yet when this wrapper runs -
+     * only that it's populated by the time `request.integer(...)` etc. is
+     * actually called (typically by `RequestMiddleware`, if attached).
+     */
+    private attachRequestHelpers;
     private joinPaths;
     private resolveControllerString;
     private resolveIncludedActions;

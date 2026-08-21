@@ -9,6 +9,7 @@ import RuntimeException from "@/exceptions/RuntimeException";
 import Router from "@/facades/Router";
 import MaintenanceMiddleware from "@/middlewares/MaintenanceMiddleware";
 import RateLimiterMiddleware from "@/middlewares/RateLimiterMiddleware";
+import RequestMiddleware from "@/middlewares/RequestMiddleware";
 import BaseWebSocket from "@/bases/BaseWebSocket";
 import WebSocketLoader from "@/loader/WebSocketLoader";
 
@@ -174,11 +175,9 @@ export default class Server {
                     {},
                     defineValue(
                         Router.serialize(
-                            Router.middleware(...middlewares).group([
-                                apiRoutes,
-
-                                Router.serialize(this.webRoutes)
-                            ])
+                            Router.middleware(...middlewares)
+                                .middleware(new RequestMiddleware())
+                                .group([apiRoutes, Router.serialize(this.webRoutes)])
                         ),
                         {}
                     )

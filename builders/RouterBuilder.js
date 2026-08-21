@@ -66,6 +66,8 @@ export default class RouterBuilder {
                 for (const middleware of [...middlewares].reverse()) {
                     resolvedHandler = middleware.handle(resolvedHandler);
                 }
+                if (!route.raw.websocket)
+                    resolvedHandler = this.attachRequestHelpers(resolvedHandler);
                 if (isEmpty(newRoutes[cleanPath]))
                     newRoutes[cleanPath] = {};
                 if (isEmpty(route.raw.method)) {
@@ -106,6 +108,8 @@ export default class RouterBuilder {
                 for (const middleware of [...middlewares].reverse()) {
                     resolvedHandler = middleware.handle(resolvedHandler);
                 }
+                if (!route.raw.websocket)
+                    resolvedHandler = this.attachRequestHelpers(resolvedHandler);
                 if (isEmpty(newRoutes[cleanPath]))
                     newRoutes[cleanPath] = {};
                 if (isEmpty(route.raw.method)) {
@@ -199,6 +203,7 @@ export default class RouterBuilder {
         for (const middleware of [...this.middlewares].reverse()) {
             resolvedHandler = middleware.handle(resolvedHandler);
         }
+        resolvedHandler = this.attachRequestHelpers(resolvedHandler);
         return {
             raw: {
                 prefix: this.basePath,
@@ -322,6 +327,55 @@ export default class RouterBuilder {
         }
         return merged;
     }
+    /**
+     * Wraps a handler so every request arriving at it has the predefined
+     * BejibunRequest accessor methods (`get`, `set`, `array`, `boolean`,
+     * `float`, `integer`, `object`, `string`) available - regardless of
+     * whether `RequestMiddleware` (or any other middleware) was attached
+     * to the route.
+     *
+     * Applied as the outermost wrap around every resolved handler, so it
+     * runs before any user middleware and the controller itself. The
+     * accessors read `request.payload` lazily at call time, so it doesn't
+     * matter that `payload` may not be populated yet when this wrapper runs -
+     * only that it's populated by the time `request.integer(...)` etc. is
+     * actually called (typically by `RequestMiddleware`, if attached).
+     */
+    attachRequestHelpers(handler) {
+        return async (request, server) => {
+            request.get = (key) => request.payload?.[key];
+            request.set = (key, value) => {
+                if (isEmpty(request.payload))
+                    request.payload = {};
+                request.payload[key] = value;
+            };
+            request.array = (key) => {
+                const value = request.get(key);
+                return Array.isArray(value) ? value : [value];
+            };
+            request.boolean = (key) => {
+                const value = request.get(key);
+                return value === true || value === "true" || value === "1" || value === 1;
+            };
+            request.float = (key) => {
+                const value = parseFloat(request.get(key));
+                return Number.isNaN(value) ? 0 : value;
+            };
+            request.integer = (key) => {
+                const value = parseInt(request.get(key), 10);
+                return Number.isNaN(value) ? 0 : value;
+            };
+            request.object = (key) => {
+                const value = request.get(key);
+                return typeof value === "object" && value !== null ? value : {};
+            };
+            request.string = (key) => {
+                const value = request.get(key);
+                return value === undefined || value === null ? "" : String(value);
+            };
+            return handler(request, server);
+        };
+    }
     joinPaths(base, path) {
         base = base.replace(/\/+$/, "");
         path = path.replace(/^\/+/, "");
@@ -423,6 +477,8 @@ export default class RouterBuilder {
                 for (const middleware of [...middlewares].reverse()) {
                     resolvedHandler = middleware.handle(resolvedHandler);
                 }
+                if (!route.raw.websocket)
+                    resolvedHandler = this.attachRequestHelpers(resolvedHandler);
                 if (isEmpty(newRoutes[cleanPath]))
                     newRoutes[cleanPath] = {};
                 Object.assign(newRoutes[cleanPath], {
@@ -450,6 +506,7 @@ export default class RouterBuilder {
                     for (const middleware of [...this.middlewares].reverse()) {
                         resolvedHandler = middleware.handle(resolvedHandler);
                     }
+                    resolvedHandler = this.attachRequestHelpers(resolvedHandler);
                     wrappedMethods[method] = resolvedHandler;
                 }
                 result[newKey] = wrappedMethods;
