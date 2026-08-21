@@ -37,7 +37,7 @@ export default class RouterBuilder {
     private mergeRoutes;
     /**
      * Wraps a handler so every request arriving at it has the predefined
-     * BejibunRequest accessor methods (`get`, `set`, `array`, `boolean`,
+     * Bejibun.Request accessor methods (`get`, `set`, `array`, `boolean`,
      * `float`, `integer`, `object`, `string`) available - regardless of
      * whether `RequestMiddleware` (or any other middleware) was attached
      * to the route.

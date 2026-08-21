@@ -43,7 +43,7 @@ export default class ExceptionHandler {
             .send();
     }
 
-    public async publicRoute(request: BejibunRequest): Promise<globalThis.Response> {
+    public async publicRoute(request: Bejibun.Request): Promise<globalThis.Response> {
         const url: URL = new URL(request.url);
         const file: Bun.BunFile = Bun.file(App.Path.publicPath(url.pathname.replace(/^\//, "")));
 

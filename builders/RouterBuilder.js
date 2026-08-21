@@ -329,7 +329,7 @@ export default class RouterBuilder {
     }
     /**
      * Wraps a handler so every request arriving at it has the predefined
-     * BejibunRequest accessor methods (`get`, `set`, `array`, `boolean`,
+     * Bejibun.Request accessor methods (`get`, `set`, `array`, `boolean`,
      * `float`, `integer`, `object`, `string`) available - regardless of
      * whether `RequestMiddleware` (or any other middleware) was attached
      * to the route.
@@ -343,6 +343,8 @@ export default class RouterBuilder {
      */
     attachRequestHelpers(handler) {
         return async (request, server) => {
+            if (isEmpty(request.payload))
+                request.payload = {};
             request.get = (key) => request.payload?.[key];
             request.set = (key, value) => {
                 if (isEmpty(request.payload))

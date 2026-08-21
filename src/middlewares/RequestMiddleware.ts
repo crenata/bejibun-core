@@ -3,7 +3,7 @@ import {defineValue, isNotEmpty} from "@bejibun/utils";
 
 export default class RequestMiddleware {
     public handle(handler: HandlerType): HandlerType {
-        return async (request: BejibunRequest, server: Bun.Server<any>) => {
+        return async (request: Bejibun.Request, server: Bun.Server<any>) => {
             const contentType: string = defineValue(request.headers.get("content-type"), "");
 
             const payload: Record<string, any> = {};

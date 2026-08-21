@@ -4,7 +4,7 @@ import Response from "@/facades/Response";
 
 export default class MaintenanceMiddleware {
     public handle(handler: HandlerType): HandlerType {
-        return async (request: BejibunRequest, server: Bun.Server<any>) => {
+        return async (request: Bejibun.Request, server: Bun.Server<any>) => {
             if (await App.Maintenance.isMaintenanceMode()) {
                 const maintenance = await App.Maintenance.getData();
 

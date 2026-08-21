@@ -1,7 +1,7 @@
 import type {ApiDocConfig} from "@/decorators/ApiDocDecorator";
 import type {IMiddleware} from "@/types/middleware";
 
-export type HandlerType = (request: BejibunRequest, server: Bun.Server<any>) => Promise<Response>;
+export type HandlerType = (request: Bejibun.Request, server: Bun.Server<any>) => Promise<Response>;
 export type RouterMethodMap = Record<string, HandlerType>;
 export type RouterGroup = Record<string, RouterMethodMap | RouterGroup>;
 export type RawRoute = {

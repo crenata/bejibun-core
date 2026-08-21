@@ -386,7 +386,7 @@ export default class RouterBuilder {
     public websocket(path: string, handler: string | HandlerType): Route {
         const cleanPath: string = this.joinPaths(this.basePath, path);
 
-        let resolvedHandler: any = (request: BejibunRequest, server: Bun.Server<any>) => {
+        let resolvedHandler: any = (request: Bejibun.Request, server: Bun.Server<any>) => {
             server.upgrade(request, {
                 data: {
                     id: Bun.randomUUIDv7(),
@@ -464,7 +464,7 @@ export default class RouterBuilder {
 
     /**
      * Wraps a handler so every request arriving at it has the predefined
-     * BejibunRequest accessor methods (`get`, `set`, `array`, `boolean`,
+     * Bejibun.Request accessor methods (`get`, `set`, `array`, `boolean`,
      * `float`, `integer`, `object`, `string`) available - regardless of
      * whether `RequestMiddleware` (or any other middleware) was attached
      * to the route.
@@ -477,7 +477,7 @@ export default class RouterBuilder {
      * actually called (typically by `RequestMiddleware`, if attached).
      */
     private attachRequestHelpers(handler: HandlerType): HandlerType {
-        return async (request: BejibunRequest, server: Bun.Server<any>) => {
+        return async (request: Bejibun.Request, server: Bun.Server<any>) => {
             if (isEmpty(request.payload)) request.payload = {};
 
             request.get = (key: string): any => request.payload?.[key];
