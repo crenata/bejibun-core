@@ -378,7 +378,7 @@ export default class RouterBuilder {
     public websocket(path: string, handler: string | HandlerType): Route {
         const cleanPath: string = this.joinPaths(this.basePath, path);
 
-        let resolvedHandler: any = (request: Bun.BunRequest, server: Bun.Server<any>) => {
+        let resolvedHandler: any = (request: BejibunRequest, server: Bun.Server<any>) => {
             server.upgrade(request, {
                 data: {
                     id: Bun.randomUUIDv7(),

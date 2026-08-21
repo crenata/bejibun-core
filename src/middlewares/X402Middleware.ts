@@ -12,7 +12,7 @@ export default class X402Middleware {
     }
 
     public handle(handler: HandlerType): HandlerType {
-        return async (request: Bun.BunRequest, server: Bun.Server<any>) => {
+        return async (request: BejibunRequest, server: Bun.Server<any>) => {
             return X402.setFacilitator(this.facilitator)
                 .setRoutePayment(this.routePayment)
                 .setRequest(request)

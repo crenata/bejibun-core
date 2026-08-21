@@ -7,5 +7,5 @@ import RuntimeException from "../exceptions/RuntimeException";
 import ValidatorException from "../exceptions/ValidatorException";
 export default class ExceptionHandler {
     handle(error: Bun.ErrorLike | ModelNotFoundException | QueueException | RateLimiterException | RouterException | RuntimeException | ValidatorException | ValidationError): globalThis.Response;
-    publicRoute(request: Bun.BunRequest): Promise<globalThis.Response>;
+    publicRoute(request: BejibunRequest): Promise<globalThis.Response>;
 }

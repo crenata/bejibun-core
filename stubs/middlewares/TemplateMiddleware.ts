@@ -2,7 +2,7 @@ import type {HandlerType} from "@bejibun/core/types";
 
 export default class TemplateMiddleware {
     public handle(handler: HandlerType): HandlerType {
-        return async (request: Bun.BunRequest) => {
+        return async (request: BejibunRequest) => {
             // Your code goes here
 
             return handler(request);

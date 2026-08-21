@@ -7,7 +7,7 @@ import Str from "@bejibun/utils/facades/Str";
 
 export default class RateLimiterMiddleware {
     public handle(handler: HandlerType): HandlerType {
-        return async (request: Bun.BunRequest, server: Bun.Server<any>) => {
+        return async (request: BejibunRequest, server: Bun.Server<any>) => {
             const configPath: string = App.Path.configPath("limiter.ts");
 
             let config: any;

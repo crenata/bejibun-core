@@ -5,7 +5,7 @@ import ValidatorException from "@/exceptions/ValidatorException";
 import Response from "@/facades/Response";
 
 export default class BaseController {
-    public async parse(request: Bun.BunRequest): Promise<Record<string, any>> {
+    public async parse(request: BejibunRequest): Promise<Record<string, any>> {
         const contentType: string = defineValue(request.headers.get("content-type"), "");
         const formData: FormData = new FormData();
 
