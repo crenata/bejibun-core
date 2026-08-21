@@ -50,6 +50,12 @@ export default class RouterBuilder {
      * actually called (typically by `RequestMiddleware`, if attached).
      */
     private attachRequestHelpers;
+    /**
+     * Normalizes a single key or array of keys into a flat array of keys,
+     * used by the payload-inspecting request helpers (`only`, `except`,
+     * `has`, `hasAny`, `filled`, `missing`).
+     */
+    private toArrayKeys;
     private joinPaths;
     private resolveControllerString;
     private resolveIncludedActions;

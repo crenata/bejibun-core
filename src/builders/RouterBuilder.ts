@@ -524,8 +524,133 @@ export default class RouterBuilder {
                 return value === undefined || value === null ? "" : String(value);
             };
 
+            request.input = (key?: string, defaultValue?: any): any => {
+                if (isEmpty(key)) return request.payload;
+
+                const value: any = request.get(key as string);
+
+                return isEmpty(value) ? defaultValue : value;
+            };
+
+            request.all = (): Record<string, any> => request.payload;
+
+            request.keys = (): Array<string> => Object.keys(request.payload);
+
+            request.only = (keys: string | Array<string>): Record<string, any> => {
+                const result: Record<string, any> = {};
+
+                for (const key of this.toArrayKeys(keys)) {
+                    if (Object.prototype.hasOwnProperty.call(request.payload, key))
+                        result[key] = request.payload[key];
+                }
+
+                return result;
+            };
+
+            request.except = (keys: string | Array<string>): Record<string, any> => {
+                const excluded: Set<string> = new Set(this.toArrayKeys(keys));
+                const result: Record<string, any> = {};
+
+                for (const [key, value] of Object.entries(request.payload)) {
+                    if (!excluded.has(key)) result[key] = value;
+                }
+
+                return result;
+            };
+
+            request.has = (keys: string | Array<string>): boolean => {
+                return this.toArrayKeys(keys).every((key: string) => {
+                    return Object.prototype.hasOwnProperty.call(request.payload, key);
+                });
+            };
+
+            request.hasAny = (keys: string | Array<string>): boolean => {
+                return this.toArrayKeys(keys).some((key: string) => {
+                    return Object.prototype.hasOwnProperty.call(request.payload, key);
+                });
+            };
+
+            request.filled = (keys: string | Array<string>): boolean => {
+                return this.toArrayKeys(keys).every((key: string) => isNotEmpty(request.get(key)));
+            };
+
+            request.missing = (keys: string | Array<string>): boolean => {
+                return this.toArrayKeys(keys).every((key: string) => {
+                    return !Object.prototype.hasOwnProperty.call(request.payload, key);
+                });
+            };
+
+            request.header = (key: string, defaultValue?: string): string | undefined => {
+                return defineValue(request.headers.get(key), defaultValue);
+            };
+
+            request.bearerToken = (): string | undefined => {
+                const authorization: string = defineValue(request.header("authorization"), "");
+
+                return authorization.toLowerCase().startsWith("bearer ")
+                    ? authorization.slice(7).trim()
+                    : undefined;
+            };
+
+            request.cookie = (key: string): string | undefined => {
+                return request.cookies?.get(key) ?? undefined;
+            };
+
+            request.ip = (): string | undefined => server?.requestIP(request)?.address;
+
+            request.path = (): string => new URL(request.url).pathname;
+
+            request.fullUrl = (): string => request.url;
+
+            request.is = (...patterns: Array<string>): boolean => {
+                const path: string = request.path().replace(/^\/+/, "");
+
+                return patterns.some((pattern: string) => {
+                    const normalized: string = pattern.replace(/^\/+/, "");
+                    const regex: RegExp = new RegExp(
+                        `^${normalized.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*")}$`
+                    );
+
+                    return regex.test(path);
+                });
+            };
+
+            request.secure = (): boolean => new URL(request.url).protocol === "https:";
+
+            request.userAgent = (): string | undefined => request.header("user-agent");
+
+            request.ajax = (): boolean => {
+                return (
+                    defineValue(request.header("x-requested-with"), "").toLowerCase() ===
+                    "xmlhttprequest"
+                );
+            };
+
+            request.wantsJson = (): boolean => {
+                return defineValue(request.header("accept"), "").toLowerCase().includes("json");
+            };
+
+            request.expectsJson = (): boolean => request.ajax() || request.wantsJson();
+
+            request.file = (key: string): File | undefined => {
+                const value: any = request.get(key);
+
+                return value instanceof File ? value : undefined;
+            };
+
+            request.hasFile = (key: string): boolean => isNotEmpty(request.file(key));
+
             return handler(request, server);
         };
+    }
+
+    /**
+     * Normalizes a single key or array of keys into a flat array of keys,
+     * used by the payload-inspecting request helpers (`only`, `except`,
+     * `has`, `hasAny`, `filled`, `missing`).
+     */
+    private toArrayKeys(keys: string | Array<string>): Array<string> {
+        return Array.isArray(keys) ? keys : [keys];
     }
 
     private joinPaths(base: string, path: string): string {
