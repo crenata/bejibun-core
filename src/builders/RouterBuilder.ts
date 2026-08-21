@@ -478,6 +478,8 @@ export default class RouterBuilder {
      */
     private attachRequestHelpers(handler: HandlerType): HandlerType {
         return async (request: BejibunRequest, server: Bun.Server<any>) => {
+            if (isEmpty(request.payload)) request.payload = {};
+
             request.get = (key: string): any => request.payload?.[key];
 
             request.set = (key: string, value: any): void => {
