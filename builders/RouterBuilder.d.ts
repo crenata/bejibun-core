@@ -38,16 +38,21 @@ export default class RouterBuilder {
     /**
      * Wraps a handler so every request arriving at it has the predefined
      * Bejibun.Request accessor methods (`get`, `set`, `array`, `boolean`,
-     * `float`, `integer`, `object`, `string`) available - regardless of
-     * whether `RequestMiddleware` (or any other middleware) was attached
-     * to the route.
+     * `float`, `integer`, `object`, `string`, plus the Laravel-inspired
+     * helpers - `input`, `all`, `keys`, `only`, `except`, `has`, `hasAny`,
+     * `filled`, `missing`, `header`, `hasHeader`, `bearerToken`, `cookie`,
+     * `ip`, `path`, `fullUrl`, `is`, `secure`, `userAgent`, `ajax`,
+     * `wantsJson`, `expectsJson`, `file`, `hasFile`, `merge`, `replace`,
+     * `isMethod`, and `validate`) available - regardless of whether
+     * `RequestMiddleware` (or any other middleware) was attached to the route.
      *
      * Applied as the outermost wrap around every resolved handler, so it
      * runs before any user middleware and the controller itself. The
-     * accessors read `request.payload` lazily at call time, so it doesn't
-     * matter that `payload` may not be populated yet when this wrapper runs -
-     * only that it's populated by the time `request.integer(...)` etc. is
-     * actually called (typically by `RequestMiddleware`, if attached).
+     * payload-based accessors read `request.payload` lazily at call time,
+     * so it doesn't matter that `payload` may not be populated yet when
+     * this wrapper runs - only that it's populated by the time
+     * `request.integer(...)` etc. is actually called (typically by
+     * `RequestMiddleware`, if attached).
      */
     private attachRequestHelpers;
     /**

@@ -1,9 +1,8 @@
-import type {ValidatorType} from "@bejibun/core/types/ValidatorType";
 import BaseValidator from "@bejibun/core/bases/BaseValidator";
 import TemplateModel from "@/app/models/TemplateModel";
 
 export default class TemplateValidator extends BaseValidator {
-    public static get index(): ValidatorType {
+    public static get index(): Bejibun.Validator {
         return super.validator.compile(
             super.validator.object({
                 search: super.validator.string().nullable().optional()
@@ -11,7 +10,7 @@ export default class TemplateValidator extends BaseValidator {
         );
     }
 
-    public static get store(): ValidatorType {
+    public static get store(): Bejibun.Validator {
         return super.validator.compile(
             super.validator.object({
                 name: super.validator.string()
@@ -19,7 +18,7 @@ export default class TemplateValidator extends BaseValidator {
         );
     }
 
-    public static get show(): ValidatorType {
+    public static get show(): Bejibun.Validator {
         return super.validator.compile(
             super.validator.object({
                 id: super.validator.number().min(1).exists(TemplateModel, "id")
@@ -27,7 +26,7 @@ export default class TemplateValidator extends BaseValidator {
         );
     }
 
-    public static get update(): ValidatorType {
+    public static get update(): Bejibun.Validator {
         return super.validator.compile(
             super.validator.object({
                 id: super.validator.number().min(1).exists(TemplateModel, "id"),
@@ -36,7 +35,7 @@ export default class TemplateValidator extends BaseValidator {
         );
     }
 
-    public static get destroy(): ValidatorType {
+    public static get destroy(): Bejibun.Validator {
         return super.validator.compile(
             super.validator.object({
                 id: super.validator.number().min(1).exists(TemplateModel, "id")

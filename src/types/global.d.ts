@@ -1,5 +1,6 @@
 import type {ApiDocConfig} from "@/decorators/ApiDocDecorator";
 import type {BejibunRequest} from "@/types/request";
+import {SchemaTypes, VineValidator} from "@vinejs/vine";
 
 declare global {
     /**
@@ -24,6 +25,8 @@ declare global {
 
     namespace Bejibun {
         type Request<Path extends string = string> = BejibunRequest<Path>;
+
+        type Validator = VineValidator<SchemaTypes, Record<string, any> | undefined>;
     }
 }
 

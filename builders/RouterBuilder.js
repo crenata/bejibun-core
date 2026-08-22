@@ -6,6 +6,7 @@ import Enum from "@bejibun/utils/facades/Enum";
 import "reflect-metadata";
 import { ApiDocDecoratorKey } from "../decorators/ApiDocDecorator";
 import RouterException from "../exceptions/RouterException";
+import { validatePayload } from "../utils/validate";
 export default class RouterBuilder {
     basePath = "";
     middlewares = [];
@@ -330,22 +331,135 @@ export default class RouterBuilder {
     /**
      * Wraps a handler so every request arriving at it has the predefined
      * Bejibun.Request accessor methods (`get`, `set`, `array`, `boolean`,
-     * `float`, `integer`, `object`, `string`) available - regardless of
-     * whether `RequestMiddleware` (or any other middleware) was attached
-     * to the route.
+     * `float`, `integer`, `object`, `string`, plus the Laravel-inspired
+     * helpers - `input`, `all`, `keys`, `only`, `except`, `has`, `hasAny`,
+     * `filled`, `missing`, `header`, `hasHeader`, `bearerToken`, `cookie`,
+     * `ip`, `path`, `fullUrl`, `is`, `secure`, `userAgent`, `ajax`,
+     * `wantsJson`, `expectsJson`, `file`, `hasFile`, `merge`, `replace`,
+     * `isMethod`, and `validate`) available - regardless of whether
+     * `RequestMiddleware` (or any other middleware) was attached to the route.
      *
      * Applied as the outermost wrap around every resolved handler, so it
      * runs before any user middleware and the controller itself. The
-     * accessors read `request.payload` lazily at call time, so it doesn't
-     * matter that `payload` may not be populated yet when this wrapper runs -
-     * only that it's populated by the time `request.integer(...)` etc. is
-     * actually called (typically by `RequestMiddleware`, if attached).
+     * payload-based accessors read `request.payload` lazily at call time,
+     * so it doesn't matter that `payload` may not be populated yet when
+     * this wrapper runs - only that it's populated by the time
+     * `request.integer(...)` etc. is actually called (typically by
+     * `RequestMiddleware`, if attached).
      */
     attachRequestHelpers(handler) {
         return async (request, server) => {
             if (isEmpty(request.payload))
                 request.payload = {};
-            request.get = (key) => request.payload?.[key];
+            request.header = (key, defaultValue) => {
+                return defineValue(request.headers.get(key), defaultValue);
+            };
+            request.hasHeader = (key) => {
+                return isNotEmpty(request.header(key));
+            };
+            request.bearerToken = () => {
+                const authorization = defineValue(request.header("authorization"), "");
+                return authorization.toLowerCase().startsWith("bearer ")
+                    ? authorization.slice(7).trim()
+                    : undefined;
+            };
+            request.cookie = (key) => {
+                return request.cookies?.get(key) ?? undefined;
+            };
+            request.userAgent = () => {
+                return request.header("user-agent");
+            };
+            request.ip = () => {
+                return server?.requestIP(request)?.address;
+            };
+            request.path = () => {
+                return new URL(request.url).pathname;
+            };
+            request.fullUrl = () => {
+                return request.url;
+            };
+            request.is = (...patterns) => {
+                const path = request.path().replace(/^\/+/, "");
+                return patterns.some((pattern) => {
+                    const normalized = pattern.replace(/^\/+/, "");
+                    const regex = new RegExp(`^${normalized.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*")}$`);
+                    return regex.test(path);
+                });
+            };
+            request.isMethod = (method) => {
+                return request.method.toLowerCase() === method.toLowerCase();
+            };
+            request.secure = () => {
+                return new URL(request.url).protocol.toLowerCase() === "https:";
+            };
+            request.ajax = () => {
+                return (defineValue(request.header("x-requested-with"), "").toLowerCase() ===
+                    "xmlhttprequest");
+            };
+            request.wantsJson = () => {
+                return defineValue(request.header("accept"), "").toLowerCase().includes("json");
+            };
+            request.expectsJson = () => {
+                return defineValue(request.ajax(), request.wantsJson());
+            };
+            request.keys = () => {
+                return Object.keys(request.payload);
+            };
+            request.all = () => {
+                return request.payload;
+            };
+            request.has = (keys) => {
+                return this.toArrayKeys(keys).every((key) => {
+                    return Object.prototype.hasOwnProperty.call(request.payload, key);
+                });
+            };
+            request.hasAny = (keys) => {
+                return this.toArrayKeys(keys).some((key) => {
+                    return Object.prototype.hasOwnProperty.call(request.payload, key);
+                });
+            };
+            request.filled = (keys) => {
+                return this.toArrayKeys(keys).every((key) => isNotEmpty(request.get(key)));
+            };
+            request.missing = (keys) => {
+                return this.toArrayKeys(keys).every((key) => {
+                    return !Object.prototype.hasOwnProperty.call(request.payload, key);
+                });
+            };
+            request.input = (key, defaultValue) => {
+                if (isEmpty(key))
+                    return request.payload;
+                const value = request.get(key);
+                return isEmpty(value) ? defaultValue : value;
+            };
+            request.only = (keys) => {
+                const result = {};
+                for (const key of this.toArrayKeys(keys)) {
+                    if (Object.prototype.hasOwnProperty.call(request.payload, key))
+                        result[key] = request.payload[key];
+                }
+                return result;
+            };
+            request.except = (keys) => {
+                const excluded = new Set(this.toArrayKeys(keys));
+                const result = {};
+                for (const [key, value] of Object.entries(request.payload)) {
+                    if (!excluded.has(key))
+                        result[key] = value;
+                }
+                return result;
+            };
+            request.merge = (values) => {
+                if (isEmpty(request.payload))
+                    request.payload = {};
+                Object.assign(request.payload, values);
+            };
+            request.replace = (values) => {
+                request.payload = { ...values };
+            };
+            request.get = (key) => {
+                return request.payload?.[key];
+            };
             request.set = (key, value) => {
                 if (isEmpty(request.payload))
                     request.payload = {};
@@ -375,87 +489,16 @@ export default class RouterBuilder {
                 const value = request.get(key);
                 return value === undefined || value === null ? "" : String(value);
             };
-            request.input = (key, defaultValue) => {
-                if (isEmpty(key))
-                    return request.payload;
-                const value = request.get(key);
-                return isEmpty(value) ? defaultValue : value;
-            };
-            request.all = () => request.payload;
-            request.keys = () => Object.keys(request.payload);
-            request.only = (keys) => {
-                const result = {};
-                for (const key of this.toArrayKeys(keys)) {
-                    if (Object.prototype.hasOwnProperty.call(request.payload, key))
-                        result[key] = request.payload[key];
-                }
-                return result;
-            };
-            request.except = (keys) => {
-                const excluded = new Set(this.toArrayKeys(keys));
-                const result = {};
-                for (const [key, value] of Object.entries(request.payload)) {
-                    if (!excluded.has(key))
-                        result[key] = value;
-                }
-                return result;
-            };
-            request.has = (keys) => {
-                return this.toArrayKeys(keys).every((key) => {
-                    return Object.prototype.hasOwnProperty.call(request.payload, key);
-                });
-            };
-            request.hasAny = (keys) => {
-                return this.toArrayKeys(keys).some((key) => {
-                    return Object.prototype.hasOwnProperty.call(request.payload, key);
-                });
-            };
-            request.filled = (keys) => {
-                return this.toArrayKeys(keys).every((key) => isNotEmpty(request.get(key)));
-            };
-            request.missing = (keys) => {
-                return this.toArrayKeys(keys).every((key) => {
-                    return !Object.prototype.hasOwnProperty.call(request.payload, key);
-                });
-            };
-            request.header = (key, defaultValue) => {
-                return defineValue(request.headers.get(key), defaultValue);
-            };
-            request.bearerToken = () => {
-                const authorization = defineValue(request.header("authorization"), "");
-                return authorization.toLowerCase().startsWith("bearer ")
-                    ? authorization.slice(7).trim()
-                    : undefined;
-            };
-            request.cookie = (key) => {
-                return request.cookies?.get(key) ?? undefined;
-            };
-            request.ip = () => server?.requestIP(request)?.address;
-            request.path = () => new URL(request.url).pathname;
-            request.fullUrl = () => request.url;
-            request.is = (...patterns) => {
-                const path = request.path().replace(/^\/+/, "");
-                return patterns.some((pattern) => {
-                    const normalized = pattern.replace(/^\/+/, "");
-                    const regex = new RegExp(`^${normalized.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*")}$`);
-                    return regex.test(path);
-                });
-            };
-            request.secure = () => new URL(request.url).protocol === "https:";
-            request.userAgent = () => request.header("user-agent");
-            request.ajax = () => {
-                return (defineValue(request.header("x-requested-with"), "").toLowerCase() ===
-                    "xmlhttprequest");
-            };
-            request.wantsJson = () => {
-                return defineValue(request.header("accept"), "").toLowerCase().includes("json");
-            };
-            request.expectsJson = () => request.ajax() || request.wantsJson();
             request.file = (key) => {
                 const value = request.get(key);
                 return value instanceof File ? value : undefined;
             };
-            request.hasFile = (key) => isNotEmpty(request.file(key));
+            request.hasFile = (key) => {
+                return isNotEmpty(request.file(key));
+            };
+            request.validate = (validator) => {
+                return validatePayload(validator, request.payload);
+            };
             return handler(request, server);
         };
     }
