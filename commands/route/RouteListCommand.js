@@ -1,4 +1,10 @@
 import { defineValue } from "@bejibun/utils";
+/**
+ * Console command: `List all registered routes`
+ *
+ * Registered under the `ace` CLI as `RouteListCommand`. See `$signature`,
+ * `$options`, and `$arguments` below for its CLI shape.
+ */
 export default class RouteListCommand {
     /**
      * The name and signature of the console command.
@@ -24,6 +30,9 @@ export default class RouteListCommand {
      * @var $arguments Array<Array<string>>
      */
     $arguments = [];
+    /**
+     * Executes this command.
+     */
     async handle() {
         const url = defineValue(`${Bun.env.APP_URL}/apis`, "http://localhost:3000/apis");
         let proc;

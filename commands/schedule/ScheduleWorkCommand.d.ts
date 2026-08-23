@@ -4,6 +4,12 @@ type TPreparedSchedule = TSchedule & {
     expression: CronExpression;
     nextRun: number;
 };
+/**
+ * Console command: `Start the schedule worker`
+ *
+ * Registered under the `ace` CLI as `ScheduleWorkCommand`. See `$signature`,
+ * `$options`, and `$arguments` below for its CLI shape.
+ */
 export default class ScheduleWorkCommand {
     /**
      * The name and signature of the console command.
@@ -32,6 +38,9 @@ export default class ScheduleWorkCommand {
     protected running: Set<string>;
     protected interval: NodeJS.Timeout | null;
     protected schedules: Array<TPreparedSchedule>;
+    /**
+     * Executes this command.
+     */
     handle(): Promise<void>;
     private prepareSchedules;
     private startSchedule;

@@ -1,3 +1,9 @@
+/**
+ * Console command: `Create a new validator file`
+ *
+ * Registered under the `ace` CLI as `MakeValidatorCommand`. See `$signature`,
+ * `$options`, and `$arguments` below for its CLI shape.
+ */
 export default class MakeValidatorCommand {
     /**
      * The name and signature of the console command.
@@ -23,5 +29,11 @@ export default class MakeValidatorCommand {
      * @var $arguments Array<Array<string>>
      */
     protected $arguments: Array<Array<string>>;
+    /**
+     * Executes this command.
+     *
+     * @param options - Parsed CLI options, matching the flags declared in `$options`.
+     * @param args - Parsed positional CLI arguments, matching `$arguments`.
+     */
     handle(options: any, args: string): Promise<void>;
 }

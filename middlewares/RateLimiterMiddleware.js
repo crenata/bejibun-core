@@ -3,7 +3,21 @@ import RateLimiter from "@bejibun/limiter";
 import LimiterConfig from "@bejibun/limiter/config/limiter";
 import { defineValue } from "@bejibun/utils";
 import Str from "@bejibun/utils/facades/Str";
+/**
+ * Middleware that rate-limits requests per client IP, using `@bejibun/limiter`.
+ * Falls back to the package's bundled `LimiterConfig` when the application
+ * hasn't provided its own `config/limiter.ts`. Enabled globally via
+ * `performance.middlewares.limiter` in `server.ts`.
+ */
 export default class RateLimiterMiddleware {
+    /**
+     * Wraps the handler with a per-IP rate limit check, keyed by the
+     * requesting client's IP address (converted to a filesystem-safe key
+     * via `Str.ipToFileName`).
+     *
+     * @param handler - The handler to rate-limit.
+     * @returns The rate-limited handler.
+     */
     handle(handler) {
         return async (request, server) => {
             const configPath = App.Path.configPath("limiter.ts");

@@ -1,3 +1,9 @@
+/**
+ * Console command: `Turn app into maintenance mode`
+ *
+ * Registered under the `ace` CLI as `MaintenanceDownCommand`. See `$signature`,
+ * `$options`, and `$arguments` below for its CLI shape.
+ */
 export default class MaintenanceDownCommand {
     /**
      * The name and signature of the console command.
@@ -23,5 +29,10 @@ export default class MaintenanceDownCommand {
      * @var $arguments Array<Array<any>>
      */
     protected $arguments: Array<Array<any>>;
+    /**
+     * Executes this command.
+     *
+     * @param options - Parsed CLI options, matching the flags declared in `$options`.
+     */
     handle(options: any): Promise<void>;
 }

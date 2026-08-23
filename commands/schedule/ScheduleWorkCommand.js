@@ -5,6 +5,12 @@ import Luxon from "@bejibun/utils/facades/Luxon";
 import CronExpressionParser from "cron-parser";
 import Kernel from "../../Kernel";
 import ScheduleLoader from "../../loader/ScheduleLoader";
+/**
+ * Console command: `Start the schedule worker`
+ *
+ * Registered under the `ace` CLI as `ScheduleWorkCommand`. See `$signature`,
+ * `$options`, and `$arguments` below for its CLI shape.
+ */
 export default class ScheduleWorkCommand {
     /**
      * The name and signature of the console command.
@@ -33,6 +39,9 @@ export default class ScheduleWorkCommand {
     running = new Set();
     interval = null;
     schedules = [];
+    /**
+     * Executes this command.
+     */
     async handle() {
         process.on("exit", async () => {
             this.stopSchedule();

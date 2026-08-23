@@ -5,6 +5,11 @@ import os from "os";
 import Kernel from "@/Kernel";
 import {version} from "package.json";
 
+// Entry point for the `bun ace <command>` CLI, invoked directly by the
+// `ace` binary. Boots the application's bootstrap.ts first (so DB, cors,
+// and namespace loaders are initialized before any command runs), then
+// configures and parses the Commander program.
+
 await import(App.Path.rootPath("bootstrap.ts"));
 
 const commandExec = "ace";
@@ -25,6 +30,7 @@ program
         ].join(`${os.EOL}  `)
     );
 
+// Discovers and registers every Ace command (see Kernel.registerCommands).
 Kernel.registerCommands(program);
 
 program.parse();

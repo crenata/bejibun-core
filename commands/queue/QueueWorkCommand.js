@@ -7,6 +7,12 @@ import QueueException from "../../exceptions/QueueException";
 import RuntimeException from "../../exceptions/RuntimeException";
 import JobModel from "../../models/JobModel";
 import fs from "fs";
+/**
+ * Console command: `Start processing jobs on the queue as a daemon`
+ *
+ * Registered under the `ace` CLI as `QueueWorkCommand`. See `$signature`,
+ * `$options`, and `$arguments` below for its CLI shape.
+ */
 export default class QueueWorkCommand {
     /**
      * The name and signature of the console command.
@@ -32,6 +38,20 @@ export default class QueueWorkCommand {
      * @var $arguments Array<Array<string>>
      */
     $arguments = [];
+    /**
+     * Executes this command.
+     *
+     * Runs as a long-lived daemon: loads the queue config (falling back to
+     * the package default if the app hasn't published its own), then loops
+     * indefinitely, claiming the oldest eligible job (attempts < 3, and
+     * either never reserved or whose reservation is older than
+     * `retry_after` seconds - i.e. presumed abandoned by a crashed worker),
+     * dynamically importing and running its handler, and deleting it on
+     * success or incrementing `attempts` and releasing the reservation on
+     * failure. Sleeps for `retry_after` seconds whenever there's nothing
+     * to claim. Listens for `exit`/`SIGINT`/`SIGTERM` to stop the loop
+     * gracefully after the current iteration.
+     */
     async handle() {
         const configPath = App.Path.configPath("queue.ts");
         let config;
@@ -58,7 +78,9 @@ export default class QueueWorkCommand {
         });
         Logger.setContext("Queue").info("Queue worker started.");
         while (running) {
+            // Jobs reserved before this cutoff are treated as abandoned (e.g. worker crash) and become claimable again.
             const staleBefore = Luxon.DateTime.now().toUnixInteger() - retryAfter;
+            // Find the oldest eligible job: under the attempt limit, and either unreserved or staled out.
             const job = await JobModel.query()
                 .where("attempts", "<", 3)
                 .where((builder) => builder.whereNull("reserved_at").orWhere("reserved_at", "<", staleBefore))
@@ -68,6 +90,8 @@ export default class QueueWorkCommand {
                 await Bun.sleep(retryAfter * 1000);
             }
             else {
+                // Atomically claim the job by stamping `reserved_at`, re-checking the same eligibility
+                // conditions to avoid a race with another worker claiming it first.
                 const claimed = await JobModel.query()
                     .where("id", job.id)
                     .where("attempts", "<", 3)
@@ -77,6 +101,7 @@ export default class QueueWorkCommand {
                 });
                 if (isEmpty(claimed))
                     continue;
+                // Dynamically resolves and invokes the job class's `handle()` with its stored payload.
                 const handler = async () => {
                     const module = await import(App.Path.rootPath(job.queue));
                     const Class = module.default;
@@ -92,6 +117,7 @@ export default class QueueWorkCommand {
                     await JobModel.query().findById(job.id).delete();
                 }
                 catch {
+                    // On failure: bump the attempt count and release the reservation so it can be retried (or eventually dead-lettered once attempts hits 3).
                     await JobModel.query()
                         .findById(job.id)
                         .update({

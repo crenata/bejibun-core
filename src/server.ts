@@ -13,9 +13,26 @@ import RequestMiddleware from "@/middlewares/RequestMiddleware";
 import BaseWebSocket from "@/bases/BaseWebSocket";
 import WebSocketLoader from "@/loader/WebSocketLoader";
 
+// Boot the application (DB, decorators, websockets, namespaces, CORS)
+// before building the server.
 await import(App.Path.rootPath("bootstrap.ts"));
 
+/**
+ * Composes and starts the application's Bun HTTP/WebSocket server.
+ *
+ * Responsible for: loading the application's route files (`api.ts`,
+ * `web.ts`, `websocket.ts`) and config (`performance.ts`, `route.ts`,
+ * `websocket.ts`), generating an OpenAPI spec (`apis.json`) from route
+ * `apiDoc` metadata, assembling the global middleware stack, and wiring
+ * everything into a single `Bun.serve()` call - including the WebSocket
+ * lifecycle handlers (`open`, `message`, `close`) that dispatch incoming
+ * messages to the correct WebSocket controller method.
+ */
 export default class Server {
+    /**
+     * Loads the application's custom exception handler class from
+     * `app/exceptions/handler.ts`.
+     */
     private get exceptionHandler(): any {
         const exceptionHandlerPath = App.Path.appPath("exceptions/handler.ts");
 
@@ -30,6 +47,7 @@ export default class Server {
         }
     }
 
+    /** Loads the application's API route definitions from `routes/api.ts`. */
     private get apiRoutes(): any {
         const apiRoutesPath = App.Path.routesPath("api.ts");
 
@@ -44,6 +62,7 @@ export default class Server {
         }
     }
 
+    /** Loads the application's WebSocket route definitions from `routes/websocket.ts`. */
     private get webSocketRoutes(): any {
         const webSocketRoutesPath = App.Path.routesPath("websocket.ts");
 
@@ -58,6 +77,7 @@ export default class Server {
         }
     }
 
+    /** Loads the application's web route definitions from `routes/web.ts`. */
     private get webRoutes(): RouterGroup {
         const webRoutesPath = App.Path.routesPath("web.ts");
 
@@ -72,6 +92,11 @@ export default class Server {
         }
     }
 
+    /**
+     * Resolves the active performance configuration, preferring the
+     * application's own `config/performance.ts` over this package's
+     * bundled default when present.
+     */
     private get performance(): Record<string, any> {
         const configPath: string = App.Path.configPath("performance.ts");
 
@@ -83,6 +108,11 @@ export default class Server {
         return config;
     }
 
+    /**
+     * Resolves the active OpenAPI/route documentation configuration,
+     * preferring the application's own `config/route.ts` over this
+     * package's bundled default when present.
+     */
     private get route(): Record<string, any> {
         const configPath: string = App.Path.configPath("route.ts");
 
@@ -94,6 +124,11 @@ export default class Server {
         return config;
     }
 
+    /**
+     * Resolves the active WebSocket configuration, preferring the
+     * application's own `config/websocket.ts` over this package's
+     * bundled default when present.
+     */
     private get websocket(): Record<string, any> {
         const configPath: string = App.Path.configPath("websocket.ts");
 
@@ -105,11 +140,20 @@ export default class Server {
         return config;
     }
 
+    /**
+     * Builds and starts the Bun server: generates `public/apis.json` from
+     * the API routes' `apiDoc` metadata, assembles the conditional
+     * middleware stack (rate limiter / maintenance, based on
+     * `performance.middlewares`), merges API + web routes behind
+     * `RequestMiddleware`, mounts websocket upgrade handlers for every
+     * route declared in `routes/websocket.ts`, and starts listening.
+     */
     public async run(): Promise<void> {
         const apiRoutes: RouterGroup = Router.serialize(this.apiRoutes);
 
         const paths: Record<string, any> = {};
 
+        // Build the OpenAPI `paths` object from each raw route's apiDoc metadata.
         for (const item of this.apiRoutes.raws) {
             const raw: Record<string, any> = (item as any).raw;
             const path: string = raw.path.replace(/:([^/]+)/g, "{$1}");
@@ -137,6 +181,7 @@ export default class Server {
             };
         }
 
+        // Persist the generated OpenAPI document, served at /apis.
         await Bun.write(
             App.Path.publicPath("apis.json"),
             JSON.stringify(
@@ -149,6 +194,7 @@ export default class Server {
             )
         );
 
+        // Global middleware stack, conditionally enabled via performance config.
         const middlewares: Array<any> = [];
 
         if (this.performance.middlewares.limiter) middlewares.push(new RateLimiterMiddleware());
@@ -171,6 +217,8 @@ export default class Server {
                 "/": require(App.Path.publicPath("index.html")),
                 "/apis": require(App.Path.publicPath("apis.html")),
 
+                // Merged API + web routes, wrapped in the global middleware
+                // stack plus RequestMiddleware (which populates request.payload).
                 ...Object.assign(
                     {},
                     defineValue(
@@ -183,6 +231,8 @@ export default class Server {
                     )
                 ),
 
+                // WebSocket upgrade endpoints - one per path declared in
+                // routes/websocket.ts, each simply upgrading the connection.
                 ...Object.fromEntries(
                     Object.keys(this.webSocketRoutes.routes).map((key: string) => [
                         key,
@@ -197,10 +247,12 @@ export default class Server {
                     ])
                 ),
 
+                // Fallback for any unmatched route.
                 "/*": new this.exceptionHandler().publicRoute
             },
 
             websocket: {
+                /** Registers the newly-upgraded client against its route path. */
                 open: (ws: Bun.ServerWebSocket<any>): void | Promise<void> => {
                     BaseWebSocket.addClient(ws.data.path, ws);
 
@@ -209,6 +261,11 @@ export default class Server {
                     );
                 },
 
+                /**
+                 * Resolves the WebSocket controller/route registered for
+                 * this connection's path and dispatches the incoming
+                 * message to its handler method.
+                 */
                 message: (
                     ws: Bun.ServerWebSocket<any>,
                     message: string | Buffer<ArrayBuffer>
@@ -251,6 +308,7 @@ export default class Server {
                     instance[methodName](ws, message);
                 },
 
+                /** Deregisters the client on disconnect. */
                 close: (
                     ws: Bun.ServerWebSocket<any>,
                     code: number,
@@ -263,6 +321,7 @@ export default class Server {
                     );
                 },
 
+                // Allow the application's own websocket config to override any of the above.
                 ...this.websocket
             }
         });

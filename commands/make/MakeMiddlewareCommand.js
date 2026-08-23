@@ -3,6 +3,12 @@ import Logger from "@bejibun/logger";
 import { isEmpty } from "@bejibun/utils";
 import Str from "@bejibun/utils/facades/Str";
 import path from "path";
+/**
+ * Console command: `Create a new middleware file`
+ *
+ * Registered under the `ace` CLI as `MakeMiddlewareCommand`. See `$signature`,
+ * `$options`, and `$arguments` below for its CLI shape.
+ */
 export default class MakeMiddlewareCommand {
     /**
      * The name and signature of the console command.
@@ -28,6 +34,12 @@ export default class MakeMiddlewareCommand {
      * @var $arguments Array<Array<string>>
      */
     $arguments = [["<file>", "The name of the middleware file"]];
+    /**
+     * Executes this command.
+     *
+     * @param options - Parsed CLI options, matching the flags declared in `$options`.
+     * @param args - Parsed positional CLI arguments, matching `$arguments`.
+     */
     async handle(options, args) {
         if (isEmpty(args)) {
             Logger.setContext("APP").error("There is no filename provided.");

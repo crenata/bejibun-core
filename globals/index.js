@@ -2,6 +2,16 @@ import App from "@bejibun/app";
 import { defineValue, isEmpty, isNotEmpty } from "@bejibun/utils";
 import fs from "fs";
 import RuntimeException from "../exceptions/RuntimeException";
+/**
+ * Side-effect-only import (via `bootstrap.ts`) that installs the `config()`
+ * and `env()` global functions declared in `@/types/global.d.ts`.
+ */
+/**
+ * Global `config(key, defaultValue)` implementation. Resolves a
+ * dot-notated key (e.g. `"database.connections.mysql"`) against the
+ * matching `config/<file>.ts` module, where the first segment names the
+ * file and the rest walks into its default export.
+ */
 globalThis.config = (key, defaultValue = null) => {
     const keys = key.split(".");
     if (isEmpty(keys))
@@ -22,4 +32,8 @@ globalThis.config = (key, defaultValue = null) => {
     }
     return value;
 };
+/**
+ * Global `env(key, defaultValue)` implementation. Thin wrapper around
+ * `Bun.env`, falling back to `defaultValue` when the variable is unset.
+ */
 globalThis.env = (key, defaultValue = null) => defineValue(Bun.env[key], defaultValue);

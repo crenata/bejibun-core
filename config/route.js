@@ -1,6 +1,14 @@
+/**
+ * Route documentation configuration. Defines the default documentation
+ * template (`"swagger"`) and the OpenAPI document generated for it,
+ * consumed by `RouteListCommand` / the route-listing tooling.
+ */
 const config = {
+    /** The default route-documentation template to generate. */
     default: "swagger",
+    /** Available documentation templates, keyed by name. */
     templates: {
+        /** OpenAPI 3.0 document template, describing the app's routes. */
         swagger: {
             openapi: "3.0.0",
             components: {

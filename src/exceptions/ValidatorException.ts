@@ -1,9 +1,20 @@
 import Logger from "@bejibun/logger";
 import {defineValue} from "@bejibun/utils";
 
+/**
+ * Thrown when Vine validation fails (via `BaseController.validate()` or
+ * `Bejibun.Request.validate()`). Defaults to HTTP status `422`. Logs
+ * itself (message + stack trace) on construction, and is recognized by
+ * `ExceptionHandler` to produce a matching JSON error response.
+ */
 export default class ValidatorException extends Error {
+    /** The HTTP status code this exception maps to when handled. */
     public code: number;
 
+    /**
+     * @param message - The error message (typically the first Vine validation failure's message).
+     * @param code - The HTTP status code to respond with. Defaults to `422`.
+     */
     public constructor(message?: string, code?: number) {
         super(message);
         this.name = "ValidatorException";

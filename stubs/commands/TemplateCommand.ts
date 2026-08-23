@@ -27,6 +27,12 @@ export default class TemplateCommand {
      */
     protected $arguments: Array<Array<any>> = [];
 
+    /**
+     * Executes this command.
+     *
+     * @param options - Parsed CLI options, matching the flags declared in `$options`.
+     * @param args - Parsed positional CLI arguments, matching `$arguments`.
+     */
     public async handle(options: any, args: any): Promise<void> {
         // Your code goes here
     }

@@ -1,6 +1,12 @@
 import App from "@bejibun/app";
 import AppConfig from "@bejibun/app/config/app";
 import Logger from "@bejibun/logger";
+/**
+ * Console command: `Turn app into live mode`
+ *
+ * Registered under the `ace` CLI as `MaintenanceUpCommand`. See `$signature`,
+ * `$options`, and `$arguments` below for its CLI shape.
+ */
 export default class MaintenanceUpCommand {
     /**
      * The name and signature of the console command.
@@ -26,6 +32,9 @@ export default class MaintenanceUpCommand {
      * @var $arguments Array<Array<any>>
      */
     $arguments = [];
+    /**
+     * Executes this command.
+     */
     async handle() {
         if (await App.Maintenance.isMaintenanceMode())
             await Bun.file(AppConfig.maintenance.file).delete();

@@ -1,11 +1,41 @@
+/**
+ * Fluent builder used to configure and dispatch a queue job. Persists the
+ * job as a row in `JobModel` (queue name, serialized arguments, and the
+ * unix timestamp it becomes available at) for the queue worker to pick up.
+ */
 export default class JobBuilder {
+    /** The queue name this job will be pushed onto. */
     protected queue?: string;
+    /** The unix timestamp this builder was created at. */
     protected now: number;
+    /** The unix timestamp the job becomes eligible to run at (defaults to `now`, shifted by `delay()`). */
     protected availableAt: number;
+    /** The arguments to pass to the job's handler when it runs. */
     protected args: Array<any>;
     constructor();
+    /**
+     * Sets the queue this job will be dispatched onto.
+     *
+     * @param queue - The queue name/namespace.
+     * @returns This builder, for chaining.
+     */
     setQueue(queue: string): JobBuilder;
+    /**
+     * Adds arguments to be forwarded to the job's handler when it runs.
+     *
+     * @param args - The arguments to store.
+     * @returns This builder, for chaining.
+     */
     dispatch(...args: any): JobBuilder;
+    /**
+     * Delays the job's availability by the given number of seconds from now.
+     *
+     * @param delay - The delay, in seconds.
+     * @returns This builder, for chaining.
+     */
     delay(delay: number): JobBuilder;
+    /**
+     * Persists the job to the queue table so a worker can pick it up.
+     */
     send(): Promise<void>;
 }

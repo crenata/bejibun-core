@@ -21,11 +21,35 @@ declare global {
      */
     function env<T = any>(key: string, defaultValue?: T): T;
 
+    /**
+     * Class method decorator that attaches OpenAPI documentation metadata
+     * to a controller action, stored via `reflect-metadata` and read back
+     * by `RouterBuilder.resolveControllerString()` when the route is
+     * resolved. Registered globally by `Kernel.registerDecorator()`
+     * (aliased from `ApiDocDecorator`).
+     *
+     * @param config - The OpenAPI metadata (description, params, responses, etc.) to attach.
+     */
     function ApiDoc(config: ApiDocConfig): any;
 
     namespace Bejibun {
+        /**
+         * The extended Bun request type available on every route handler,
+         * carrying the payload accessors and Laravel-inspired helpers
+         * attached by `RouterBuilder.attachRequestHelpers()`. Defaults to
+         * an untyped path (`params: Record<string, string>`); pass a
+         * literal path type to get typed route params, mirroring Bun's
+         * own `BunRequest<Path>`.
+         */
         type Request<Path extends string = string> = BejibunRequest<Path>;
 
+        /**
+         * A VineJS validator instance used to validate and type-check
+         * incoming request payloads. Wraps `VineValidator` from
+         * `@vinejs/vine`, scoped to schemas returning a plain object
+         * (or `undefined`) shape, suitable for validating request
+         * bodies, query params, or other structured input.
+         */
         type Validator = VineValidator<SchemaTypes, Record<string, any> | undefined>;
     }
 }

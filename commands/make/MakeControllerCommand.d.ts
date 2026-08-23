@@ -1,3 +1,9 @@
+/**
+ * Console command: `Create a new controller file`
+ *
+ * Registered under the `ace` CLI as `MakeControllerCommand`. See `$signature`,
+ * `$options`, and `$arguments` below for its CLI shape.
+ */
 export default class MakeControllerCommand {
     /**
      * The name and signature of the console command.
@@ -23,5 +29,11 @@ export default class MakeControllerCommand {
      * @var $arguments Array<Array<string>>
      */
     protected $arguments: Array<Array<string>>;
+    /**
+     * Executes this command.
+     *
+     * @param options - Parsed CLI options, matching the flags declared in `$options`.
+     * @param args - Parsed positional CLI arguments, matching `$arguments`.
+     */
     handle(options: any, args: string): Promise<void>;
 }

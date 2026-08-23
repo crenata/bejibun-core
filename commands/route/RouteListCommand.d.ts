@@ -1,3 +1,9 @@
+/**
+ * Console command: `List all registered routes`
+ *
+ * Registered under the `ace` CLI as `RouteListCommand`. See `$signature`,
+ * `$options`, and `$arguments` below for its CLI shape.
+ */
 export default class RouteListCommand {
     /**
      * The name and signature of the console command.
@@ -23,5 +29,8 @@ export default class RouteListCommand {
      * @var $arguments Array<Array<string>>
      */
     protected $arguments: Array<Array<string>>;
+    /**
+     * Executes this command.
+     */
     handle(): Promise<void>;
 }

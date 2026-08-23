@@ -2,6 +2,12 @@ import AppConfig from "@bejibun/app/config/app";
 import Logger from "@bejibun/logger";
 import Luxon from "@bejibun/utils/facades/Luxon";
 
+/**
+ * Console command: `Turn app into maintenance mode`
+ *
+ * Registered under the `ace` CLI as `MaintenanceDownCommand`. See `$signature`,
+ * `$options`, and `$arguments` below for its CLI shape.
+ */
 export default class MaintenanceDownCommand {
     /**
      * The name and signature of the console command.
@@ -38,6 +44,11 @@ export default class MaintenanceDownCommand {
      */
     protected $arguments: Array<Array<any>> = [];
 
+    /**
+     * Executes this command.
+     *
+     * @param options - Parsed CLI options, matching the flags declared in `$options`.
+     */
     public async handle(options: any): Promise<void> {
         await Bun.write(
             AppConfig.maintenance.file,

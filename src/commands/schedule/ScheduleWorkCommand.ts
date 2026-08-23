@@ -12,6 +12,12 @@ type TPreparedSchedule = TSchedule & {
     nextRun: number;
 };
 
+/**
+ * Console command: `Start the schedule worker`
+ *
+ * Registered under the `ace` CLI as `ScheduleWorkCommand`. See `$signature`,
+ * `$options`, and `$arguments` below for its CLI shape.
+ */
 export default class ScheduleWorkCommand {
     /**
      * The name and signature of the console command.
@@ -45,6 +51,9 @@ export default class ScheduleWorkCommand {
     protected interval: NodeJS.Timeout | null = null;
     protected schedules: Array<TPreparedSchedule> = [];
 
+    /**
+     * Executes this command.
+     */
     public async handle(): Promise<void> {
         process.on("exit", async (): Promise<void> => {
             this.stopSchedule();

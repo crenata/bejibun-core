@@ -11,7 +11,26 @@ import RuntimeException from "@/exceptions/RuntimeException";
 import ValidatorException from "@/exceptions/ValidatorException";
 import Response from "@/facades/Response";
 
+/**
+ * Central exception-to-response translator. Converts thrown errors into
+ * consistent JSON error responses (message + status code), and serves
+ * fallback static files (or a 404/204) for unmatched public routes.
+ * Also logs every handled error via `Logger`.
+ */
 export default class ExceptionHandler {
+    /**
+     * Converts a thrown error into a JSON `Response`.
+     *
+     * Recognized framework/library exceptions (`ModelNotFoundException`,
+     * `QueueException`, `RateLimiterException`, `RouterException`,
+     * `RuntimeException`, `ValidatorException`) use their own `message`
+     * and `code` as the response body/status. Objection `ValidationError`
+     * uses its own `message`/`statusCode`. Anything else falls back to a
+     * generic `500 Internal server error.` response.
+     *
+     * @param error - The thrown error to handle.
+     * @returns The resulting JSON error response.
+     */
     public handle(
         error:
             | Bun.ErrorLike
@@ -43,6 +62,15 @@ export default class ExceptionHandler {
             .send();
     }
 
+    /**
+     * Fallback handler for requests that didn't match any registered
+     * route. Attempts to serve a matching static file from the public
+     * directory; if none exists, returns a `204` (for `OPTIONS`
+     * requests) or `404` JSON response.
+     *
+     * @param request - The unmatched incoming request.
+     * @returns The static file response, or a 204/404 fallback.
+     */
     public async publicRoute(request: Bejibun.Request): Promise<globalThis.Response> {
         const url: URL = new URL(request.url);
         const file: Bun.BunFile = Bun.file(App.Path.publicPath(url.pathname.replace(/^\//, "")));

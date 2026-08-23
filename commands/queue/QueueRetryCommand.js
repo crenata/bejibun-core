@@ -4,6 +4,12 @@ import { defineValue, isEmpty } from "@bejibun/utils";
 import Luxon from "@bejibun/utils/facades/Luxon";
 import RuntimeException from "../../exceptions/RuntimeException";
 import JobModel from "../../models/JobModel";
+/**
+ * Console command: `Retry a failed queue job`
+ *
+ * Registered under the `ace` CLI as `QueueRetryCommand`. See `$signature`,
+ * `$options`, and `$arguments` below for its CLI shape.
+ */
 export default class QueueRetryCommand {
     /**
      * The name and signature of the console command.
@@ -29,6 +35,9 @@ export default class QueueRetryCommand {
      * @var $arguments Array<Array<string>>
      */
     $arguments = [];
+    /**
+     * Executes this command.
+     */
     async handle() {
         let running = true;
         process.on("exit", async () => {

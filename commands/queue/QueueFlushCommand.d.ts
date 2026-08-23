@@ -1,3 +1,9 @@
+/**
+ * Console command: `Flush all of the failed queue jobs`
+ *
+ * Registered under the `ace` CLI as `QueueFlushCommand`. See `$signature`,
+ * `$options`, and `$arguments` below for its CLI shape.
+ */
 export default class QueueFlushCommand {
     /**
      * The name and signature of the console command.
@@ -23,5 +29,8 @@ export default class QueueFlushCommand {
      * @var $arguments Array<Array<string>>
      */
     protected $arguments: Array<Array<string>>;
+    /**
+     * Executes this command.
+     */
     handle(): Promise<void>;
 }

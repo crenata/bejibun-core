@@ -1,3 +1,9 @@
+/**
+ * Console command: `Retry a failed queue job`
+ *
+ * Registered under the `ace` CLI as `QueueRetryCommand`. See `$signature`,
+ * `$options`, and `$arguments` below for its CLI shape.
+ */
 export default class QueueRetryCommand {
     /**
      * The name and signature of the console command.
@@ -23,5 +29,8 @@ export default class QueueRetryCommand {
      * @var $arguments Array<Array<string>>
      */
     protected $arguments: Array<Array<string>>;
+    /**
+     * Executes this command.
+     */
     handle(): Promise<void>;
 }

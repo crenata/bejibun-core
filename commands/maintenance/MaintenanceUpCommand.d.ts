@@ -1,3 +1,9 @@
+/**
+ * Console command: `Turn app into live mode`
+ *
+ * Registered under the `ace` CLI as `MaintenanceUpCommand`. See `$signature`,
+ * `$options`, and `$arguments` below for its CLI shape.
+ */
 export default class MaintenanceUpCommand {
     /**
      * The name and signature of the console command.
@@ -23,5 +29,8 @@ export default class MaintenanceUpCommand {
      * @var $arguments Array<Array<any>>
      */
     protected $arguments: Array<Array<any>>;
+    /**
+     * Executes this command.
+     */
     handle(): Promise<void>;
 }

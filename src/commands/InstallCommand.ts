@@ -2,6 +2,12 @@ import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
 import {isEmpty} from "@bejibun/utils";
 
+/**
+ * Console command: `Install package dependencies`
+ *
+ * Registered under the `ace` CLI as `InstallCommand`. See `$signature`,
+ * `$options`, and `$arguments` below for its CLI shape.
+ */
 export default class InstallCommand {
     /**
      * The name and signature of the console command.
@@ -31,6 +37,12 @@ export default class InstallCommand {
      */
     protected $arguments: Array<Array<any>> = [["<packages...>", "Install package dependencies"]];
 
+    /**
+     * Executes this command.
+     *
+     * @param options - Parsed CLI options, matching the flags declared in `$options`.
+     * @param args - Parsed positional CLI arguments, matching `$arguments`.
+     */
     public async handle(options: any, args: Array<string>): Promise<void> {
         if (isEmpty(args)) {
             Logger.setContext("APP").error("There is no packages provided.");

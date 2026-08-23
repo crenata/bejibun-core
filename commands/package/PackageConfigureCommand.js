@@ -1,6 +1,12 @@
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
 import { defineValue, isEmpty } from "@bejibun/utils";
+/**
+ * Console command: `Configure package after installation`
+ *
+ * Registered under the `ace` CLI as `PackageConfigureCommand`. See `$signature`,
+ * `$options`, and `$arguments` below for its CLI shape.
+ */
 export default class PackageConfigureCommand {
     /**
      * The name and signature of the console command.
@@ -28,6 +34,11 @@ export default class PackageConfigureCommand {
      * @var $arguments Array<Array<any>>
      */
     $arguments = [];
+    /**
+     * Executes this command.
+     *
+     * @param options - Parsed CLI options, matching the flags declared in `$options`.
+     */
     async handle(options) {
         if (isEmpty(options.package)) {
             Logger.setContext("APP").error("Package is not provided, please use --package.");

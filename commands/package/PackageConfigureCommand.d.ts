@@ -1,3 +1,9 @@
+/**
+ * Console command: `Configure package after installation`
+ *
+ * Registered under the `ace` CLI as `PackageConfigureCommand`. See `$signature`,
+ * `$options`, and `$arguments` below for its CLI shape.
+ */
 export default class PackageConfigureCommand {
     /**
      * The name and signature of the console command.
@@ -23,5 +29,10 @@ export default class PackageConfigureCommand {
      * @var $arguments Array<Array<any>>
      */
     protected $arguments: Array<Array<any>>;
+    /**
+     * Executes this command.
+     *
+     * @param options - Parsed CLI options, matching the flags declared in `$options`.
+     */
     handle(options: any): Promise<void>;
 }
