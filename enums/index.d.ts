@@ -1,4 +1,4 @@
 /**
  * Barrel file re-exporting every framework enum.
  */
-export * from "../enums/QueueDriverEnum";
+export { default as QueueDriverEnum } from "./QueueDriverEnum";

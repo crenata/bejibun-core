@@ -6,21 +6,21 @@ import type { HandlerType } from "../types/router";
  * `RouterBuilder.x402()`.
  */
 export default class X402Middleware {
-    /** The payment facilitator configuration used to verify/settle payments. */
+    /** The payment facilitator configuration for x402 payment verification and settlement. */
     protected facilitator?: TFacilitator;
     /** Per-route payment requirements (price, asset, etc.). */
     protected routePayment?: TRoutePayment;
     /**
-     * @param facilitator - Optional payment facilitator configuration.
-     * @param routePayment - Optional per-route payment requirements.
+     * @param {TFacilitator} facilitator - Optional payment facilitator configuration.
+     * @param {TRoutePayment} routePayment - Optional per-route payment requirements.
      */
     constructor(facilitator?: TFacilitator, routePayment?: TRoutePayment);
     /**
      * Wraps the handler so the request must satisfy the configured x402
      * payment requirements before it's allowed to run.
      *
-     * @param handler - The handler to protect.
-     * @returns The payment-gated handler.
+     * @param {HandlerType} handler - The handler to protect.
+     * @returns {HandlerType} The payment-gated handler.
      */
     handle(handler: HandlerType): HandlerType;
 }

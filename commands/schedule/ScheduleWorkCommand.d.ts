@@ -1,7 +1,10 @@
 import type { TSchedule } from "../../types/schedule";
 import { CronExpression } from "cron-parser";
+/** A schedule entry enriched with a parsed cron expression and the next run timestamp. */
 type TPreparedSchedule = TSchedule & {
+    /** Parsed cron expression used to compute the next run time. */
     expression: CronExpression;
+    /** Unix timestamp (ms) when the task should next execute. */
     nextRun: number;
 };
 /**
@@ -35,8 +38,11 @@ export default class ScheduleWorkCommand {
      * @var $arguments Array<Array<string>>
      */
     protected $arguments: Array<Array<string>>;
+    /** The set of command names currently executing, preventing concurrent runs. */
     protected running: Set<string>;
+    /** The timeout handle for the schedule tick loop. */
     protected interval: NodeJS.Timeout | null;
+    /** The list of prepared schedules with parsed cron expressions. */
     protected schedules: Array<TPreparedSchedule>;
     /**
      * Executes this command.

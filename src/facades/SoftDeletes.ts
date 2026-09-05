@@ -10,19 +10,19 @@ interface SoftDeleteQueryContext extends QueryContext {
 }
 
 /**
- * Objection `QueryBuilder` subclass adding Laravel-style soft-delete
+ * Objection `QueryBuilder` subclass adding soft-delete
  * semantics: by default, every query is automatically scoped to exclude
  * rows with a non-null `deletedColumn`, unless `withTrashed()` or
- * `onlyTrashed()` is used to opt out. `delete()` becomes a soft delete
+ * `onlyTrashed()` is called. `delete()` becomes a soft delete
  * (stamping `deletedColumn`) while `forceDelete()` performs a real
- * `DELETE`. Used as the base for `BaseModel`'s `BunQueryBuilder`.
+ * `DELETE`. Serves as the base for `BaseModel`'s `BunQueryBuilder`.
  */
 export default class SoftDeletes<M extends Model, R = M[]> extends QueryBuilder<M, R> {
     /** Guards against the soft-delete `WHERE` clause being applied more than once per query build. */
     private hasFilterApplied = false;
 
     /**
-     * @param modelClass - The Objection model class this query builder is bound to.
+     * @param {ModelClass<M>} modelClass - The Objection model class this query builder is bound to.
      */
     constructor(modelClass: ModelClass<M>) {
         // @ts-expect-error - QueryBuilder's constructor is protected/internal in Objection's types; subclassing requires bypassing that.
@@ -53,7 +53,7 @@ export default class SoftDeletes<M extends Model, R = M[]> extends QueryBuilder<
     /**
      * Includes soft-deleted rows in this query, alongside non-deleted ones.
      *
-     * @returns This query builder, for chaining.
+     * @returns {this} This query builder, for chaining.
      */
     withTrashed(): this {
         return (this as any).context({
@@ -65,7 +65,7 @@ export default class SoftDeletes<M extends Model, R = M[]> extends QueryBuilder<
     /**
      * Restricts this query to only soft-deleted rows.
      *
-     * @returns This query builder, for chaining.
+     * @returns {this} This query builder, for chaining.
      */
     onlyTrashed(): this {
         return (this as any).context({
@@ -78,7 +78,7 @@ export default class SoftDeletes<M extends Model, R = M[]> extends QueryBuilder<
      * Soft-deletes matching rows by stamping `deletedColumn` with the
      * current timestamp, rather than removing them from the table.
      *
-     * @returns The query builder resolving to the number of affected rows.
+     * @returns {QueryBuilder<M, number>} The query builder resolving to the number of affected rows.
      */
     delete(): QueryBuilder<M, number> {
         return (this as any).update({
@@ -89,7 +89,7 @@ export default class SoftDeletes<M extends Model, R = M[]> extends QueryBuilder<
     /**
      * Alias for `delete()`, mirroring Objection's own `del()` shorthand.
      *
-     * @returns The query builder resolving to the number of affected rows.
+     * @returns {QueryBuilder<M, number>} The query builder resolving to the number of affected rows.
      */
     del(): QueryBuilder<M, number> {
         return this.delete();
@@ -99,7 +99,7 @@ export default class SoftDeletes<M extends Model, R = M[]> extends QueryBuilder<
      * Permanently removes matching rows from the table (a real SQL
      * `DELETE`, bypassing the soft-delete behavior).
      *
-     * @returns The query builder resolving to the number of affected rows.
+     * @returns {QueryBuilder<M, number>} The query builder resolving to the number of affected rows.
      */
     forceDelete(): QueryBuilder<M, number> {
         return super.delete();
@@ -109,7 +109,7 @@ export default class SoftDeletes<M extends Model, R = M[]> extends QueryBuilder<
      * Restores soft-deleted rows by clearing `deletedColumn` back to `null`.
      * Only affects rows found via `onlyTrashed()`.
      *
-     * @returns The query builder resolving to the number of affected rows.
+     * @returns {QueryBuilder<M, number>} The query builder resolving to the number of affected rows.
      */
     restore(): QueryBuilder<M, number> {
         return this.onlyTrashed().update({

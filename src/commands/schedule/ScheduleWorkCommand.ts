@@ -1,14 +1,17 @@
 import type {TSchedule} from "@/types/schedule";
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
-import {defineValue, isEmpty, isNotEmpty} from "@bejibun/utils";
 import Luxon from "@bejibun/utils/facades/Luxon";
 import CronExpressionParser, {CronExpression} from "cron-parser";
 import Kernel from "@/Kernel";
 import ScheduleLoader from "@/loader/ScheduleLoader";
 
+/** A schedule entry enriched with a parsed cron expression and the next run timestamp. */
 type TPreparedSchedule = TSchedule & {
+    /** Parsed cron expression used to compute the next run time. */
     expression: CronExpression;
+
+    /** Unix timestamp (ms) when the task should next execute. */
     nextRun: number;
 };
 
@@ -47,8 +50,13 @@ export default class ScheduleWorkCommand {
      */
     protected $arguments: Array<Array<string>> = [];
 
+    /** The set of command names currently executing, preventing concurrent runs. */
     protected running: Set<string> = new Set<string>();
+
+    /** The timeout handle for the schedule tick loop. */
     protected interval: NodeJS.Timeout | null = null;
+
+    /** The list of prepared schedules with parsed cron expressions. */
     protected schedules: Array<TPreparedSchedule> = [];
 
     /**
@@ -81,10 +89,10 @@ export default class ScheduleWorkCommand {
         this.schedules = [];
 
         for (const schedule of ScheduleLoader.schedulers) {
-            if (isEmpty(schedule.cron)) continue;
+            if (!schedule.cron) continue;
 
             try {
-                const timezone: string = defineValue(schedule.timezone, "UTC");
+                const timezone: string = schedule.timezone ?? "UTC";
                 const now: Date = Luxon.DateTime.now().setZone(timezone).toJSDate();
 
                 const expression: CronExpression = CronExpressionParser.parse(schedule.cron, {
@@ -123,7 +131,7 @@ export default class ScheduleWorkCommand {
     }
 
     private stopSchedule(): void {
-        if (isNotEmpty(this.interval)) {
+        if (this.interval) {
             clearTimeout(this.interval as NodeJS.Timeout);
 
             this.interval = null;

@@ -1,5 +1,4 @@
 import type {HandlerType} from "@/types/router";
-import {defineValue, isNotEmpty} from "@bejibun/utils";
 
 /**
  * Middleware that parses the incoming request body/query/route params
@@ -19,24 +18,28 @@ import {defineValue, isNotEmpty} from "@bejibun/utils";
  * 5. Raw request body text, stored under the `plainText` key
  *
  * Any parsing failure is swallowed silently, leaving `payload` as whatever
- * was successfully collected before the error.
+ * data is successfully collected before the error.
  */
 export default class RequestMiddleware {
     /**
      * Wraps the handler so `request.payload` is populated before it runs.
      *
-     * @param handler - The handler to wrap.
-     * @returns The payload-populating handler.
+     * @param {HandlerType} handler - The handler to wrap.
+     * @returns {HandlerType} The payload-populating handler.
      */
     public handle(handler: HandlerType): HandlerType {
         return async (request: Bejibun.Request, server: Bun.Server<any>) => {
-            const contentType: string = defineValue(request.headers.get("content-type"), "");
+            const contentType: string = request.headers.get("content-type") ?? "";
 
             const payload: Record<string, any> = {};
 
+            const isJson = contentType.includes("application/json");
+            const isForm =
+                contentType.includes("multipart/form-data") ||
+                contentType.includes("application/x-www-form-urlencoded");
+
             try {
-                if (contentType.includes("application/json"))
-                    Object.assign(payload, await request.json());
+                if (isJson) Object.assign(payload, await request.json());
 
                 for (const [key, value] of Object.entries(request.params)) {
                     payload[key] = value;
@@ -47,10 +50,7 @@ export default class RequestMiddleware {
                     payload[key] = value;
                 }
 
-                if (
-                    contentType.includes("multipart/form-data") ||
-                    contentType.includes("application/x-www-form-urlencoded")
-                ) {
+                if (isForm) {
                     const body = await request.formData();
 
                     for (const [key, value] of body) {
@@ -58,8 +58,10 @@ export default class RequestMiddleware {
                     }
                 }
 
-                const text = await request.text();
-                if (isNotEmpty(text)) payload.plainText = text;
+                if (!isJson && !isForm) {
+                    const text = await request.text();
+                    if (text) payload.plainText = text;
+                }
             } catch {
                 // do nothing
             }

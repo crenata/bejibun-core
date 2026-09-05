@@ -8,8 +8,9 @@ export default class ModelNotFoundException extends Error {
     /** The HTTP status code this exception maps to when handled. */
     code: number;
     /**
-     * @param message - The error message.
-     * @param code - The HTTP status code to respond with. Defaults to `404`.
+     * @param {string} message - The error message.
+     * @param {number} code - The HTTP status code to respond with. Defaults to `404`.
+     * @returns {ModelNotFoundException} A new ModelNotFoundException instance.
      */
     constructor(message?: string, code?: number);
 }

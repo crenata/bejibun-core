@@ -1,6 +1,5 @@
 import type {Command} from "commander";
 import App from "@bejibun/app";
-import {defineValue, isEmpty, isNotEmpty} from "@bejibun/utils";
 import path from "path";
 import BaseModel from "@/bases/BaseModel";
 import RuntimeException from "@/exceptions/RuntimeException";
@@ -30,7 +29,7 @@ export default class Kernel {
      * callback and ensuring the DB connection (`BaseModel.knex()`) is
      * destroyed afterward regardless of success or failure.
      *
-     * @param program - The Commander program to register commands on.
+     * @param {Command} program - The Commander program to register commands on.
      */
     public static registerCommands(program: Command): void {
         const rootCommands: Array<{path: string}> = require(
@@ -79,7 +78,7 @@ export default class Kernel {
 
             const instance = new CommandClass();
 
-            if (isEmpty(instance.$signature) || typeof instance.handle !== "function") continue;
+            if (!instance.$signature || typeof instance.handle !== "function") continue;
 
             instances.push(instance);
         }
@@ -87,7 +86,7 @@ export default class Kernel {
         for (const instance of instances.sort((a, b) => a.$signature.localeCompare(b.$signature))) {
             const cmd = program
                 .command(instance.$signature)
-                .description(defineValue(instance.$description, ""));
+                .description(instance.$description ?? "");
 
             if (Array.isArray(instance.$options)) {
                 for (const option of instance.$options) {
@@ -127,7 +126,7 @@ export default class Kernel {
         const kernelPath: string = App.Path.commandsPath("Kernel.ts");
         const {default: Kernel} = require(kernelPath);
 
-        if (isEmpty(Kernel)) throw new RuntimeException(`Kernel class not found [${kernelPath}].`);
+        if (!Kernel) throw new RuntimeException(`Kernel class not found [${kernelPath}].`);
 
         const instance = new Kernel();
         if (typeof instance.schedule !== "function")
@@ -171,7 +170,7 @@ export default class Kernel {
 
             if (typeof decorator !== "function") continue;
 
-            if (isNotEmpty(decorator.name))
+            if (decorator.name)
                 (globalThis as any)[decorator.name.replace("Decorator", "")] = decorator;
         }
     }

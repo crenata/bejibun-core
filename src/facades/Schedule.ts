@@ -9,8 +9,8 @@ export default class Schedule {
     /**
      * Starts a new scheduled task for the given Ace command.
      *
-     * @param command - The Ace command to run on the configured cron schedule.
-     * @returns A new `ScheduleBuilder` for further chaining (frequency, timezone, etc.).
+     * @param {string} command - The Ace command to run on the configured cron schedule.
+     * @returns {ScheduleBuilder} A new `ScheduleBuilder` for further chaining (frequency, timezone, etc.).
      */
     public static command(command: string): ScheduleBuilder {
         return new ScheduleBuilder().command(command);

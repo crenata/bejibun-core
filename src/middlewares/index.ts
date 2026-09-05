@@ -4,8 +4,8 @@
  * `RequestMiddleware` is intentionally excluded - it's applied internally
  * by `server.ts` rather than being part of the public middleware set.
  */
-export * from "@/middlewares/MaintenanceMiddleware";
+export {default as MaintenanceMiddleware} from "@/middlewares/MaintenanceMiddleware";
 
-export * from "@/middlewares/RateLimiterMiddleware";
+export {default as RateLimiterMiddleware} from "@/middlewares/RateLimiterMiddleware";
 
-export * from "@/middlewares/X402Middleware";
+export {default as X402Middleware} from "@/middlewares/X402Middleware";

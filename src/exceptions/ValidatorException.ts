@@ -1,5 +1,4 @@
 import Logger from "@bejibun/logger";
-import {defineValue} from "@bejibun/utils";
 
 /**
  * Thrown when Vine validation fails (via `BaseController.validate()` or
@@ -12,13 +11,14 @@ export default class ValidatorException extends Error {
     public code: number;
 
     /**
-     * @param message - The error message (typically the first Vine validation failure's message).
-     * @param code - The HTTP status code to respond with. Defaults to `422`.
+     * @param {string} message - The error message (typically the first Vine validation failure's message).
+     * @param {number} code - The HTTP status code to respond with. Defaults to `422`.
+     * @returns {ValidatorException} A new ValidatorException instance.
      */
     public constructor(message?: string, code?: number) {
         super(message);
         this.name = "ValidatorException";
-        this.code = defineValue(code, 422);
+        this.code = code ?? 422;
 
         Logger.setContext(this.name).error(this.message).trace(this.stack);
 

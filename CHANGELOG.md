@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [v0.6.11](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.6.0...v0.6.11) - 2026-08-20
+## [v0.6.11](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.6.1...v0.6.11) - 2026-09-05
 
 ### 🩹 Fixes
 
@@ -14,23 +14,24 @@ All notable changes to this project will be documented in this file.
 - `alias` script now runs `tsc-alias` directly instead of via `bunx`
 
 ### 📦 Dependencies
-- Bumped [`@bejibun/app`](https://github.com/Bejibun-Framework/bejibun-app) from `^0.1.24` to `^0.1.25`
-- Bumped [`@bejibun/cache`](https://github.com/Bejibun-Framework/bejibun-cache) from `^0.1.24` to `^0.1.25`
-- Bumped [`@bejibun/cors`](https://github.com/Bejibun-Framework/bejibun-cors) from `^0.1.17` to `^0.1.18`
-- Bumped [`@bejibun/database`](https://github.com/Bejibun-Framework/bejibun-database) from `^0.1.21` to `^0.1.22`
-- Bumped [`@bejibun/limiter`](https://github.com/Bejibun-Framework/bejibun-limiter) from `^0.1.1` to `^0.1.11`
-- Bumped [`@bejibun/logger`](https://github.com/Bejibun-Framework/bejibun-logger) from `^0.1.22` to `^0.1.23`
-- Bumped [`@bejibun/storage`](https://github.com/Bejibun-Framework/bejibun-storage) from `^0.1.0` to `^0.1.1`
-- Bumped [`@bejibun/utils`](https://github.com/Bejibun-Framework/bejibun-utils) from `^0.1.28` to `^0.1.29`
-- Bumped [`@bejibun/x402`](https://github.com/Bejibun-Framework/bejibun-x402) (devDependency) from `^0.2.1` to `^0.2.11`
-- Bumped `tsc-alias` (devDependency) from `^1.9.1` to `^1.9.2`
+- Bumped [`@bejibun/app`](https://github.com/Bejibun-Framework/bejibun-app) from `^0.1.24` to `^0.1.26`
+- Bumped [`@bejibun/cache`](https://github.com/Bejibun-Framework/bejibun-cache) from `^0.1.24` to `^0.1.26`
+- Bumped [`@bejibun/cors`](https://github.com/Bejibun-Framework/bejibun-cors) from `^0.1.17` to `^0.1.19`
+- Bumped [`@bejibun/database`](https://github.com/Bejibun-Framework/bejibun-database) from `^0.1.21` to `^0.1.23`
+- Bumped [`@bejibun/limiter`](https://github.com/Bejibun-Framework/bejibun-limiter) from `^0.1.1` to `^0.1.12`
+- Bumped [`@bejibun/logger`](https://github.com/Bejibun-Framework/bejibun-logger) from `^0.1.22` to `^0.2.1`
+- Bumped [`@bejibun/storage`](https://github.com/Bejibun-Framework/bejibun-storage) from `^0.1.0` to `^0.1.11`
+- Bumped [`@bejibun/utils`](https://github.com/Bejibun-Framework/bejibun-utils) from `^0.1.28` to `^0.1.30`
+- Bumped [`@bejibun/x402`](https://github.com/Bejibun-Framework/bejibun-x402) (devDependency) from `^0.2.1` to `^0.2.12`
+- Bumped `@types/bun` (devDependency) from `^1.3.14` to `^1.4.1`
+- Bumped `tsc-alias` (devDependency) from `^1.9.1` to `^1.9.4`
 - Added `@eslint/js` (devDependency) `^10.0.1`
-- Added `eslint` (devDependency) `^10.8.1`
+- Added `eslint` (devDependency) `^10.10.0`
 - Added `eslint-config-prettier` (devDependency) `^10.1.8`
-- Added `globals` (devDependency) `^17.11.0`
+- Added `globals` (devDependency) `^17.12.0`
 - Added `prettier` (devDependency) `^3.9.6`
 - Added `typescript` (devDependency) `^6.0.3`
-- Added `typescript-eslint` (devDependency) `^8.67.0`
+- Added `typescript-eslint` (devDependency) `^8.69.0`
 
 ### ❤️Contributors
 - Havea Crenata ([@crenata](https://github.com/crenata))

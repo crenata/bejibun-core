@@ -32,10 +32,10 @@ declare module "@vinejs/vine" {
         /**
          * Validates that a matching row exists in the given table/column.
          *
-         * @param tableOrOptions - The model class to check against, or a full `ExtendOptions` object.
-         * @param column - The column to check (when `tableOrOptions` is a model class).
-         * @param withTrashed - Whether to include soft-deleted rows.
-         * @param nullable - Whether `null`/`undefined` values should skip the check.
+         * @param {typeof BaseModel | ExtendOptions} tableOrOptions - The model class to check against, or a full `ExtendOptions` object.
+         * @param {string} column - The column to check (when `tableOrOptions` is a model class).
+         * @param {boolean} withTrashed - Whether to include soft-deleted rows.
+         * @param {boolean} nullable - Whether `null`/`undefined` values should skip the check.
          */
         exists(
             tableOrOptions: typeof BaseModel | ExtendOptions,
@@ -47,10 +47,10 @@ declare module "@vinejs/vine" {
         /**
          * Validates that no matching row already exists in the given table/column.
          *
-         * @param tableOrOptions - The model class to check against, or a full `ExtendOptions` object.
-         * @param column - The column to check (when `tableOrOptions` is a model class).
-         * @param withTrashed - Whether to include soft-deleted rows.
-         * @param nullable - Whether `null`/`undefined` values should skip the check.
+         * @param {typeof BaseModel | ExtendOptions} tableOrOptions - The model class to check against, or a full `ExtendOptions` object.
+         * @param {string} column - The column to check (when `tableOrOptions` is a model class).
+         * @param {boolean} withTrashed - Whether to include soft-deleted rows.
+         * @param {boolean} nullable - Whether `null`/`undefined` values should skip the check.
          */
         unique(
             tableOrOptions: typeof BaseModel | ExtendOptions,
@@ -64,10 +64,10 @@ declare module "@vinejs/vine" {
         /**
          * Validates that a matching row exists in the given table/column.
          *
-         * @param tableOrOptions - The model class to check against, or a full `ExtendOptions` object.
-         * @param column - The column to check (when `tableOrOptions` is a model class).
-         * @param withTrashed - Whether to include soft-deleted rows.
-         * @param nullable - Whether `null`/`undefined` values should skip the check.
+         * @param {typeof BaseModel | ExtendOptions} tableOrOptions - The model class to check against, or a full `ExtendOptions` object.
+         * @param {string} column - The column to check (when `tableOrOptions` is a model class).
+         * @param {boolean} withTrashed - Whether to include soft-deleted rows.
+         * @param {boolean} nullable - Whether `null`/`undefined` values should skip the check.
          */
         exists(
             tableOrOptions: typeof BaseModel | ExtendOptions,
@@ -79,10 +79,10 @@ declare module "@vinejs/vine" {
         /**
          * Validates that no matching row already exists in the given table/column.
          *
-         * @param tableOrOptions - The model class to check against, or a full `ExtendOptions` object.
-         * @param column - The column to check (when `tableOrOptions` is a model class).
-         * @param withTrashed - Whether to include soft-deleted rows.
-         * @param nullable - Whether `null`/`undefined` values should skip the check.
+         * @param {typeof BaseModel | ExtendOptions} tableOrOptions - The model class to check against, or a full `ExtendOptions` object.
+         * @param {string} column - The column to check (when `tableOrOptions` is a model class).
+         * @param {boolean} withTrashed - Whether to include soft-deleted rows.
+         * @param {boolean} nullable - Whether `null`/`undefined` values should skip the check.
          */
         unique(
             tableOrOptions: typeof BaseModel | ExtendOptions,

@@ -11,8 +11,8 @@ export default class RateLimiterMiddleware {
      * requesting client's IP address (converted to a filesystem-safe key
      * via `Str.ipToFileName`).
      *
-     * @param handler - The handler to rate-limit.
-     * @returns The rate-limited handler.
+     * @param {HandlerType} handler - The handler to rate-limit.
+     * @returns {HandlerType} The rate-limited handler.
      */
     handle(handler: HandlerType): HandlerType;
 }

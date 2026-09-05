@@ -4,5 +4,5 @@
  * Imported once by `BaseValidator` so every validator gets the extended
  * rule set automatically.
  */
-import "../utils/vines/exists";
-import "../utils/vines/unique";
+import "./vines/exists";
+import "./vines/unique";

@@ -2,8 +2,8 @@
  * Barrel file re-exporting every base class provided by the framework
  * (`BaseController`, `BaseJob`, `BaseModel`, `BaseValidator`, `BaseWebSocket`).
  */
-export * from "../bases/BaseController";
-export * from "../bases/BaseJob";
-export * from "../bases/BaseModel";
-export * from "../bases/BaseValidator";
-export * from "../bases/BaseWebSocket";
+export { default as BaseController } from "./BaseController";
+export { default as BaseJob } from "./BaseJob";
+export { default as BaseModel } from "./BaseModel";
+export { default as BaseValidator } from "./BaseValidator";
+export { default as BaseWebSocket } from "./BaseWebSocket";

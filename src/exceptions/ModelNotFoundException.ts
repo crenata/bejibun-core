@@ -1,5 +1,4 @@
 import Logger from "@bejibun/logger";
-import {defineValue} from "@bejibun/utils";
 
 /**
  * Thrown when a model lookup (e.g. `BaseModel.findOrFail()`) finds no
@@ -12,13 +11,14 @@ export default class ModelNotFoundException extends Error {
     public code: number;
 
     /**
-     * @param message - The error message.
-     * @param code - The HTTP status code to respond with. Defaults to `404`.
+     * @param {string} message - The error message.
+     * @param {number} code - The HTTP status code to respond with. Defaults to `404`.
+     * @returns {ModelNotFoundException} A new ModelNotFoundException instance.
      */
     public constructor(message?: string, code?: number) {
         super(message);
         this.name = "ModelNotFoundException";
-        this.code = defineValue(code, 404);
+        this.code = code ?? 404;
 
         Logger.setContext(this.name).error(this.message).trace(this.stack);
 

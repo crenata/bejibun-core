@@ -8,7 +8,7 @@ export default class NamespaceLoader {
     /**
      * Scans and loads every class file under the given directory.
      *
-     * @param directory - The absolute directory path to scan.
+     * @param {string} directory - The absolute directory path to scan.
      */
     static async load(directory) {
         return await new NamespaceBuilder().load(directory);

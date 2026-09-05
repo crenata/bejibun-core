@@ -9,7 +9,7 @@ export default class WebSocketLoader {
     /**
      * Registers a WebSocket handler class.
      *
-     * @param schedule - The WebSocket handler class to register.
+     * @param {BaseWebSocket} schedule - The WebSocket handler class to register.
      */
     static add(schedule) {
         WebSocketLoader.controllers.push(schedule);

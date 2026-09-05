@@ -12,15 +12,15 @@ export default class NamespaceBuilder {
      * project root, with the file extension stripped and path separators
      * normalized to forward slashes.
      *
-     * @param filePath - The absolute path to the file.
-     * @returns The computed namespace (e.g. `"app/models/User"`).
+     * @param {string} filePath - The absolute path to the file.
+     * @returns {string} The computed namespace (e.g. `"app/models/User"`).
      */
     private computeNamespace;
     /**
      * Recursively collects every `.ts`/`.js` file under the given directory.
      *
-     * @param directory - The directory to walk.
-     * @returns The absolute paths of every matching file found. Returns an empty array if the directory can't be read.
+     * @param {any} directory - The directory to walk.
+     * @returns {Array<string>} The absolute paths of every matching file found. Returns an empty array if the directory can't be read.
      */
     private walk;
     /**
@@ -29,7 +29,7 @@ export default class NamespaceBuilder {
      * `setNamespace()` (skipping files with no default export, or whose
      * default export doesn't expose `setNamespace`).
      *
-     * @param directory - The directory to load and register namespaces from.
+     * @param {string} directory - The directory to load and register namespaces from.
      */
     load(directory: string): Promise<void>;
 }

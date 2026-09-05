@@ -1,5 +1,4 @@
 import App from "@bejibun/app";
-import {defineValue, isEmpty, isNotEmpty} from "@bejibun/utils";
 import fs from "fs";
 import RuntimeException from "@/exceptions/RuntimeException";
 
@@ -16,7 +15,7 @@ import RuntimeException from "@/exceptions/RuntimeException";
  */
 (globalThis as any).config = (key: string, defaultValue: any = null): any => {
     const keys: Array<string> = key.split(".");
-    if (isEmpty(keys)) throw new RuntimeException("Invalid key config.");
+    if (keys.length === 0) throw new RuntimeException("Invalid key config.");
 
     const filename: string | undefined = keys.shift();
     const configPath: string = App.Path.configPath(`${filename as string}.ts`);
@@ -27,7 +26,7 @@ import RuntimeException from "@/exceptions/RuntimeException";
     let value: any = config;
 
     for (const segment of keys) {
-        if (isNotEmpty(value) && typeof value === "object" && segment in value) {
+        if (value && typeof value === "object" && segment in value) {
             value = value[segment];
         } else {
             return defaultValue;
@@ -42,4 +41,4 @@ import RuntimeException from "@/exceptions/RuntimeException";
  * `Bun.env`, falling back to `defaultValue` when the variable is unset.
  */
 (globalThis as any).env = (key: string, defaultValue: any = null): string | undefined =>
-    defineValue(Bun.env[key], defaultValue);
+    Bun.env[key] ?? defaultValue;

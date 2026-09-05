@@ -12,8 +12,8 @@ export interface IMiddleware {
     /**
      * Wraps the given handler with this middleware's behavior.
      *
-     * @param handler - The handler to wrap.
-     * @returns The wrapped handler.
+     * @param {HandlerType} handler - The handler to wrap.
+     * @returns {HandlerType} The wrapped handler.
      */
     handle(handler: HandlerType): HandlerType;
 }

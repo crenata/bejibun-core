@@ -1,6 +1,5 @@
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
-import {isEmpty} from "@bejibun/utils";
 import Str from "@bejibun/utils/facades/Str";
 import path from "path";
 
@@ -42,11 +41,11 @@ export default class MakeJobCommand {
     /**
      * Executes this command.
      *
-     * @param options - Parsed CLI options, matching the flags declared in `$options`.
-     * @param args - Parsed positional CLI arguments, matching `$arguments`.
+     * @param {any} options - Parsed CLI options, matching the flags declared in `$options`.
+     * @param {string} args - Parsed positional CLI arguments, matching `$arguments`.
      */
     public async handle(options: any, args: string): Promise<void> {
-        if (isEmpty(args)) {
+        if (!args) {
             Logger.setContext("APP").error("There is no filename provided.");
             return;
         }

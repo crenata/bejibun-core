@@ -32,8 +32,8 @@ export default class MakeJobCommand {
     /**
      * Executes this command.
      *
-     * @param options - Parsed CLI options, matching the flags declared in `$options`.
-     * @param args - Parsed positional CLI arguments, matching `$arguments`.
+     * @param {any} options - Parsed CLI options, matching the flags declared in `$options`.
+     * @param {string} args - Parsed positional CLI arguments, matching `$arguments`.
      */
     handle(options: any, args: string): Promise<void>;
 }

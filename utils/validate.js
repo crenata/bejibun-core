@@ -1,4 +1,3 @@
-import { defineValue, isNotEmpty } from "@bejibun/utils";
 import { errors } from "@vinejs/vine";
 import ValidatorException from "../exceptions/ValidatorException";
 /**
@@ -8,9 +7,9 @@ import ValidatorException from "../exceptions/ValidatorException";
  * Shared by `BaseController.validate()` and `Bejibun.Request.validate()`
  * so both entry points behave identically.
  *
- * @param validator - The Vine validator to run.
- * @param body - The data to validate.
- * @returns The validated (and type-coerced) data.
+ * @param {Bejibun.Validator} validator - The Vine validator to run.
+ * @param {Record<string, any>} body - The data to validate.
+ * @returns {Promise<any>} The validated (and type-coerced) data.
  * @throws {ValidatorException} When validation fails.
  */
 export async function validatePayload(validator, body) {
@@ -19,10 +18,10 @@ export async function validatePayload(validator, body) {
     }
     catch (error) {
         let message;
-        if (error instanceof errors.E_VALIDATION_ERROR && isNotEmpty(error.messages))
+        if (error instanceof errors.E_VALIDATION_ERROR && error.messages?.length)
             message = error.messages[0]?.message;
         else
-            message = defineValue(error?.message, "Invalid syntax validation.");
+            message = error?.message ?? "Invalid syntax validation.";
         throw new ValidatorException(message);
     }
 }

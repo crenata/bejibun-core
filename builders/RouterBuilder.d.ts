@@ -6,7 +6,7 @@ import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import "reflect-metadata";
 import BaseController from "../bases/BaseController";
 /**
- * Fluent builder used to define, group, and compile application routes.
+ * Fluent builder for defining, grouping, and compiling application routes.
  *
  * Each instance accumulates a base path, middleware stack, and controller
  * namespace via its chained setters (`prefix`, `middleware`, `namespace`),
@@ -17,15 +17,19 @@ import BaseController from "../bases/BaseController";
  * which is what gets handed off to Bun's router.
  */
 export default class RouterBuilder {
+    /** The path prefix prepended to every route defined by this builder. */
     protected basePath: string;
+    /** The middleware stack applied to every route defined by this builder. */
     protected middlewares: Array<IMiddleware>;
+    /** The base directory used to resolve string-based controller handlers. */
     protected baseNamespace: string;
+    /** The API documentation metadata attached to the next resolved route. */
     protected apiDoc: ApiDocConfig;
     /**
      * Sets the base path prepended to every route defined by this builder.
      *
-     * @param basePath - The path prefix (e.g. `/api/v1`).
-     * @returns This builder, for chaining.
+     * @param {string} basePath - The path prefix (e.g. `/api/v1`).
+     * @returns {RouterBuilder} This builder, for chaining.
      */
     prefix(basePath: string): RouterBuilder;
     /**
@@ -34,16 +38,16 @@ export default class RouterBuilder {
      * the handler from the outside in (last middleware pushed runs closest
      * to the handler).
      *
-     * @param middlewares - The middleware instances to add.
-     * @returns This builder, for chaining.
+     * @param {Array<IMiddleware>} middlewares - The middleware instances to add.
+     * @returns {RouterBuilder} This builder, for chaining.
      */
     middleware(...middlewares: Array<IMiddleware>): RouterBuilder;
     /**
-     * Sets the base controller namespace (directory) used to resolve
+     * Sets the base controller namespace (directory) to resolve
      * string-based handlers (e.g. `"UserController@index"`).
      *
-     * @param baseNamespace - The namespace/directory controllers are resolved from.
-     * @returns This builder, for chaining.
+     * @param {string} baseNamespace - The namespace/directory controllers are resolved from.
+     * @returns {RouterBuilder} This builder, for chaining.
      */
     namespace(baseNamespace: string): RouterBuilder;
     /**
@@ -51,9 +55,9 @@ export default class RouterBuilder {
      * this builder. Requires the optional `@bejibun/x402` package to be
      * installed.
      *
-     * @param facilitator - Optional x402 payment facilitator configuration.
-     * @param routePayment - Optional per-route payment requirements.
-     * @returns This builder, for chaining.
+     * @param {TFacilitator} facilitator - Optional x402 payment facilitator configuration.
+     * @param {TRoutePayment} routePayment - Optional per-route payment requirements.
+     * @returns {RouterBuilder} This builder, for chaining.
      * @throws {RouterException} If `@bejibun/x402` is not installed.
      */
     x402(facilitator?: TFacilitator, routePayment?: TRoutePayment): RouterBuilder;
@@ -70,13 +74,24 @@ export default class RouterBuilder {
      * reflect the group's settings before merging everything into one
      * `RouterGroup`.
      *
-     * @param routes - The route(s) or group(s) to combine.
-     * @returns The merged route group (or an array of groups, for array input without raw routes).
+     * @param {Route | Array<Route> | RouterGroup} routes - The route(s) or group(s) to combine.
+     * @returns {RouterGroup | Array<RouterGroup>} The merged route group (or an array of groups, for array input without raw routes).
      */
     group(routes: Route | Array<Route> | RouterGroup): RouterGroup | Array<RouterGroup>;
     /**
-     * Registers RESTful CRUD routes for a controller, mirroring Laravel's
-     * `Route::resource()`. Generates:
+     * Compiles a single raw route into the group's merged route map:
+     * resolves the controller handler, applies the middleware stack,
+     * attaches request helpers, registers the handler under its path/method,
+     * and records the normalized route in the raw-groups list.
+     *
+     * @param {Route} route - The raw route to compile.
+     * @param {Record<string, any>} newRoutes - The merged route map being built.
+     * @param {Array<Route>} rawGroups - The accumulator of compiled raw routes.
+     */
+    private compileRawRoute;
+    /**
+     * Registers RESTful CRUD routes for a controller.
+     * Generates:
      * - `GET {path}` -> `index`
      * - `POST {path}` -> `store`
      * - `GET {path}/:id` -> `show`
@@ -86,10 +101,10 @@ export default class RouterBuilder {
      * Only actions that exist as methods on the controller are registered;
      * `options.only`/`options.except` further narrow which actions apply.
      *
-     * @param path - The base resource path (e.g. `/users`).
-     * @param controller - The controller class providing the resource actions.
-     * @param options - Optional `only`/`except` action filters.
-     * @returns The resulting route group.
+     * @param {string} path - The base resource path (e.g. `/users`).
+     * @param {typeof BaseController} controller - The controller class providing the resource actions.
+     * @param {ResourceOptions} options - Optional `only`/`except` action filters.
+     * @returns {RouterGroup} The resulting route group.
      */
     resource(path: string, controller: typeof BaseController, options?: ResourceOptions): RouterGroup;
     /**
@@ -100,45 +115,99 @@ export default class RouterBuilder {
      *
      * This is the common implementation behind `get`, `post`, `put`, etc.
      *
-     * @param method - The HTTP method to register.
-     * @param path - The route path, relative to this builder's prefix.
-     * @param handler - A `"Controller@method"` string or a handler function.
-     * @returns The built route.
+     * @param {HttpMethodEnum} method - The HTTP method to register.
+     * @param {string} path - The route path, relative to this builder's prefix.
+     * @param {string | HandlerType} handler - A `"Controller@method"` string or a handler function.
+     * @returns {Route} The built route.
      */
     buildSingle(method: HttpMethodEnum, path: string, handler: string | HandlerType): Route;
-    /** Registers a `CONNECT` route. @param path - Route path. @param handler - Controller string or handler function. */
+    /**
+     * Registers a `CONNECT` route.
+     *
+     * @param {string} path - Route path.
+     * @param {string | HandlerType} handler - Controller string or handler function.
+     * @returns {Route} The built route.
+     */
     connect(path: string, handler: string | HandlerType): Route;
-    /** Registers a `DELETE` route. @param path - Route path. @param handler - Controller string or handler function. */
+    /**
+     * Registers a `DELETE` route.
+     *
+     * @param {string} path - Route path.
+     * @param {string | HandlerType} handler - Controller string or handler function.
+     * @returns {Route} The built route.
+     */
     delete(path: string, handler: string | HandlerType): Route;
-    /** Registers a `GET` route. @param path - Route path. @param handler - Controller string or handler function. */
+    /**
+     * Registers a `GET` route.
+     *
+     * @param {string} path - Route path.
+     * @param {string | HandlerType} handler - Controller string or handler function.
+     * @returns {Route} The built route.
+     */
     get(path: string, handler: string | HandlerType): Route;
-    /** Registers a `HEAD` route. @param path - Route path. @param handler - Controller string or handler function. */
+    /**
+     * Registers a `HEAD` route.
+     *
+     * @param {string} path - Route path.
+     * @param {string | HandlerType} handler - Controller string or handler function.
+     * @returns {Route} The built route.
+     */
     head(path: string, handler: string | HandlerType): Route;
-    /** Registers an `OPTIONS` route. @param path - Route path. @param handler - Controller string or handler function. */
+    /**
+     * Registers an `OPTIONS` route.
+     *
+     * @param {string} path - Route path.
+     * @param {string | HandlerType} handler - Controller string or handler function.
+     * @returns {Route} The built route.
+     */
     options(path: string, handler: string | HandlerType): Route;
-    /** Registers a `PATCH` route. @param path - Route path. @param handler - Controller string or handler function. */
+    /**
+     * Registers a `PATCH` route.
+     *
+     * @param {string} path - Route path.
+     * @param {string | HandlerType} handler - Controller string or handler function.
+     * @returns {Route} The built route.
+     */
     patch(path: string, handler: string | HandlerType): Route;
-    /** Registers a `POST` route. @param path - Route path. @param handler - Controller string or handler function. */
+    /**
+     * Registers a `POST` route.
+     *
+     * @param {string} path - Route path.
+     * @param {string | HandlerType} handler - Controller string or handler function.
+     * @returns {Route} The built route.
+     */
     post(path: string, handler: string | HandlerType): Route;
-    /** Registers a `PUT` route. @param path - Route path. @param handler - Controller string or handler function. */
+    /**
+     * Registers a `PUT` route.
+     *
+     * @param {string} path - Route path.
+     * @param {string | HandlerType} handler - Controller string or handler function.
+     * @returns {Route} The built route.
+     */
     put(path: string, handler: string | HandlerType): Route;
-    /** Registers a `TRACE` route. @param path - Route path. @param handler - Controller string or handler function. */
+    /**
+     * Registers a `TRACE` route.
+     *
+     * @param {string} path - Route path.
+     * @param {string | HandlerType} handler - Controller string or handler function.
+     * @returns {Route} The built route.
+     */
     trace(path: string, handler: string | HandlerType): Route;
     /**
      * Registers the same path/handler for multiple HTTP methods at once.
      *
-     * @param methods - The HTTP methods to register the route under.
-     * @param path - The route path.
-     * @param handler - A `"Controller@method"` string or a handler function.
-     * @returns The merged route group covering all given methods.
+     * @param {Array<HttpMethodEnum>} methods - The HTTP methods to register the route under.
+     * @param {string} path - The route path.
+     * @param {string | HandlerType} handler - A `"Controller@method"` string or a handler function.
+     * @returns {RouterGroup} The merged route group covering all given methods.
      */
     match(methods: Array<HttpMethodEnum>, path: string, handler: string | HandlerType): RouterGroup;
     /**
      * Registers a route that responds to every HTTP method.
      *
-     * @param path - The route path.
-     * @param handler - A `"Controller@method"` string or a handler function.
-     * @returns The merged route group covering every HTTP method.
+     * @param {string} path - The route path.
+     * @param {string | HandlerType} handler - A `"Controller@method"` string or a handler function.
+     * @returns {RouterGroup} The merged route group covering every HTTP method.
      */
     any(path: string, handler: string | HandlerType): RouterGroup;
     /**
@@ -151,9 +220,9 @@ export default class RouterBuilder {
      * `attachRequestHelpers`, since there's no request/response payload
      * cycle once the connection is upgraded.
      *
-     * @param path - The route path clients connect to.
-     * @param handler - A `"Controller@method"` string or a handler function (used to resolve the associated websocket class).
-     * @returns The built websocket route.
+     * @param {string} path - The route path clients connect to.
+     * @param {string | HandlerType} handler - A `"Controller@method"` string or a handler function (resolves the associated websocket class).
+     * @returns {Route} The built websocket route.
      */
     websocket(path: string, handler: string | HandlerType): Route;
     /**
@@ -165,8 +234,8 @@ export default class RouterBuilder {
      * everything via `mergeRoutes`, logging a warning for any duplicate
      * `METHOD path` combination (the later one wins).
      *
-     * @param routes - The route(s)/group(s) to serialize.
-     * @returns The flattened route map.
+     * @param {Route | Array<Route> | RouterGroup | Array<RouterGroup> | Array<RawsRoute>} routes - The route(s)/group(s) to serialize.
+     * @returns {RouterGroup} The flattened route map.
      */
     serialize(routes: Route | Array<Route> | RouterGroup | Array<RouterGroup> | Array<RawsRoute>): RouterGroup;
     /**
@@ -174,20 +243,20 @@ export default class RouterBuilder {
      * one, warning (via `Logger`) and overwriting when the same
      * `METHOD path` combination is registered more than once.
      *
-     * @param routes - The route group(s) to merge.
-     * @returns The merged route group.
+     * @param {RouterGroup | Array<RouterGroup>} routes - The route group(s) to merge.
+     * @returns {RouterGroup} The merged route group.
      */
     private mergeRoutes;
     /**
      * Wraps a handler so every request arriving at it has the predefined
      * Bejibun.Request accessor methods (`get`, `set`, `array`, `boolean`,
-     * `float`, `integer`, `object`, `string`, plus the Laravel-inspired
+     * `float`, `integer`, `object`, `string`, plus the fluent
      * helpers - `input`, `all`, `keys`, `only`, `except`, `has`, `hasAny`,
      * `filled`, `missing`, `header`, `hasHeader`, `bearerToken`, `cookie`,
      * `ip`, `path`, `fullUrl`, `is`, `secure`, `userAgent`, `ajax`,
      * `wantsJson`, `expectsJson`, `file`, `hasFile`, `merge`, `replace`,
      * `isMethod`, and `validate`) available - regardless of whether
-     * `RequestMiddleware` (or any other middleware) was attached to the route.
+     * `RequestMiddleware` (or any other middleware) is attached to the route.
      *
      * Applied as the outermost wrap around every resolved handler, so it
      * runs before any user middleware and the controller itself. The
@@ -196,21 +265,26 @@ export default class RouterBuilder {
      * this wrapper runs - only that it's populated by the time
      * `request.integer(...)` etc. is actually called (typically by
      * `RequestMiddleware`, if attached).
+     *
+     * @param {HandlerType} handler - The handler to wrap with request helpers.
+     * @returns {HandlerType} The handler wrapped with request helpers.
      */
     private attachRequestHelpers;
     /**
      * Normalizes a single key or array of keys into a flat array of keys,
      * used by the payload-inspecting request helpers (`only`, `except`,
      * `has`, `hasAny`, `filled`, `missing`).
+     *
+     * @returns {Array<string>} The normalized key list.
      */
     private toArrayKeys;
     /**
      * Joins a base path and a relative path into a single normalized,
      * leading-slash path, collapsing duplicate/trailing slashes.
      *
-     * @param base - The base path (e.g. the current prefix).
-     * @param path - The relative path to append.
-     * @returns The joined, normalized path (e.g. `/api/users`).
+     * @param {string} base - The base path (e.g. the current prefix).
+     * @param {string} path - The relative path to append.
+     * @returns {string} The joined, normalized path (e.g. `/api/users`).
      */
     private joinPaths;
     /**
@@ -224,10 +298,10 @@ export default class RouterBuilder {
      * for the resolved method, and - for websocket routes - stamps the
      * resolved controller class with the route's `path`.
      *
-     * @param definition - The `"Controller@method"` string to resolve.
-     * @param overrideNamespace - Namespace to resolve the controller from, if different from `this.baseNamespace`.
-     * @param websocket - When set, marks this as a websocket route and carries its resolved `path`.
-     * @returns The resolved, bound handler function.
+     * @param {string} definition - The `"Controller@method"` string to resolve.
+     * @param {string} overrideNamespace - Namespace to resolve the controller from, if different from `this.baseNamespace`.
+     * @param {Record<string, any>} websocket - When set, marks this as a websocket route and carries its resolved `path`.
+     * @returns {HandlerType} The resolved, bound handler function.
      * @throws {RouterException} If the definition is malformed, the controller can't be found, or the method doesn't exist on it.
      */
     private resolveControllerString;
@@ -236,24 +310,24 @@ export default class RouterBuilder {
      * `destroy`) should be registered by `resource()`, based on the
      * `only`/`except` options.
      *
-     * @param options - Optional `only`/`except` action filters.
-     * @returns The set of resource actions to register. Defaults to all five when no filter is given.
+     * @param {ResourceOptions} options - Optional `only`/`except` action filters.
+     * @returns {Set<ResourceAction>} The set of resource actions to register. Defaults to all five when no filter is given.
      */
     private resolveIncludedActions;
     /**
      * Type guard: determines whether the given value is a single unresolved
      * `Route` (or array containing one) - i.e. has a `raw` property.
      *
-     * @param routes - The value to check.
-     * @returns True if `routes` is (or contains) a `Route` with a `raw` property.
+     * @param {RawsRoute | Array<RawsRoute> | Route | Array<Route> | RouterGroup} routes - The value to check.
+     * @returns {boolean} True if `routes` is (or contains) a `Route` with a `raw` property.
      */
     private hasRaw;
     /**
      * Type guard: determines whether the given value is an already-grouped
      * `RawsRoute` (or array containing one) - i.e. has a `raws` property.
      *
-     * @param routes - The value to check.
-     * @returns True if `routes` is (or contains) a `RawsRoute` with a `raws` property.
+     * @param {RawsRoute | Array<RawsRoute> | Route | Array<Route> | RouterGroup} routes - The value to check.
+     * @returns {boolean} True if `routes` is (or contains) a `RawsRoute` with a `raws` property.
      */
     private hasRaws;
     /**
@@ -261,8 +335,8 @@ export default class RouterBuilder {
      * - a plain object whose every value is a handler function (e.g.
      * `{ GET: handler, POST: handler }`), as opposed to a nested `RouterGroup`.
      *
-     * @param value - The value to check.
-     * @returns True if every property of `value` is a function.
+     * @param {any} value - The value to check.
+     * @returns {boolean} True if every property of `value` is a function.
      */
     private isMethodMap;
     /**
@@ -279,8 +353,8 @@ export default class RouterBuilder {
      * middleware stack + `attachRequestHelpers`, and recurses into any
      * further nested groups.
      *
-     * @param route - The route or route group to apply this builder's settings to.
-     * @returns The resulting, fully-resolved route group.
+     * @param {RouterGroup | Route} route - The route or route group to apply this builder's settings to.
+     * @returns {RouterGroup} The resulting, fully-resolved route group.
      */
     private applyGroup;
 }

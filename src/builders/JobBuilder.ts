@@ -2,7 +2,7 @@ import Luxon from "@bejibun/utils/facades/Luxon";
 import JobModel from "@/models/JobModel";
 
 /**
- * Fluent builder used to configure and dispatch a queue job. Persists the
+ * Fluent builder for configuring and dispatching a queue job. Persists the
  * job as a row in `JobModel` (queue name, serialized arguments, and the
  * unix timestamp it becomes available at) for the queue worker to pick up.
  */
@@ -10,7 +10,7 @@ export default class JobBuilder {
     /** The queue name this job will be pushed onto. */
     protected queue?: string;
 
-    /** The unix timestamp this builder was created at. */
+    /** The unix timestamp this builder is created at. */
     protected now: number;
 
     /** The unix timestamp the job becomes eligible to run at (defaults to `now`, shifted by `delay()`). */
@@ -28,8 +28,8 @@ export default class JobBuilder {
     /**
      * Sets the queue this job will be dispatched onto.
      *
-     * @param queue - The queue name/namespace.
-     * @returns This builder, for chaining.
+     * @param {string} queue - The queue name/namespace.
+     * @returns {JobBuilder} This builder, for chaining.
      */
     public setQueue(queue: string): JobBuilder {
         this.queue = queue;
@@ -40,8 +40,8 @@ export default class JobBuilder {
     /**
      * Adds arguments to be forwarded to the job's handler when it runs.
      *
-     * @param args - The arguments to store.
-     * @returns This builder, for chaining.
+     * @param {any} args - The arguments to store.
+     * @returns {JobBuilder} This builder, for chaining.
      */
     public dispatch(...args: any): JobBuilder {
         this.args.push(...args);
@@ -52,8 +52,8 @@ export default class JobBuilder {
     /**
      * Delays the job's availability by the given number of seconds from now.
      *
-     * @param delay - The delay, in seconds.
-     * @returns This builder, for chaining.
+     * @param {number} delay - The delay, in seconds.
+     * @returns {JobBuilder} This builder, for chaining.
      */
     public delay(delay: number): JobBuilder {
         this.availableAt = this.now + delay;

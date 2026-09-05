@@ -12,29 +12,34 @@ export default class BaseWebSocket {
     /**
      * The path this websocket instance is bound to.
      *
+     * @returns {string} The registered route path.
      * @throws {RuntimeException} If no `path` has been set on the class.
      */
     get currentPath(): string;
-    /** Every currently-connected client for this websocket's path. */
+    /**
+     * Every currently-connected client for this websocket's path.
+     *
+     * @returns {Array<any>} The list of connected client instances (empty when none).
+     */
     get connections(): Array<any>;
     /**
      * Registers a newly-connected client under the given path.
      *
-     * @param path - The websocket path the client connected to.
-     * @param client - The client/connection instance to register.
+     * @param {string} path - The websocket path the client connected to.
+     * @param {any} client - The client/connection instance to register.
      */
     static addClient(path: string, client: any): void;
     /**
      * Removes a disconnected client from the given path's registry.
      *
-     * @param path - The websocket path the client was connected to.
-     * @param client - The client/connection instance to remove.
+     * @param {string} path - The websocket path the client is connected to.
+     * @param {any} client - The client/connection instance to remove.
      */
     static removeClient(path: string, client: any): void;
     /**
      * Sends a message to every open connection on this websocket's path.
      *
-     * @param message - The message to broadcast.
+     * @param {any} message - The message to broadcast.
      */
     broadcast(message: any): void;
 }

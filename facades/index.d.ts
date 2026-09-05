@@ -1,8 +1,7 @@
 /**
- * Barrel file re-exporting every facade provided by the framework
- * (`Response`, `Router`, `Schedule`, `SoftDeletes`).
+ * Barrel file re-exporting every facade provided by the framework.
  */
-export * from "../facades/Response";
-export * from "../facades/Router";
-export * from "../facades/Schedule";
-export * from "../facades/SoftDeletes";
+export { default as Response } from "./Response";
+export { default as Router } from "./Router";
+export { default as Schedule } from "./Schedule";
+export { default as SoftDeletes } from "./SoftDeletes";

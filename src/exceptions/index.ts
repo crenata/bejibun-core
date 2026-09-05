@@ -1,13 +1,14 @@
 /**
- * Barrel file re-exporting the framework's exception handler and
- * exception classes.
+ * Barrel file re-exporting the framework's exception classes.
  */
-export * from "@/exceptions/ExceptionHandler";
+export {default as ExceptionHandler} from "@/exceptions/ExceptionHandler";
 
-export * from "@/exceptions/ModelNotFoundException";
+export {default as ModelNotFoundException} from "@/exceptions/ModelNotFoundException";
 
-export * from "@/exceptions/RouterException";
+export {default as QueueException} from "@/exceptions/QueueException";
 
-export * from "@/exceptions/RuntimeException";
+export {default as RouterException} from "@/exceptions/RouterException";
 
-export * from "@/exceptions/ValidatorException";
+export {default as RuntimeException} from "@/exceptions/RuntimeException";
+
+export {default as ValidatorException} from "@/exceptions/ValidatorException";

@@ -1,6 +1,5 @@
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
-import { defineValue, isEmpty } from "@bejibun/utils";
 import Luxon from "@bejibun/utils/facades/Luxon";
 import QueueConfig from "../../config/queue";
 import QueueException from "../../exceptions/QueueException";
@@ -59,10 +58,10 @@ export default class QueueWorkCommand {
             config = require(configPath).default;
         else
             config = QueueConfig;
-        if (isEmpty(config))
+        if (!config)
             throw new QueueException("There is no config provided.");
         const currentConnection = config.connections[config.default];
-        const retryAfter = defineValue(Number(currentConnection?.retry_after), 60);
+        const retryAfter = Number(currentConnection?.retry_after) || 60;
         let running = true;
         process.on("exit", async () => {
             running = false;
@@ -86,7 +85,7 @@ export default class QueueWorkCommand {
                 .where((builder) => builder.whereNull("reserved_at").orWhere("reserved_at", "<", staleBefore))
                 .orderBy("id", "asc")
                 .first();
-            if (isEmpty(job?.id)) {
+            if (!job?.id) {
                 await Bun.sleep(retryAfter * 1000);
             }
             else {
@@ -99,13 +98,13 @@ export default class QueueWorkCommand {
                     .update({
                     reserved_at: Luxon.DateTime.now().toUnixInteger()
                 });
-                if (isEmpty(claimed))
+                if (!claimed)
                     continue;
                 // Dynamically resolves and invokes the job class's `handle()` with its stored payload.
                 const handler = async () => {
                     const module = await import(App.Path.rootPath(job.queue));
                     const Class = module.default;
-                    if (isEmpty(Class))
+                    if (!Class)
                         throw new RuntimeException(`Job class not found [${job.queue}].`);
                     const instance = new Class();
                     if (typeof instance.handle !== "function")
@@ -121,7 +120,7 @@ export default class QueueWorkCommand {
                     await JobModel.query()
                         .findById(job.id)
                         .update({
-                        attempts: defineValue(Number(job.attempts), 0) + 1,
+                        attempts: (Number(job.attempts) || 0) + 1,
                         reserved_at: null
                     });
                     await Bun.sleep(retryAfter * 1000);

@@ -1,6 +1,5 @@
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
-import { defineValue, isEmpty, isNotEmpty } from "@bejibun/utils";
 import Luxon from "@bejibun/utils/facades/Luxon";
 import CronExpressionParser from "cron-parser";
 import Kernel from "../../Kernel";
@@ -36,8 +35,11 @@ export default class ScheduleWorkCommand {
      * @var $arguments Array<Array<string>>
      */
     $arguments = [];
+    /** The set of command names currently executing, preventing concurrent runs. */
     running = new Set();
+    /** The timeout handle for the schedule tick loop. */
     interval = null;
+    /** The list of prepared schedules with parsed cron expressions. */
     schedules = [];
     /**
      * Executes this command.
@@ -63,10 +65,10 @@ export default class ScheduleWorkCommand {
     prepareSchedules() {
         this.schedules = [];
         for (const schedule of ScheduleLoader.schedulers) {
-            if (isEmpty(schedule.cron))
+            if (!schedule.cron)
                 continue;
             try {
-                const timezone = defineValue(schedule.timezone, "UTC");
+                const timezone = schedule.timezone ?? "UTC";
                 const now = Luxon.DateTime.now().setZone(timezone).toJSDate();
                 const expression = CronExpressionParser.parse(schedule.cron, {
                     currentDate: now
@@ -95,7 +97,7 @@ export default class ScheduleWorkCommand {
         tick();
     }
     stopSchedule() {
-        if (isNotEmpty(this.interval)) {
+        if (this.interval) {
             clearTimeout(this.interval);
             this.interval = null;
         }

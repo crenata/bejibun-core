@@ -1,6 +1,5 @@
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
-import { defineValue, isEmpty } from "@bejibun/utils";
 import Luxon from "@bejibun/utils/facades/Luxon";
 import RuntimeException from "../../exceptions/RuntimeException";
 import JobModel from "../../models/JobModel";
@@ -58,7 +57,7 @@ export default class QueueRetryCommand {
                 .whereNull("reserved_at")
                 .orderBy("id", "asc")
                 .first();
-            if (isEmpty(job?.id)) {
+            if (!job?.id) {
                 running = false;
             }
             else {
@@ -69,12 +68,12 @@ export default class QueueRetryCommand {
                     .update({
                     reserved_at: Luxon.DateTime.now().toUnixInteger()
                 });
-                if (isEmpty(claimed))
+                if (!claimed)
                     continue;
                 const handler = async () => {
                     const module = await import(App.Path.rootPath(job.queue));
                     const Class = module.default;
-                    if (isEmpty(Class))
+                    if (!Class)
                         throw new RuntimeException(`Job class not found [${job.queue}].`);
                     const instance = new Class();
                     if (typeof instance.handle !== "function")
@@ -89,7 +88,7 @@ export default class QueueRetryCommand {
                     await JobModel.query()
                         .findById(job.id)
                         .update({
-                        attempts: defineValue(Number(job.attempts), 0) + 1,
+                        attempts: (Number(job.attempts) || 0) + 1,
                         reserved_at: null
                     });
                 }

@@ -10,7 +10,7 @@ export default class ScheduleLoader {
     /**
      * Registers a scheduled task.
      *
-     * @param schedule - The schedule descriptor to register.
+     * @param {TSchedule} schedule - The schedule descriptor to register.
      */
     static add(schedule: TSchedule): void;
 }

@@ -10,7 +10,7 @@ export default class CorsLoader {
     /**
      * Sets the active CORS configuration.
      *
-     * @param cors - The CORS configuration to store.
+     * @param {Record<string, any>} cors - The CORS configuration to store.
      */
     public static set(cors: Record<string, any>): void {
         CorsLoader.cors = cors;

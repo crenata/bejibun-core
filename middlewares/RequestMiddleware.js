@@ -1,4 +1,3 @@
-import { defineValue, isNotEmpty } from "@bejibun/utils";
 /**
  * Middleware that parses the incoming request body/query/route params
  * into a single flat `request.payload` map, which every accessor attached
@@ -17,21 +16,24 @@ import { defineValue, isNotEmpty } from "@bejibun/utils";
  * 5. Raw request body text, stored under the `plainText` key
  *
  * Any parsing failure is swallowed silently, leaving `payload` as whatever
- * was successfully collected before the error.
+ * data is successfully collected before the error.
  */
 export default class RequestMiddleware {
     /**
      * Wraps the handler so `request.payload` is populated before it runs.
      *
-     * @param handler - The handler to wrap.
-     * @returns The payload-populating handler.
+     * @param {HandlerType} handler - The handler to wrap.
+     * @returns {HandlerType} The payload-populating handler.
      */
     handle(handler) {
         return async (request, server) => {
-            const contentType = defineValue(request.headers.get("content-type"), "");
+            const contentType = request.headers.get("content-type") ?? "";
             const payload = {};
+            const isJson = contentType.includes("application/json");
+            const isForm = contentType.includes("multipart/form-data") ||
+                contentType.includes("application/x-www-form-urlencoded");
             try {
-                if (contentType.includes("application/json"))
+                if (isJson)
                     Object.assign(payload, await request.json());
                 for (const [key, value] of Object.entries(request.params)) {
                     payload[key] = value;
@@ -40,16 +42,17 @@ export default class RequestMiddleware {
                 for (const [key, value] of url.searchParams) {
                     payload[key] = value;
                 }
-                if (contentType.includes("multipart/form-data") ||
-                    contentType.includes("application/x-www-form-urlencoded")) {
+                if (isForm) {
                     const body = await request.formData();
                     for (const [key, value] of body) {
                         payload[key] = value;
                     }
                 }
-                const text = await request.text();
-                if (isNotEmpty(text))
-                    payload.plainText = text;
+                if (!isJson && !isForm) {
+                    const text = await request.text();
+                    if (text)
+                        payload.plainText = text;
+                }
             }
             catch {
                 // do nothing

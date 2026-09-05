@@ -1,4 +1,4 @@
-import type {HandlerType} from "../types/router";
+import type {HandlerType} from "./router";
 
 /** A function that wraps a handler with additional behavior, returning a new handler. */
 export type MiddlewareType = (handler: HandlerType) => HandlerType;
@@ -12,8 +12,8 @@ export interface IMiddleware {
     /**
      * Wraps the given handler with this middleware's behavior.
      *
-     * @param handler - The handler to wrap.
-     * @returns The wrapped handler.
+     * @param {HandlerType} handler - The handler to wrap.
+     * @returns {HandlerType} The wrapped handler.
      */
     handle(handler: HandlerType): HandlerType;
 }

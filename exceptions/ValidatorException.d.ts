@@ -8,8 +8,9 @@ export default class ValidatorException extends Error {
     /** The HTTP status code this exception maps to when handled. */
     code: number;
     /**
-     * @param message - The error message (typically the first Vine validation failure's message).
-     * @param code - The HTTP status code to respond with. Defaults to `422`.
+     * @param {string} message - The error message (typically the first Vine validation failure's message).
+     * @param {number} code - The HTTP status code to respond with. Defaults to `422`.
+     * @returns {ValidatorException} A new ValidatorException instance.
      */
     constructor(message?: string, code?: number);
 }

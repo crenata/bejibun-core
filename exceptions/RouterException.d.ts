@@ -9,8 +9,9 @@ export default class RouterException extends Error {
     /** The HTTP status code this exception maps to when handled. */
     code: number;
     /**
-     * @param message - The error message.
-     * @param code - The HTTP status code to respond with. Defaults to `500`.
+     * @param {string} message - The error message.
+     * @param {number} code - The HTTP status code to respond with. Defaults to `500`.
+     * @returns {RouterException} A new RouterException instance.
      */
     constructor(message?: string, code?: number);
 }

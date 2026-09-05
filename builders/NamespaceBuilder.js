@@ -1,5 +1,4 @@
 import App from "@bejibun/app";
-import { isEmpty } from "@bejibun/utils";
 import { readdirSync } from "fs";
 import { join, relative, sep } from "path";
 import { pathToFileURL } from "url";
@@ -17,8 +16,8 @@ export default class NamespaceBuilder {
      * project root, with the file extension stripped and path separators
      * normalized to forward slashes.
      *
-     * @param filePath - The absolute path to the file.
-     * @returns The computed namespace (e.g. `"app/models/User"`).
+     * @param {string} filePath - The absolute path to the file.
+     * @returns {string} The computed namespace (e.g. `"app/models/User"`).
      */
     computeNamespace(filePath) {
         const rel = relative(App.Path.rootPath(), filePath);
@@ -29,8 +28,8 @@ export default class NamespaceBuilder {
     /**
      * Recursively collects every `.ts`/`.js` file under the given directory.
      *
-     * @param directory - The directory to walk.
-     * @returns The absolute paths of every matching file found. Returns an empty array if the directory can't be read.
+     * @param {any} directory - The directory to walk.
+     * @returns {Array<string>} The absolute paths of every matching file found. Returns an empty array if the directory can't be read.
      */
     async walk(directory) {
         try {
@@ -57,7 +56,7 @@ export default class NamespaceBuilder {
      * `setNamespace()` (skipping files with no default export, or whose
      * default export doesn't expose `setNamespace`).
      *
-     * @param directory - The directory to load and register namespaces from.
+     * @param {string} directory - The directory to load and register namespaces from.
      */
     async load(directory) {
         const files = await this.walk(directory);
@@ -65,7 +64,7 @@ export default class NamespaceBuilder {
             const fileUrl = pathToFileURL(file).href;
             const module = await import(fileUrl);
             const Class = module.default;
-            if (isEmpty(Class))
+            if (!Class)
                 continue;
             const namespace = this.computeNamespace(file);
             if (typeof Class.setNamespace === "function")

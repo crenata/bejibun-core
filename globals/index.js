@@ -1,5 +1,4 @@
 import App from "@bejibun/app";
-import { defineValue, isEmpty, isNotEmpty } from "@bejibun/utils";
 import fs from "fs";
 import RuntimeException from "../exceptions/RuntimeException";
 /**
@@ -14,7 +13,7 @@ import RuntimeException from "../exceptions/RuntimeException";
  */
 globalThis.config = (key, defaultValue = null) => {
     const keys = key.split(".");
-    if (isEmpty(keys))
+    if (keys.length === 0)
         throw new RuntimeException("Invalid key config.");
     const filename = keys.shift();
     const configPath = App.Path.configPath(`${filename}.ts`);
@@ -23,7 +22,7 @@ globalThis.config = (key, defaultValue = null) => {
     const config = require(configPath).default;
     let value = config;
     for (const segment of keys) {
-        if (isNotEmpty(value) && typeof value === "object" && segment in value) {
+        if (value && typeof value === "object" && segment in value) {
             value = value[segment];
         }
         else {
@@ -36,4 +35,4 @@ globalThis.config = (key, defaultValue = null) => {
  * Global `env(key, defaultValue)` implementation. Thin wrapper around
  * `Bun.env`, falling back to `defaultValue` when the variable is unset.
  */
-globalThis.env = (key, defaultValue = null) => defineValue(Bun.env[key], defaultValue);
+globalThis.env = (key, defaultValue = null) => Bun.env[key] ?? defaultValue;

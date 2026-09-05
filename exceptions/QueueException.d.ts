@@ -8,9 +8,10 @@ export default class QueueException extends Error {
     /** The HTTP status code this exception maps to when handled. */
     code: number;
     /**
-     * @param message - The error message.
-     * @param code - The HTTP status code to respond with. Defaults to `500`.
-     * @param stack - Optional stack trace to use instead of the auto-captured one.
+     * @param {string} message - The error message.
+     * @param {number} code - The HTTP status code to respond with. Defaults to `500`.
+     * @param {string} [stack] - Optional stack trace to override the auto-captured one.
+     * @returns {QueueException} A new QueueException instance.
      */
     constructor(message?: string, code?: number | undefined | null, stack?: string);
 }

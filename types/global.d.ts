@@ -1,23 +1,23 @@
 import type {ApiDocConfig} from "../decorators/ApiDocDecorator";
-import type {BejibunRequest} from "../types/request";
+import type {BejibunRequest} from "./request";
 import {SchemaTypes, VineValidator} from "@vinejs/vine";
 
 declare global {
     /**
      * Retrieves a configuration value by key.
      *
-     * @param key - The dot-notated (or plain) key identifying the config value to retrieve.
-     * @param defaultValue - The value to return if the config key is not found.
-     * @returns The configuration value associated with the key, or defaultValue if not found.
+     * @param {string} key - The dot-notated (or plain) key identifying the config value to retrieve.
+     * @param {T} defaultValue - The value to return if the config key is not found.
+     * @returns {T} The configuration value associated with the key, or defaultValue if not found.
      */
     function config<T = any>(key: string, defaultValue?: T): T;
 
     /**
      * Retrieves an environment variable value by key.
      *
-     * @param key - The name of the environment variable to retrieve.
-     * @param defaultValue - The value to return if the environment variable is not set.
-     * @returns The environment variable value, or defaultValue if not set.
+     * @param {string} key - The name of the environment variable to retrieve.
+     * @param {T} defaultValue - The value to return if the environment variable is not set.
+     * @returns {T} The environment variable value, or defaultValue if not set.
      */
     function env<T = any>(key: string, defaultValue?: T): T;
 
@@ -28,14 +28,14 @@ declare global {
      * resolved. Registered globally by `Kernel.registerDecorator()`
      * (aliased from `ApiDocDecorator`).
      *
-     * @param config - The OpenAPI metadata (description, params, responses, etc.) to attach.
+     * @param {ApiDocConfig} config - The OpenAPI metadata (description, params, responses, etc.) to attach.
      */
     function ApiDoc(config: ApiDocConfig): any;
 
     namespace Bejibun {
         /**
          * The extended Bun request type available on every route handler,
-         * carrying the payload accessors and Laravel-inspired helpers
+         * carrying the payload accessors and request helpers
          * attached by `RouterBuilder.attachRequestHelpers()`. Defaults to
          * an untyped path (`params: Record<string, string>`); pass a
          * literal path type to get typed route params, mirroring Bun's

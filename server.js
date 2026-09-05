@@ -1,6 +1,6 @@
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
-import { defineValue, isEmpty } from "@bejibun/utils";
+import { isEmpty } from "@bejibun/utils";
 import fs from "fs";
 import PerformanceConfig from "./config/performance";
 import RouteConfig from "./config/route";
@@ -39,7 +39,11 @@ export default class Server {
             throw new RuntimeException(`Missing exception handler class [${exceptionHandlerPath}].`, null, error.message);
         }
     }
-    /** Loads the application's API route definitions from `routes/api.ts`. */
+    /**
+     * Loads the application's API route definitions from `routes/api.ts`.
+     *
+     * @returns {any} The API route group.
+     */
     get apiRoutes() {
         const apiRoutesPath = App.Path.routesPath("api.ts");
         try {
@@ -49,7 +53,11 @@ export default class Server {
             throw new RuntimeException(`Missing api file on routes directory [${apiRoutesPath}].`, null, error.message);
         }
     }
-    /** Loads the application's WebSocket route definitions from `routes/websocket.ts`. */
+    /**
+     * Loads the application's WebSocket route definitions from `routes/websocket.ts`.
+     *
+     * @returns {any} The WebSocket route definitions.
+     */
     get webSocketRoutes() {
         const webSocketRoutesPath = App.Path.routesPath("websocket.ts");
         try {
@@ -59,7 +67,11 @@ export default class Server {
             throw new RuntimeException(`Missing webSocket file on routes directory [${webSocketRoutesPath}].`, null, error.message);
         }
     }
-    /** Loads the application's web route definitions from `routes/web.ts`. */
+    /**
+     * Loads the application's web route definitions from `routes/web.ts`.
+     *
+     * @returns {RouterGroup} The web route group.
+     */
     get webRoutes() {
         const webRoutesPath = App.Path.routesPath("web.ts");
         try {
@@ -73,6 +85,8 @@ export default class Server {
      * Resolves the active performance configuration, preferring the
      * application's own `config/performance.ts` over this package's
      * bundled default when present.
+     *
+     * @returns {Record<string, any>} The performance configuration.
      */
     get performance() {
         const configPath = App.Path.configPath("performance.ts");
@@ -87,6 +101,8 @@ export default class Server {
      * Resolves the active OpenAPI/route documentation configuration,
      * preferring the application's own `config/route.ts` over this
      * package's bundled default when present.
+     *
+     * @returns {Record<string, any>} The route documentation configuration.
      */
     get route() {
         const configPath = App.Path.configPath("route.ts");
@@ -101,6 +117,8 @@ export default class Server {
      * Resolves the active WebSocket configuration, preferring the
      * application's own `config/websocket.ts` over this package's
      * bundled default when present.
+     *
+     * @returns {Record<string, any>} The WebSocket configuration.
      */
     get websocket() {
         const configPath = App.Path.configPath("websocket.ts");
@@ -126,14 +144,14 @@ export default class Server {
         for (const item of this.apiRoutes.raws) {
             const raw = item.raw;
             const path = raw.path.replace(/:([^/]+)/g, "{$1}");
-            if (isEmpty(paths[path]))
+            if (!paths[path])
                 paths[path] = {};
             paths[path][raw.method.toLowerCase()] = {
-                deprecated: defineValue(raw.apiDoc?.deprecated, false),
-                parameters: defineValue(raw.apiDoc?.request?.params, []),
-                summary: defineValue(raw.apiDoc?.description, ""),
-                tags: defineValue(raw.apiDoc?.tags, []),
-                responses: defineValue(raw.apiDoc?.response, {
+                deprecated: raw.apiDoc?.deprecated ?? false,
+                parameters: raw.apiDoc?.request?.params ?? [],
+                summary: raw.apiDoc?.description ?? "",
+                tags: raw.apiDoc?.tags ?? [],
+                responses: raw.apiDoc?.response ?? {
                     200: {
                         description: "Success",
                         content: {
@@ -145,7 +163,7 @@ export default class Server {
                             }
                         }
                     }
-                })
+                }
             };
         }
         // Persist the generated OpenAPI document, served at /apis.
@@ -160,7 +178,7 @@ export default class Server {
         if (this.performance.middlewares.maintenance)
             middlewares.push(new MaintenanceMiddleware());
         const server = Bun.serve({
-            development: defineValue(Bun.env.APP_ENV, "development") !== "production" && {
+            development: (Bun.env.APP_ENV ?? "development") !== "production" && {
                 // Enable browser hot reloading in development
                 hmr: true,
                 // Echo console logs from the browser to the server
@@ -173,9 +191,9 @@ export default class Server {
                 "/apis": require(App.Path.publicPath("apis.html")),
                 // Merged API + web routes, wrapped in the global middleware
                 // stack plus RequestMiddleware (which populates request.payload).
-                ...Object.assign({}, defineValue(Router.serialize(Router.middleware(...middlewares)
+                ...Object.assign({}, Router.serialize(Router.middleware(...middlewares)
                     .middleware(new RequestMiddleware())
-                    .group([apiRoutes, Router.serialize(this.webRoutes)])), {})),
+                    .group([apiRoutes, Router.serialize(this.webRoutes)])) ?? {}),
                 // WebSocket upgrade endpoints - one per path declared in
                 // routes/websocket.ts, each simply upgrading the connection.
                 ...Object.fromEntries(Object.keys(this.webSocketRoutes.routes).map((key) => [

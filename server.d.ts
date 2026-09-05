@@ -15,28 +15,46 @@ export default class Server {
      * `app/exceptions/handler.ts`.
      */
     private get exceptionHandler();
-    /** Loads the application's API route definitions from `routes/api.ts`. */
+    /**
+     * Loads the application's API route definitions from `routes/api.ts`.
+     *
+     * @returns {any} The API route group.
+     */
     private get apiRoutes();
-    /** Loads the application's WebSocket route definitions from `routes/websocket.ts`. */
+    /**
+     * Loads the application's WebSocket route definitions from `routes/websocket.ts`.
+     *
+     * @returns {any} The WebSocket route definitions.
+     */
     private get webSocketRoutes();
-    /** Loads the application's web route definitions from `routes/web.ts`. */
+    /**
+     * Loads the application's web route definitions from `routes/web.ts`.
+     *
+     * @returns {RouterGroup} The web route group.
+     */
     private get webRoutes();
     /**
      * Resolves the active performance configuration, preferring the
      * application's own `config/performance.ts` over this package's
      * bundled default when present.
+     *
+     * @returns {Record<string, any>} The performance configuration.
      */
     private get performance();
     /**
      * Resolves the active OpenAPI/route documentation configuration,
      * preferring the application's own `config/route.ts` over this
      * package's bundled default when present.
+     *
+     * @returns {Record<string, any>} The route documentation configuration.
      */
     private get route();
     /**
      * Resolves the active WebSocket configuration, preferring the
      * application's own `config/websocket.ts` over this package's
      * bundled default when present.
+     *
+     * @returns {Record<string, any>} The WebSocket configuration.
      */
     private get websocket();
     /**

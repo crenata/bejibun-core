@@ -1,6 +1,6 @@
 import { QueryBuilder } from "objection";
 import BaseModel from "../bases/BaseModel";
-import EpochTimestamps from "../models/EpochTimestamps";
+import EpochTimestamps from "./EpochTimestamps";
 /**
  * Built-in model backing the queue's `jobs` table. Uses `EpochTimestamps`
  * for integer-based timestamps, opts out of soft-deletes/update-column

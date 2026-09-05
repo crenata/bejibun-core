@@ -3,14 +3,14 @@
  * framework - global ambient declarations, middleware, request, router,
  * schedule, validator, and the Vine module augmentation.
  */
-export * from "../types/global";
+export * from "./global";
 
-export * from "../types/middleware";
+export * from "./middleware";
 
-export * from "../types/request";
+export * from "./request";
 
-export * from "../types/router";
+export * from "./router";
 
-export * from "../types/schedule";
+export * from "./schedule";
 
-export * from "../types/vine";
+export * from "./vine";

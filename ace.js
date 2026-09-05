@@ -9,6 +9,7 @@ import { version } from "package.json";
 // and namespace loaders are initialized before any command runs), then
 // configures and parses the Commander program.
 await import(App.Path.rootPath("bootstrap.ts"));
+/** The name of the CLI binary, used for help and version output. */
 const commandExec = "ace";
 program
     .name(commandExec)

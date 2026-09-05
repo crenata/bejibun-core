@@ -22,7 +22,7 @@ export default class Kernel {
      * callback and ensuring the DB connection (`BaseModel.knex()`) is
      * destroyed afterward regardless of success or failure.
      *
-     * @param program - The Commander program to register commands on.
+     * @param {Command} program - The Commander program to register commands on.
      */
     static registerCommands(program: Command): void;
     /**

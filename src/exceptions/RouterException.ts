@@ -1,5 +1,4 @@
 import Logger from "@bejibun/logger";
-import {defineValue} from "@bejibun/utils";
 
 /**
  * Thrown for routing-related failures (e.g. malformed controller
@@ -13,13 +12,14 @@ export default class RouterException extends Error {
     public code: number;
 
     /**
-     * @param message - The error message.
-     * @param code - The HTTP status code to respond with. Defaults to `500`.
+     * @param {string} message - The error message.
+     * @param {number} code - The HTTP status code to respond with. Defaults to `500`.
+     * @returns {RouterException} A new RouterException instance.
      */
     public constructor(message?: string, code?: number) {
         super(message);
         this.name = "RouterException";
-        this.code = defineValue(code, 500);
+        this.code = code ?? 500;
 
         Logger.setContext(this.name).error(this.message).trace(this.stack);
 

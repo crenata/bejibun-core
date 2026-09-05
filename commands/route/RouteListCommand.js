@@ -1,4 +1,3 @@
-import { defineValue } from "@bejibun/utils";
 /**
  * Console command: `List all registered routes`
  *
@@ -34,7 +33,9 @@ export default class RouteListCommand {
      * Executes this command.
      */
     async handle() {
-        const url = defineValue(`${Bun.env.APP_URL}/apis`, "http://localhost:3000/apis");
+        const url = Bun.env.APP_URL
+            ? `${Bun.env.APP_URL}/apis`
+            : "http://localhost:3000/apis";
         let proc;
         switch (process.platform) {
             case "darwin":

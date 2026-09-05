@@ -1,5 +1,4 @@
 import App from "@bejibun/app";
-import { defineValue, isEmpty, isNotEmpty } from "@bejibun/utils";
 import path from "path";
 import BaseModel from "./bases/BaseModel";
 import RuntimeException from "./exceptions/RuntimeException";
@@ -28,7 +27,7 @@ export default class Kernel {
      * callback and ensuring the DB connection (`BaseModel.knex()`) is
      * destroyed afterward regardless of success or failure.
      *
-     * @param program - The Commander program to register commands on.
+     * @param {Command} program - The Commander program to register commands on.
      */
     static registerCommands(program) {
         const rootCommands = require(App.Path.configPath("command.ts")).default;
@@ -62,14 +61,14 @@ export default class Kernel {
         for (const file of files) {
             const { default: CommandClass } = require(file);
             const instance = new CommandClass();
-            if (isEmpty(instance.$signature) || typeof instance.handle !== "function")
+            if (!instance.$signature || typeof instance.handle !== "function")
                 continue;
             instances.push(instance);
         }
         for (const instance of instances.sort((a, b) => a.$signature.localeCompare(b.$signature))) {
             const cmd = program
                 .command(instance.$signature)
-                .description(defineValue(instance.$description, ""));
+                .description(instance.$description ?? "");
             if (Array.isArray(instance.$options)) {
                 for (const option of instance.$options) {
                     cmd.option(...option);
@@ -104,7 +103,7 @@ export default class Kernel {
     static registerSchedulers() {
         const kernelPath = App.Path.commandsPath("Kernel.ts");
         const { default: Kernel } = require(kernelPath);
-        if (isEmpty(Kernel))
+        if (!Kernel)
             throw new RuntimeException(`Kernel class not found [${kernelPath}].`);
         const instance = new Kernel();
         if (typeof instance.schedule !== "function")
@@ -137,7 +136,7 @@ export default class Kernel {
             const { default: decorator } = require(file);
             if (typeof decorator !== "function")
                 continue;
-            if (isNotEmpty(decorator.name))
+            if (decorator.name)
                 globalThis[decorator.name.replace("Decorator", "")] = decorator;
         }
     }

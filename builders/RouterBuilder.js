@@ -8,7 +8,7 @@ import { ApiDocDecoratorKey } from "../decorators/ApiDocDecorator";
 import RouterException from "../exceptions/RouterException";
 import { validatePayload } from "../utils/validate";
 /**
- * Fluent builder used to define, group, and compile application routes.
+ * Fluent builder for defining, grouping, and compiling application routes.
  *
  * Each instance accumulates a base path, middleware stack, and controller
  * namespace via its chained setters (`prefix`, `middleware`, `namespace`),
@@ -19,9 +19,13 @@ import { validatePayload } from "../utils/validate";
  * which is what gets handed off to Bun's router.
  */
 export default class RouterBuilder {
+    /** The path prefix prepended to every route defined by this builder. */
     basePath = "";
+    /** The middleware stack applied to every route defined by this builder. */
     middlewares = [];
+    /** The base directory used to resolve string-based controller handlers. */
     baseNamespace = "app/controllers";
+    /** The API documentation metadata attached to the next resolved route. */
     apiDoc = {
         description: "",
         deprecated: false,
@@ -33,8 +37,8 @@ export default class RouterBuilder {
     /**
      * Sets the base path prepended to every route defined by this builder.
      *
-     * @param basePath - The path prefix (e.g. `/api/v1`).
-     * @returns This builder, for chaining.
+     * @param {string} basePath - The path prefix (e.g. `/api/v1`).
+     * @returns {RouterBuilder} This builder, for chaining.
      */
     prefix(basePath) {
         this.basePath = basePath;
@@ -46,19 +50,19 @@ export default class RouterBuilder {
      * the handler from the outside in (last middleware pushed runs closest
      * to the handler).
      *
-     * @param middlewares - The middleware instances to add.
-     * @returns This builder, for chaining.
+     * @param {Array<IMiddleware>} middlewares - The middleware instances to add.
+     * @returns {RouterBuilder} This builder, for chaining.
      */
     middleware(...middlewares) {
         this.middlewares.push(...middlewares);
         return this;
     }
     /**
-     * Sets the base controller namespace (directory) used to resolve
+     * Sets the base controller namespace (directory) to resolve
      * string-based handlers (e.g. `"UserController@index"`).
      *
-     * @param baseNamespace - The namespace/directory controllers are resolved from.
-     * @returns This builder, for chaining.
+     * @param {string} baseNamespace - The namespace/directory controllers are resolved from.
+     * @returns {RouterBuilder} This builder, for chaining.
      */
     namespace(baseNamespace) {
         this.baseNamespace = baseNamespace;
@@ -69,9 +73,9 @@ export default class RouterBuilder {
      * this builder. Requires the optional `@bejibun/x402` package to be
      * installed.
      *
-     * @param facilitator - Optional x402 payment facilitator configuration.
-     * @param routePayment - Optional per-route payment requirements.
-     * @returns This builder, for chaining.
+     * @param {TFacilitator} facilitator - Optional x402 payment facilitator configuration.
+     * @param {TRoutePayment} routePayment - Optional per-route payment requirements.
+     * @returns {RouterBuilder} This builder, for chaining.
      * @throws {RouterException} If `@bejibun/x402` is not installed.
      */
     x402(facilitator, routePayment) {
@@ -94,12 +98,19 @@ export default class RouterBuilder {
      * reflect the group's settings before merging everything into one
      * `RouterGroup`.
      *
-     * @param routes - The route(s) or group(s) to combine.
-     * @returns The merged route group (or an array of groups, for array input without raw routes).
+     * @param {Route | Array<Route> | RouterGroup} routes - The route(s) or group(s) to combine.
+     * @returns {RouterGroup | Array<RouterGroup>} The merged route group (or an array of groups, for array input without raw routes).
      */
     group(routes) {
         const rawGroups = [];
         let routeGroups = {};
+        const compile = (rawRoutes, routerGroups) => {
+            const newRoutes = {};
+            for (const route of rawRoutes) {
+                this.compileRawRoute(route, newRoutes, rawGroups);
+            }
+            routeGroups = Object.assign({}, ...routerGroups.map((value) => this.applyGroup(value)), newRoutes);
+        };
         if (this.hasRaws(routes)) {
             const routeList = Array.isArray(routes)
                 ? routes.flat()
@@ -109,41 +120,7 @@ export default class RouterBuilder {
                 .filter((value) => this.hasRaws(value))
                 .map((value) => value.raws)
                 .flat();
-            const newRoutes = {};
-            for (const route of rawRoutes) {
-                const middlewares = this.middlewares.concat(defineValue(route.raw.middlewares, []));
-                const effectiveNamespace = route.raw.websocket
-                    ? defineValue("app/websockets", route.raw.namespace)
-                    : defineValue(this.baseNamespace, route.raw.namespace);
-                const cleanPath = this.joinPaths(defineValue(route.raw.prefix, this.basePath), route.raw.path);
-                let resolvedHandler = typeof route.raw.handler === "string"
-                    ? this.resolveControllerString(route.raw.handler, effectiveNamespace, route.raw.websocket
-                        ? {
-                            path: cleanPath
-                        }
-                        : undefined)
-                    : route.raw.handler;
-                for (const middleware of [...middlewares].reverse()) {
-                    resolvedHandler = middleware.handle(resolvedHandler);
-                }
-                if (!route.raw.websocket)
-                    resolvedHandler = this.attachRequestHelpers(resolvedHandler);
-                if (isEmpty(newRoutes[cleanPath]))
-                    newRoutes[cleanPath] = {};
-                if (isEmpty(route.raw.method)) {
-                    newRoutes[cleanPath] = resolvedHandler;
-                }
-                else {
-                    Object.assign(newRoutes[cleanPath], {
-                        [route.raw.method]: resolvedHandler
-                    });
-                }
-                route.raw.middlewares = middlewares;
-                route.raw.namespace = effectiveNamespace;
-                route.raw.path = cleanPath;
-                rawGroups.push(route);
-            }
-            routeGroups = Object.assign({}, ...routerGroups.map((value) => this.applyGroup(value)), newRoutes);
+            compile(rawRoutes, routerGroups);
         }
         if (this.hasRaw(routes)) {
             const routeList = Array.isArray(routes)
@@ -151,41 +128,7 @@ export default class RouterBuilder {
                 : [routes];
             const routerGroups = routeList.filter((value) => !this.hasRaws(value) && !this.hasRaw(value));
             const rawRoutes = routeList.filter((value) => this.hasRaw(value));
-            const newRoutes = {};
-            for (const route of rawRoutes) {
-                const middlewares = this.middlewares.concat(defineValue(route.raw.middlewares, []));
-                const effectiveNamespace = route.raw.websocket
-                    ? defineValue("app/websockets", route.raw.namespace)
-                    : defineValue(this.baseNamespace, route.raw.namespace);
-                const cleanPath = this.joinPaths(defineValue(route.raw.prefix, this.basePath), route.raw.path);
-                let resolvedHandler = typeof route.raw.handler === "string"
-                    ? this.resolveControllerString(route.raw.handler, effectiveNamespace, route.raw.websocket
-                        ? {
-                            path: cleanPath
-                        }
-                        : undefined)
-                    : route.raw.handler;
-                for (const middleware of [...middlewares].reverse()) {
-                    resolvedHandler = middleware.handle(resolvedHandler);
-                }
-                if (!route.raw.websocket)
-                    resolvedHandler = this.attachRequestHelpers(resolvedHandler);
-                if (isEmpty(newRoutes[cleanPath]))
-                    newRoutes[cleanPath] = {};
-                if (isEmpty(route.raw.method)) {
-                    newRoutes[cleanPath] = resolvedHandler;
-                }
-                else {
-                    Object.assign(newRoutes[cleanPath], {
-                        [route.raw.method]: resolvedHandler
-                    });
-                }
-                route.raw.middlewares = middlewares;
-                route.raw.namespace = effectiveNamespace;
-                route.raw.path = cleanPath;
-                rawGroups.push(route);
-            }
-            routeGroups = Object.assign({}, ...routerGroups.map((value) => this.applyGroup(value)), newRoutes);
+            compile(rawRoutes, routerGroups);
         }
         if (isNotEmpty(routeGroups))
             return {
@@ -207,8 +150,51 @@ export default class RouterBuilder {
         return this.applyGroup(routes);
     }
     /**
-     * Registers RESTful CRUD routes for a controller, mirroring Laravel's
-     * `Route::resource()`. Generates:
+     * Compiles a single raw route into the group's merged route map:
+     * resolves the controller handler, applies the middleware stack,
+     * attaches request helpers, registers the handler under its path/method,
+     * and records the normalized route in the raw-groups list.
+     *
+     * @param {Route} route - The raw route to compile.
+     * @param {Record<string, any>} newRoutes - The merged route map being built.
+     * @param {Array<Route>} rawGroups - The accumulator of compiled raw routes.
+     */
+    compileRawRoute(route, newRoutes, rawGroups) {
+        const middlewares = this.middlewares.concat(route.raw.middlewares ?? []);
+        const effectiveNamespace = route.raw.websocket
+            ? defineValue("app/websockets", route.raw.namespace)
+            : defineValue(this.baseNamespace, route.raw.namespace);
+        const cleanPath = this.joinPaths(route.raw.prefix ?? this.basePath, route.raw.path);
+        let resolvedHandler = typeof route.raw.handler === "string"
+            ? this.resolveControllerString(route.raw.handler, effectiveNamespace, route.raw.websocket
+                ? {
+                    path: cleanPath
+                }
+                : undefined)
+            : route.raw.handler;
+        for (const middleware of [...middlewares].reverse()) {
+            resolvedHandler = middleware.handle(resolvedHandler);
+        }
+        if (!route.raw.websocket)
+            resolvedHandler = this.attachRequestHelpers(resolvedHandler);
+        if (!newRoutes[cleanPath])
+            newRoutes[cleanPath] = {};
+        if (!route.raw.method) {
+            newRoutes[cleanPath] = resolvedHandler;
+        }
+        else {
+            Object.assign(newRoutes[cleanPath], {
+                [route.raw.method]: resolvedHandler
+            });
+        }
+        route.raw.middlewares = middlewares;
+        route.raw.namespace = effectiveNamespace;
+        route.raw.path = cleanPath;
+        rawGroups.push(route);
+    }
+    /**
+     * Registers RESTful CRUD routes for a controller.
+     * Generates:
      * - `GET {path}` -> `index`
      * - `POST {path}` -> `store`
      * - `GET {path}/:id` -> `show`
@@ -218,10 +204,10 @@ export default class RouterBuilder {
      * Only actions that exist as methods on the controller are registered;
      * `options.only`/`options.except` further narrow which actions apply.
      *
-     * @param path - The base resource path (e.g. `/users`).
-     * @param controller - The controller class providing the resource actions.
-     * @param options - Optional `only`/`except` action filters.
-     * @returns The resulting route group.
+     * @param {string} path - The base resource path (e.g. `/users`).
+     * @param {typeof BaseController} controller - The controller class providing the resource actions.
+     * @param {ResourceOptions} options - Optional `only`/`except` action filters.
+     * @returns {RouterGroup} The resulting route group.
      */
     resource(path, controller, options) {
         const ClassController = new controller();
@@ -246,7 +232,7 @@ export default class RouterBuilder {
             for (const method in methods) {
                 const action = methods[method];
                 const handler = ClassController[action];
-                if (includedActions.has(action) && isNotEmpty(handler)) {
+                if (includedActions.has(action) && handler) {
                     raws.push({
                         raw: {
                             prefix: this.basePath,
@@ -282,10 +268,10 @@ export default class RouterBuilder {
      *
      * This is the common implementation behind `get`, `post`, `put`, etc.
      *
-     * @param method - The HTTP method to register.
-     * @param path - The route path, relative to this builder's prefix.
-     * @param handler - A `"Controller@method"` string or a handler function.
-     * @returns The built route.
+     * @param {HttpMethodEnum} method - The HTTP method to register.
+     * @param {string} path - The route path, relative to this builder's prefix.
+     * @param {string | HandlerType} handler - A `"Controller@method"` string or a handler function.
+     * @returns {Route} The built route.
      */
     buildSingle(method, path, handler) {
         const cleanPath = this.joinPaths(this.basePath, path);
@@ -311,49 +297,103 @@ export default class RouterBuilder {
             }
         };
     }
-    /** Registers a `CONNECT` route. @param path - Route path. @param handler - Controller string or handler function. */
+    /**
+     * Registers a `CONNECT` route.
+     *
+     * @param {string} path - Route path.
+     * @param {string | HandlerType} handler - Controller string or handler function.
+     * @returns {Route} The built route.
+     */
     connect(path, handler) {
         return this.buildSingle(HttpMethodEnum.Connect, path, handler);
     }
-    /** Registers a `DELETE` route. @param path - Route path. @param handler - Controller string or handler function. */
+    /**
+     * Registers a `DELETE` route.
+     *
+     * @param {string} path - Route path.
+     * @param {string | HandlerType} handler - Controller string or handler function.
+     * @returns {Route} The built route.
+     */
     delete(path, handler) {
         return this.buildSingle(HttpMethodEnum.Delete, path, handler);
     }
-    /** Registers a `GET` route. @param path - Route path. @param handler - Controller string or handler function. */
+    /**
+     * Registers a `GET` route.
+     *
+     * @param {string} path - Route path.
+     * @param {string | HandlerType} handler - Controller string or handler function.
+     * @returns {Route} The built route.
+     */
     get(path, handler) {
         return this.buildSingle(HttpMethodEnum.Get, path, handler);
     }
-    /** Registers a `HEAD` route. @param path - Route path. @param handler - Controller string or handler function. */
+    /**
+     * Registers a `HEAD` route.
+     *
+     * @param {string} path - Route path.
+     * @param {string | HandlerType} handler - Controller string or handler function.
+     * @returns {Route} The built route.
+     */
     head(path, handler) {
         return this.buildSingle(HttpMethodEnum.Head, path, handler);
     }
-    /** Registers an `OPTIONS` route. @param path - Route path. @param handler - Controller string or handler function. */
+    /**
+     * Registers an `OPTIONS` route.
+     *
+     * @param {string} path - Route path.
+     * @param {string | HandlerType} handler - Controller string or handler function.
+     * @returns {Route} The built route.
+     */
     options(path, handler) {
         return this.buildSingle(HttpMethodEnum.Options, path, handler);
     }
-    /** Registers a `PATCH` route. @param path - Route path. @param handler - Controller string or handler function. */
+    /**
+     * Registers a `PATCH` route.
+     *
+     * @param {string} path - Route path.
+     * @param {string | HandlerType} handler - Controller string or handler function.
+     * @returns {Route} The built route.
+     */
     patch(path, handler) {
         return this.buildSingle(HttpMethodEnum.Patch, path, handler);
     }
-    /** Registers a `POST` route. @param path - Route path. @param handler - Controller string or handler function. */
+    /**
+     * Registers a `POST` route.
+     *
+     * @param {string} path - Route path.
+     * @param {string | HandlerType} handler - Controller string or handler function.
+     * @returns {Route} The built route.
+     */
     post(path, handler) {
         return this.buildSingle(HttpMethodEnum.Post, path, handler);
     }
-    /** Registers a `PUT` route. @param path - Route path. @param handler - Controller string or handler function. */
+    /**
+     * Registers a `PUT` route.
+     *
+     * @param {string} path - Route path.
+     * @param {string | HandlerType} handler - Controller string or handler function.
+     * @returns {Route} The built route.
+     */
     put(path, handler) {
         return this.buildSingle(HttpMethodEnum.Put, path, handler);
     }
-    /** Registers a `TRACE` route. @param path - Route path. @param handler - Controller string or handler function. */
+    /**
+     * Registers a `TRACE` route.
+     *
+     * @param {string} path - Route path.
+     * @param {string | HandlerType} handler - Controller string or handler function.
+     * @returns {Route} The built route.
+     */
     trace(path, handler) {
         return this.buildSingle(HttpMethodEnum.Trace, path, handler);
     }
     /**
      * Registers the same path/handler for multiple HTTP methods at once.
      *
-     * @param methods - The HTTP methods to register the route under.
-     * @param path - The route path.
-     * @param handler - A `"Controller@method"` string or a handler function.
-     * @returns The merged route group covering all given methods.
+     * @param {Array<HttpMethodEnum>} methods - The HTTP methods to register the route under.
+     * @param {string} path - The route path.
+     * @param {string | HandlerType} handler - A `"Controller@method"` string or a handler function.
+     * @returns {RouterGroup} The merged route group covering all given methods.
      */
     match(methods, path, handler) {
         const routers = [];
@@ -365,9 +405,9 @@ export default class RouterBuilder {
     /**
      * Registers a route that responds to every HTTP method.
      *
-     * @param path - The route path.
-     * @param handler - A `"Controller@method"` string or a handler function.
-     * @returns The merged route group covering every HTTP method.
+     * @param {string} path - The route path.
+     * @param {string | HandlerType} handler - A `"Controller@method"` string or a handler function.
+     * @returns {RouterGroup} The merged route group covering every HTTP method.
      */
     any(path, handler) {
         return this.match(Enum.setEnums(HttpMethodEnum)
@@ -384,9 +424,9 @@ export default class RouterBuilder {
      * `attachRequestHelpers`, since there's no request/response payload
      * cycle once the connection is upgraded.
      *
-     * @param path - The route path clients connect to.
-     * @param handler - A `"Controller@method"` string or a handler function (used to resolve the associated websocket class).
-     * @returns The built websocket route.
+     * @param {string} path - The route path clients connect to.
+     * @param {string | HandlerType} handler - A `"Controller@method"` string or a handler function (resolves the associated websocket class).
+     * @returns {Route} The built websocket route.
      */
     websocket(path, handler) {
         const cleanPath = this.joinPaths(this.basePath, path);
@@ -426,8 +466,8 @@ export default class RouterBuilder {
      * everything via `mergeRoutes`, logging a warning for any duplicate
      * `METHOD path` combination (the later one wins).
      *
-     * @param routes - The route(s)/group(s) to serialize.
-     * @returns The flattened route map.
+     * @param {Route | Array<Route> | RouterGroup | Array<RouterGroup> | Array<RawsRoute>} routes - The route(s)/group(s) to serialize.
+     * @returns {RouterGroup} The flattened route map.
      */
     serialize(routes) {
         if (Array.isArray(routes)) {
@@ -452,8 +492,8 @@ export default class RouterBuilder {
      * one, warning (via `Logger`) and overwriting when the same
      * `METHOD path` combination is registered more than once.
      *
-     * @param routes - The route group(s) to merge.
-     * @returns The merged route group.
+     * @param {RouterGroup | Array<RouterGroup>} routes - The route group(s) to merge.
+     * @returns {RouterGroup} The merged route group.
      */
     mergeRoutes(routes) {
         const merged = {};
@@ -464,10 +504,10 @@ export default class RouterBuilder {
             }));
         for (const route of routeEntries) {
             for (const [path, methods] of Object.entries(route)) {
-                if (isEmpty(merged[path]))
+                if (!merged[path])
                     merged[path] = {};
                 for (const [method, handler] of Object.entries(methods)) {
-                    if (isNotEmpty(merged[path][method]))
+                    if (merged[path][method])
                         Logger.setContext("Router").warn(`Duplicate route: ${method} ${path} - overwriting.`);
                     merged[path][method] = handler;
                 }
@@ -478,13 +518,13 @@ export default class RouterBuilder {
     /**
      * Wraps a handler so every request arriving at it has the predefined
      * Bejibun.Request accessor methods (`get`, `set`, `array`, `boolean`,
-     * `float`, `integer`, `object`, `string`, plus the Laravel-inspired
+     * `float`, `integer`, `object`, `string`, plus the fluent
      * helpers - `input`, `all`, `keys`, `only`, `except`, `has`, `hasAny`,
      * `filled`, `missing`, `header`, `hasHeader`, `bearerToken`, `cookie`,
      * `ip`, `path`, `fullUrl`, `is`, `secure`, `userAgent`, `ajax`,
      * `wantsJson`, `expectsJson`, `file`, `hasFile`, `merge`, `replace`,
      * `isMethod`, and `validate`) available - regardless of whether
-     * `RequestMiddleware` (or any other middleware) was attached to the route.
+     * `RequestMiddleware` (or any other middleware) is attached to the route.
      *
      * Applied as the outermost wrap around every resolved handler, so it
      * runs before any user middleware and the controller itself. The
@@ -493,47 +533,94 @@ export default class RouterBuilder {
      * this wrapper runs - only that it's populated by the time
      * `request.integer(...)` etc. is actually called (typically by
      * `RequestMiddleware`, if attached).
+     *
+     * @param {HandlerType} handler - The handler to wrap with request helpers.
+     * @returns {HandlerType} The handler wrapped with request helpers.
      */
     attachRequestHelpers(handler) {
         return async (request, server) => {
-            if (isEmpty(request.payload))
+            if (!request.payload)
                 request.payload = {};
-            /** Retrieves a header value by name (case-insensitive), with an optional fallback. */
+            /**
+             * Retrieves a header value by name (case-insensitive), with
+             * an optional fallback when the header is absent.
+             *
+             * @param {string} key - The header name.
+             * @param {string} [defaultValue] - Optional fallback value when the header is missing.
+             * @returns {string | undefined} The header value, the fallback, or `undefined`.
+             */
             request.header = (key, defaultValue) => {
-                return defineValue(request.headers.get(key), defaultValue);
+                return request.headers.get(key) ?? defaultValue;
             };
-            /** Determines if the given header is present on the request. */
+            /**
+             * Determines if the given header is present on the request.
+             *
+             * @param {string} key - The header name.
+             * @returns {boolean} True if the header is present; otherwise false.
+             */
             request.hasHeader = (key) => {
-                return isNotEmpty(request.header(key));
+                return request.header(key) !== undefined;
             };
-            /** Retrieves the bearer token from the `Authorization` header, if any. */
+            /**
+             * Retrieves the bearer token from the `Authorization` header, if any.
+             *
+             * @returns {string | undefined} The bearer token, or `undefined` when absent.
+             */
             request.bearerToken = () => {
-                const authorization = defineValue(request.header("authorization"), "");
+                const authorization = request.header("authorization") ?? "";
                 return authorization.toLowerCase().startsWith("bearer ")
                     ? authorization.slice(7).trim()
                     : undefined;
             };
-            /** Retrieves a cookie value by name. */
+            /**
+             * Retrieves a cookie value by name.
+             *
+             * @param {string} key - The cookie name.
+             * @returns {string | undefined} The cookie value, or `undefined` when absent.
+             */
             request.cookie = (key) => {
                 return request.cookies?.get(key) ?? undefined;
             };
-            /** Retrieves the `User-Agent` header value, if any. */
+            /**
+             * Retrieves the `User-Agent` header value, if any.
+             *
+             * @returns {string | undefined} The user-agent value, or `undefined` when absent.
+             */
             request.userAgent = () => {
                 return request.header("user-agent");
             };
-            /** Retrieves the requesting client's IP address, when resolvable via the Bun server instance. */
+            /**
+             * Retrieves the requesting client's IP address, when resolvable
+             * via the Bun server instance.
+             *
+             * @returns {string | undefined} The client IP address, or `undefined` when unresolvable.
+             */
             request.ip = () => {
                 return server?.requestIP(request)?.address;
             };
-            /** Retrieves the pathname portion of the request URL, without query string. */
+            /**
+             * Retrieves the pathname portion of the request URL, without query string.
+             *
+             * @returns {string} The request path.
+             */
             request.path = () => {
                 return new URL(request.url).pathname;
             };
-            /** Retrieves the full request URL, including query string. */
+            /**
+             * Retrieves the full request URL, including query string.
+             *
+             * @returns {string} The full request URL.
+             */
             request.fullUrl = () => {
                 return request.url;
             };
-            /** Determines if the request path matches any of the given `*`-wildcard patterns. */
+            /**
+             * Determines if the request path matches any of the given
+             * `*`-wildcard patterns.
+             *
+             * @param {Array<string>} patterns - The `*`-wildcard patterns to match against.
+             * @returns {boolean} True if the path matches any pattern; otherwise false.
+             */
             request.is = (...patterns) => {
                 const path = request.path().replace(/^\/+/, "");
                 return patterns.some((pattern) => {
@@ -542,65 +629,134 @@ export default class RouterBuilder {
                     return regex.test(path);
                 });
             };
-            /** Determines if the request's HTTP method matches the given method, case-insensitively. */
+            /**
+             * Determines if the request's HTTP method matches the given
+             * method, case-insensitively.
+             *
+             * @param {string} method - The HTTP method to compare against (e.g. `get`, `post`).
+             * @returns {boolean} True if the methods match; otherwise false.
+             */
             request.isMethod = (method) => {
                 return request.method.toLowerCase() === method.toLowerCase();
             };
-            /** Determines if the request was made over HTTPS. */
+            /**
+             * Determines if the request is made over HTTPS.
+             *
+             * @returns {boolean} True when the protocol is `https:`; otherwise false.
+             */
             request.secure = () => {
                 return new URL(request.url).protocol.toLowerCase() === "https:";
             };
-            /** Determines if the request was made via `XMLHttpRequest` (`X-Requested-With` header). */
+            /**
+             * Determines if the request is made via `XMLHttpRequest`
+             * (`X-Requested-With` header).
+             *
+             * @returns {boolean} True for XHR requests; otherwise false.
+             */
             request.ajax = () => {
-                return (defineValue(request.header("x-requested-with"), "").toLowerCase() ===
-                    "xmlhttprequest");
+                return ((request.header("x-requested-with") ?? "").toLowerCase() === "xmlhttprequest");
             };
-            /** Determines if the request's `Accept` header indicates it wants a JSON response. */
+            /**
+             * Determines if the request's `Accept` header indicates it
+             * wants a JSON response.
+             *
+             * @returns {boolean} True when JSON is accepted; otherwise false.
+             */
             request.wantsJson = () => {
-                return defineValue(request.header("accept"), "").toLowerCase().includes("json");
+                return (request.header("accept") ?? "").toLowerCase().includes("json");
             };
-            /** Determines if the request expects JSON - true when it's either an AJAX request or wants JSON explicitly. */
+            /**
+             * Determines if the request expects JSON - true when it's
+             * either an AJAX request or wants JSON explicitly.
+             *
+             * @returns {boolean} True when the request expects JSON; otherwise false.
+             */
             request.expectsJson = () => {
-                return defineValue(request.ajax(), request.wantsJson());
+                return request.ajax() || request.wantsJson();
             };
-            /** Retrieves every key currently present in the payload. */
+            /**
+             * Retrieves every key currently present in the payload.
+             *
+             * @returns {Array<string>} The list of payload keys.
+             */
             request.keys = () => {
                 return Object.keys(request.payload);
             };
-            /** Retrieves the entire payload as a key-value map. */
+            /**
+             * Retrieves the entire payload as a key-value map.
+             *
+             * @returns {Record<string, any>} The full payload object.
+             */
             request.all = () => {
                 return request.payload;
             };
-            /** Determines if the payload contains every one of the given keys, regardless of emptiness. */
+            /**
+             * Determines if the payload contains every one of the given
+             * keys, regardless of emptiness.
+             *
+             * @param {string | Array<string>} keys - A single key or array of keys to check.
+             * @returns {boolean} True if all keys are present; otherwise false.
+             */
             request.has = (keys) => {
                 return this.toArrayKeys(keys).every((key) => {
                     return Object.prototype.hasOwnProperty.call(request.payload, key);
                 });
             };
-            /** Determines if the payload contains at least one of the given keys. */
+            /**
+             * Determines if the payload contains at least one of the given keys.
+             *
+             * @param {string | Array<string>} keys - A single key or array of keys to check.
+             * @returns {boolean} True if at least one key is present; otherwise false.
+             */
             request.hasAny = (keys) => {
                 return this.toArrayKeys(keys).some((key) => {
                     return Object.prototype.hasOwnProperty.call(request.payload, key);
                 });
             };
-            /** Determines if the given key(s) are present in the payload and not empty. */
+            /**
+             * Determines if the given key(s) are present in the payload
+             * and not empty.
+             *
+             * @param {string | Array<string>} keys - A single key or array of keys to check.
+             * @returns {boolean} True if all keys are present and non-empty; otherwise false.
+             */
             request.filled = (keys) => {
-                return this.toArrayKeys(keys).every((key) => isNotEmpty(request.get(key)));
+                return this.toArrayKeys(keys).every((key) => {
+                    const value = request.get(key);
+                    return value !== undefined && value !== null && value !== "";
+                });
             };
-            /** Determines if the given key(s) are absent from the payload. */
+            /**
+             * Determines if the given key(s) are absent from the payload.
+             *
+             * @param {string | Array<string>} keys - A single key or array of keys to check.
+             * @returns {boolean} True if none of the keys are present; otherwise false.
+             */
             request.missing = (keys) => {
                 return this.toArrayKeys(keys).every((key) => {
                     return !Object.prototype.hasOwnProperty.call(request.payload, key);
                 });
             };
-            /** Retrieves the entire payload, or a single value with a fallback default when missing. */
+            /**
+             * Retrieves the entire payload, or a single value with a
+             * fallback default when missing.
+             *
+             * @param {string} [key] - When given, returns only this key's value.
+             * @param {any} [defaultValue] - Optional fallback when the key is missing/empty.
+             * @returns {any} The full payload (no key), or the key's value/fallback.
+             */
             request.input = (key, defaultValue) => {
-                if (isEmpty(key))
+                if (!key)
                     return request.payload;
                 const value = request.get(key);
-                return isEmpty(value) ? defaultValue : value;
+                return value === undefined || value === null || value === "" ? defaultValue : value;
             };
-            /** Retrieves only the given payload keys. */
+            /**
+             * Retrieves only the given payload keys.
+             *
+             * @param {string | Array<string>} keys - A single key or array of keys to include.
+             * @returns {Record<string, any>} The payload subset containing only the given keys.
+             */
             request.only = (keys) => {
                 const result = {};
                 for (const key of this.toArrayKeys(keys)) {
@@ -609,7 +765,12 @@ export default class RouterBuilder {
                 }
                 return result;
             };
-            /** Retrieves the payload without the given keys. */
+            /**
+             * Retrieves the payload without the given keys.
+             *
+             * @param {string | Array<string>} keys - A single key or array of keys to exclude.
+             * @returns {Record<string, any>} The payload with the given keys omitted.
+             */
             request.except = (keys) => {
                 const excluded = new Set(this.toArrayKeys(keys));
                 const result = {};
@@ -619,66 +780,133 @@ export default class RouterBuilder {
                 }
                 return result;
             };
-            /** Merges the given values into the existing payload, leaving other keys untouched. */
+            /**
+             * Merges the given values into the existing payload, leaving
+             * other keys untouched.
+             *
+             * @param {Record<string, any>} values - The key-value pairs to merge in.
+             */
             request.merge = (values) => {
-                if (isEmpty(request.payload))
+                if (!request.payload)
                     request.payload = {};
                 Object.assign(request.payload, values);
             };
-            /** Replaces the entire payload with the given values, discarding anything previously set. */
+            /**
+             * Replaces the entire payload with the given values,
+             * discarding any existing data.
+             *
+             * @param {Record<string, any>} values - The key-value pairs to set as the new payload.
+             */
             request.replace = (values) => {
                 request.payload = { ...values };
             };
-            /** Retrieves a raw value from the payload by key. */
+            /**
+             * Retrieves a raw value from the payload by key.
+             *
+             * @param {string} key - The payload key.
+             * @returns {any} The raw value, or `undefined` when absent.
+             */
             request.get = (key) => {
                 return request.payload?.[key];
             };
-            /** Sets a value on the payload by key. */
+            /**
+             * Sets a value on the payload by key.
+             *
+             * @param {string} key - The payload key to set.
+             * @param {any} value - The value to store.
+             */
             request.set = (key, value) => {
-                if (isEmpty(request.payload))
+                if (!request.payload)
                     request.payload = {};
                 request.payload[key] = value;
             };
-            /** Retrieves a payload value coerced to an array. */
+            /**
+             * Retrieves a payload value coerced to an array.
+             *
+             * @param {string} key - The payload key.
+             * @returns {Array<any>} The value as an array (single values wrapped).
+             */
             request.array = (key) => {
                 const value = request.get(key);
                 return Array.isArray(value) ? value : [value];
             };
-            /** Retrieves a payload value coerced to a boolean. */
+            /**
+             * Retrieves a payload value coerced to a boolean.
+             *
+             * @param {string} key - The payload key.
+             * @returns {boolean} True when the value is `true`, `"true"`, `"1"`, or `1`; otherwise false.
+             */
             request.boolean = (key) => {
                 const value = request.get(key);
                 return value === true || value === "true" || value === "1" || value === 1;
             };
-            /** Retrieves a payload value coerced to a floating-point number. */
+            /**
+             * Retrieves a payload value coerced to a floating-point number.
+             *
+             * @param {string} key - The payload key.
+             * @returns {number} The parsed float, or `0` when not a number.
+             */
             request.float = (key) => {
                 const value = parseFloat(request.get(key));
                 return Number.isNaN(value) ? 0 : value;
             };
-            /** Retrieves a payload value coerced to an integer. */
+            /**
+             * Retrieves a payload value coerced to an integer.
+             *
+             * @param {string} key - The payload key.
+             * @returns {number} The parsed integer, or `0` when not a number.
+             */
             request.integer = (key) => {
                 const value = parseInt(request.get(key), 10);
                 return Number.isNaN(value) ? 0 : value;
             };
-            /** Retrieves a payload value coerced to an object. */
+            /**
+             * Retrieves a payload value coerced to an object.
+             *
+             * @param {string} key - The payload key.
+             * @returns {object} The value as an object, or `{}` when not an object.
+             */
             request.object = (key) => {
                 const value = request.get(key);
                 return typeof value === "object" && value !== null ? value : {};
             };
-            /** Retrieves a payload value coerced to a string. */
+            /**
+             * Retrieves a payload value coerced to a string.
+             *
+             * @param {string} key - The payload key.
+             * @returns {string} The value as a string, or `""` when `undefined`/`null`.
+             */
             request.string = (key) => {
                 const value = request.get(key);
                 return value === undefined || value === null ? "" : String(value);
             };
-            /** Retrieves an uploaded file from the payload by key. */
+            /**
+             * Retrieves an uploaded file from the payload by key.
+             *
+             * @param {string} key - The payload key.
+             * @returns {File | undefined} The uploaded file, or `undefined` when absent.
+             */
             request.file = (key) => {
                 const value = request.get(key);
                 return value instanceof File ? value : undefined;
             };
-            /** Determines if an uploaded file is present in the payload for the given key. */
+            /**
+             * Determines if an uploaded file is present in the payload
+             * for the given key.
+             *
+             * @param {string} key - The payload key.
+             * @returns {boolean} True if a file is present; otherwise false.
+             */
             request.hasFile = (key) => {
-                return isNotEmpty(request.file(key));
+                return request.file(key) instanceof File;
             };
-            /** Validates the request payload against a Vine validator, throwing `ValidatorException` (422) on failure. */
+            /**
+             * Validates the request payload against a Vine validator.
+             *
+             * @param {Bejibun.Validator} validator - The Vine validator definition.
+             * @returns {Promise<any>} The validated and type-coerced data.
+             * @throws {ValidatorException} When validation fails (HTTP 422).
+             */
             request.validate = (validator) => {
                 return validatePayload(validator, request.payload);
             };
@@ -689,6 +917,8 @@ export default class RouterBuilder {
      * Normalizes a single key or array of keys into a flat array of keys,
      * used by the payload-inspecting request helpers (`only`, `except`,
      * `has`, `hasAny`, `filled`, `missing`).
+     *
+     * @returns {Array<string>} The normalized key list.
      */
     toArrayKeys(keys) {
         return Array.isArray(keys) ? keys : [keys];
@@ -697,9 +927,9 @@ export default class RouterBuilder {
      * Joins a base path and a relative path into a single normalized,
      * leading-slash path, collapsing duplicate/trailing slashes.
      *
-     * @param base - The base path (e.g. the current prefix).
-     * @param path - The relative path to append.
-     * @returns The joined, normalized path (e.g. `/api/users`).
+     * @param {string} base - The base path (e.g. the current prefix).
+     * @param {string} path - The relative path to append.
+     * @returns {string} The joined, normalized path (e.g. `/api/users`).
      */
     joinPaths(base, path) {
         base = base.replace(/\/+$/, "");
@@ -717,18 +947,18 @@ export default class RouterBuilder {
      * for the resolved method, and - for websocket routes - stamps the
      * resolved controller class with the route's `path`.
      *
-     * @param definition - The `"Controller@method"` string to resolve.
-     * @param overrideNamespace - Namespace to resolve the controller from, if different from `this.baseNamespace`.
-     * @param websocket - When set, marks this as a websocket route and carries its resolved `path`.
-     * @returns The resolved, bound handler function.
+     * @param {string} definition - The `"Controller@method"` string to resolve.
+     * @param {string} overrideNamespace - Namespace to resolve the controller from, if different from `this.baseNamespace`.
+     * @param {Record<string, any>} websocket - When set, marks this as a websocket route and carries its resolved `path`.
+     * @returns {HandlerType} The resolved, bound handler function.
      * @throws {RouterException} If the definition is malformed, the controller can't be found, or the method doesn't exist on it.
      */
     resolveControllerString(definition, overrideNamespace, websocket) {
         const [controllerName, methodName] = definition.split("@");
-        if (isEmpty(controllerName) || isEmpty(methodName)) {
+        if (!controllerName || !methodName) {
             throw new RouterException(`Invalid router controller definition: ${definition}.`);
         }
-        const controllerPath = App.Path.rootPath(defineValue(overrideNamespace, this.baseNamespace));
+        const controllerPath = App.Path.rootPath(overrideNamespace ?? this.baseNamespace);
         let location = null;
         try {
             location = Bun.resolveSync(`./${controllerName}.ts`, controllerPath);
@@ -741,7 +971,7 @@ export default class RouterBuilder {
         let ControllerClass;
         try {
             ControllerClass = require(location).default;
-            if (isNotEmpty(websocket))
+            if (websocket)
                 ControllerClass.path = websocket?.path;
             this.apiDoc = Reflect.getMetadata(ApiDocDecoratorKey, ControllerClass.prototype, methodName);
         }
@@ -749,7 +979,7 @@ export default class RouterBuilder {
             return async (...args) => {
                 const module = await import(location);
                 const ESMController = module.default;
-                if (isNotEmpty(websocket))
+                if (websocket)
                     ESMController.path = websocket?.path;
                 this.apiDoc = Reflect.getMetadata(ApiDocDecoratorKey, ESMController.prototype, methodName);
                 const instance = new ESMController();
@@ -759,7 +989,7 @@ export default class RouterBuilder {
                 return instance[methodName](...args);
             };
         }
-        if (isEmpty(ControllerClass)) {
+        if (!ControllerClass) {
             throw new RouterException(`Controller not found: ${controllerName}.`);
         }
         const instance = new ControllerClass();
@@ -773,8 +1003,8 @@ export default class RouterBuilder {
      * `destroy`) should be registered by `resource()`, based on the
      * `only`/`except` options.
      *
-     * @param options - Optional `only`/`except` action filters.
-     * @returns The set of resource actions to register. Defaults to all five when no filter is given.
+     * @param {ResourceOptions} options - Optional `only`/`except` action filters.
+     * @returns {Set<ResourceAction>} The set of resource actions to register. Defaults to all five when no filter is given.
      */
     resolveIncludedActions(options) {
         const all = ["index", "store", "show", "update", "destroy"];
@@ -790,8 +1020,8 @@ export default class RouterBuilder {
      * Type guard: determines whether the given value is a single unresolved
      * `Route` (or array containing one) - i.e. has a `raw` property.
      *
-     * @param routes - The value to check.
-     * @returns True if `routes` is (or contains) a `Route` with a `raw` property.
+     * @param {RawsRoute | Array<RawsRoute> | Route | Array<Route> | RouterGroup} routes - The value to check.
+     * @returns {boolean} True if `routes` is (or contains) a `Route` with a `raw` property.
      */
     hasRaw(routes) {
         if (Array.isArray(routes))
@@ -802,8 +1032,8 @@ export default class RouterBuilder {
      * Type guard: determines whether the given value is an already-grouped
      * `RawsRoute` (or array containing one) - i.e. has a `raws` property.
      *
-     * @param routes - The value to check.
-     * @returns True if `routes` is (or contains) a `RawsRoute` with a `raws` property.
+     * @param {RawsRoute | Array<RawsRoute> | Route | Array<Route> | RouterGroup} routes - The value to check.
+     * @returns {boolean} True if `routes` is (or contains) a `RawsRoute` with a `raws` property.
      */
     hasRaws(routes) {
         if (Array.isArray(routes))
@@ -815,12 +1045,13 @@ export default class RouterBuilder {
      * - a plain object whose every value is a handler function (e.g.
      * `{ GET: handler, POST: handler }`), as opposed to a nested `RouterGroup`.
      *
-     * @param value - The value to check.
-     * @returns True if every property of `value` is a function.
+     * @param {any} value - The value to check.
+     * @returns {boolean} True if every property of `value` is a function.
      */
     isMethodMap(value) {
         return (isNotEmpty(value) &&
             typeof value === "object" &&
+            Object.keys(value).length > 0 &&
             Object.values(value).every((v) => typeof v === "function"));
     }
     /**
@@ -837,8 +1068,8 @@ export default class RouterBuilder {
      * middleware stack + `attachRequestHelpers`, and recurses into any
      * further nested groups.
      *
-     * @param route - The route or route group to apply this builder's settings to.
-     * @returns The resulting, fully-resolved route group.
+     * @param {RouterGroup | Route} route - The route or route group to apply this builder's settings to.
+     * @returns {RouterGroup} The resulting, fully-resolved route group.
      */
     applyGroup(route) {
         if (isEmpty(route))
@@ -851,8 +1082,8 @@ export default class RouterBuilder {
             const newRoutes = {};
             const rawGroups = [];
             for (const route of rawRoutes) {
-                const middlewares = route.raw.middlewares.concat(defineValue(this.middlewares, []));
-                const cleanPath = this.joinPaths(defineValue(route.raw.prefix, this.basePath), route.raw.path);
+                const middlewares = route.raw.middlewares.concat(this.middlewares ?? []);
+                const cleanPath = this.joinPaths(route.raw.prefix ?? this.basePath, route.raw.path);
                 const effectiveNamespace = route.raw.websocket
                     ? defineValue(this.baseNamespace === "app/websockets" ? null : this.baseNamespace, route.raw.namespace)
                     : defineValue(this.baseNamespace === "app/controllers" ? null : this.baseNamespace, route.raw.namespace);
@@ -868,7 +1099,7 @@ export default class RouterBuilder {
                 }
                 if (!route.raw.websocket)
                     resolvedHandler = this.attachRequestHelpers(resolvedHandler);
-                if (isEmpty(newRoutes[cleanPath]))
+                if (!newRoutes[cleanPath])
                     newRoutes[cleanPath] = {};
                 Object.assign(newRoutes[cleanPath], {
                     [route.raw.method]: resolvedHandler
@@ -878,7 +1109,7 @@ export default class RouterBuilder {
                 route.raw.path = cleanPath;
                 rawGroups.push(route);
             }
-            if (isNotEmpty(rawGroups))
+            if (rawGroups.length > 0)
                 return {
                     raws: rawGroups,
                     routes: newRoutes
@@ -901,7 +1132,7 @@ export default class RouterBuilder {
                 result[newKey] = wrappedMethods;
                 continue;
             }
-            if (isNotEmpty(value) && typeof value === "object") {
+            if (value && typeof value === "object") {
                 result[newKey] = this.applyGroup(value);
                 continue;
             }

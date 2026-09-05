@@ -18,13 +18,17 @@ export type ApiDocConfig = {
     request?: {
         /** Header/path/query parameters accepted by the endpoint. */
         params?: Array<{
+            /** Parameter name as it appears in the request (header, path, or query). */
             name: string;
 
+            /** Location of the parameter in the request. */
             in: "header" | "path" | "query";
 
+            /** Whether the parameter must be present. */
             required: boolean;
 
             schema: {
+                /** Data type of the parameter value. */
                 type: "string" | "number" | "integer" | "boolean" | "array" | "object";
             };
         }>;
@@ -32,10 +36,12 @@ export type ApiDocConfig = {
     /** Possible responses, keyed by HTTP status code. */
     response?: {
         [statusCode: number]: Array<{
+            /** Human-readable description of the response. */
             description: string;
 
             content: {
                 [contentType: string]: {
+                    /** Example response payload for this content type. */
                     example: any;
                 };
             };
@@ -50,10 +56,10 @@ export const ApiDocDecoratorKey: string = "api:doc";
  * Method decorator that attaches OpenAPI-flavored documentation metadata
  * to a controller method, later read back by `RouterBuilder` (via
  * `Reflect.getMetadata`) when resolving that method as a route handler,
- * and used to generate the app's route documentation (e.g. Swagger UI).
+ * and generates the app's route documentation (e.g. Swagger UI).
  *
- * @param config - The documentation metadata to attach.
- * @returns A method decorator.
+ * @param {ApiDocConfig} config - The documentation metadata to attach.
+ * @returns {any} A method decorator.
  */
 const ApiDocDecorator = (config: ApiDocConfig): any => {
     return (target: any, propertyKey: string): void => {

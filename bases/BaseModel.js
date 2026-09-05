@@ -1,4 +1,3 @@
-import { defineValue, isEmpty, isNotEmpty } from "@bejibun/utils";
 import Luxon from "@bejibun/utils/facades/Luxon";
 import { Model } from "objection";
 import ModelNotFoundException from "../exceptions/ModelNotFoundException";
@@ -16,18 +15,17 @@ class BunQueryBuilder extends SoftDeletes {
     }
     /**
      * Updates matching rows, returning the query for the rows that
-     * matched *before* the update was applied (or `undefined` if none
-     * matched, so callers can short-circuit).
+     * matched before the update applies.
      *
-     * @param payload - The partial column values to update.
-     * @returns The pre-update query builder for the affected rows.
+     * @param {PartialModelObject<M>} payload - The partial column values to update.
+     * @returns {QueryBuilder<M, R>} The pre-update query builder for the affected rows.
      */
     // @ts-expect-error - BunQueryBuilder's update() intentionally diverges from Objection's chainable QueryBuilder shape for soft-delete semantics.
     async update(payload) {
         const cloneQuery = this.clone();
         const beforeRows = await cloneQuery;
-        if (isEmpty(beforeRows))
-            return defineValue(beforeRows);
+        if (!beforeRows || beforeRows.length === 0)
+            return beforeRows ?? undefined;
         await super.update(payload);
         return cloneQuery;
     }
@@ -35,7 +33,7 @@ class BunQueryBuilder extends SoftDeletes {
 /**
  * Base class every Bejibun Objection model extends. Adds automatic
  * `created_at`/`updated_at` timestamp handling, soft-delete-aware query
- * helpers (`withTrashed`, `onlyTrashed`), Laravel-style static query
+ * helpers (`withTrashed`, `onlyTrashed`), fluent static query
  * shortcuts (`all`, `create`, `find`, `findOrFail`), and namespace
  * registration for resolving models by name.
  */
@@ -57,10 +55,11 @@ export default class BaseModel extends Model {
     /**
      * The model's registered namespace.
      *
+     * @returns {string} The registered namespace.
      * @throws {RuntimeException} If the namespace hasn't been registered via `setNamespace()`.
      */
     static get namespace() {
-        if (isEmpty(this._namespace))
+        if (!this._namespace)
             throw new RuntimeException(`Model namespace not registered for [${this.name}].`);
         return this._namespace;
     }
@@ -71,10 +70,10 @@ export default class BaseModel extends Model {
      */
     $beforeInsert() {
         const now = Luxon.DateTime.now();
-        if (isNotEmpty(this[this.constructor.createdColumn])) {
+        if (this[this.constructor.createdColumn]) {
             this[this.constructor.createdColumn] = now;
         }
-        if (isNotEmpty(this[this.constructor.updatedColumn])) {
+        if (this[this.constructor.updatedColumn]) {
             this[this.constructor.updatedColumn] = now;
         }
     }
@@ -84,7 +83,7 @@ export default class BaseModel extends Model {
      * the instance.
      */
     $beforeUpdate() {
-        if (isNotEmpty(this[this.constructor.updatedColumn])) {
+        if (this[this.constructor.updatedColumn]) {
             this[this.constructor.updatedColumn] = Luxon.DateTime.now();
         }
     }
@@ -92,7 +91,7 @@ export default class BaseModel extends Model {
      * Registers the namespace/identifier this model is resolved under.
      * Typically called once by the framework's namespace loader.
      *
-     * @param namespace - The namespace to register.
+     * @param {string} namespace - The namespace to register.
      */
     static setNamespace(namespace) {
         this._namespace = namespace;
@@ -101,8 +100,8 @@ export default class BaseModel extends Model {
      * Starts a new query for this model, using the soft-delete-aware
      * `BunQueryBuilder`.
      *
-     * @param trxOrKnex - Optional transaction or Knex instance to run the query on.
-     * @returns The query builder.
+     * @param {TransactionOrKnex} [trxOrKnex] - Optional transaction or Knex instance to run the query on.
+     * @returns {QueryBuilderType<InstanceType<T>>} The query builder.
      */
     static query(trxOrKnex) {
         return super.query(trxOrKnex);
@@ -110,8 +109,8 @@ export default class BaseModel extends Model {
     /**
      * Starts a query that includes soft-deleted rows.
      *
-     * @param trxOrKnex - Optional transaction or Knex instance to run the query on.
-     * @returns The query builder, including trashed rows.
+     * @param {TransactionOrKnex} [trxOrKnex] - Optional transaction or Knex instance to run the query on.
+     * @returns {QueryBuilderType<InstanceType<T>>} The query builder, including trashed rows.
      */
     static withTrashed(trxOrKnex) {
         return this.query(trxOrKnex).withTrashed();
@@ -119,8 +118,8 @@ export default class BaseModel extends Model {
     /**
      * Starts a query restricted to only soft-deleted rows.
      *
-     * @param trxOrKnex - Optional transaction or Knex instance to run the query on.
-     * @returns The query builder, restricted to trashed rows.
+     * @param {TransactionOrKnex} [trxOrKnex] - Optional transaction or Knex instance to run the query on.
+     * @returns {QueryBuilderType<InstanceType<T>>} The query builder, restricted to trashed rows.
      */
     static onlyTrashed(trxOrKnex) {
         return this.query(trxOrKnex).onlyTrashed();
@@ -128,8 +127,8 @@ export default class BaseModel extends Model {
     /**
      * Retrieves every row for this model - shorthand for `query().select()`.
      *
-     * @param trxOrKnex - Optional transaction or Knex instance to run the query on.
-     * @returns The query builder resolving to all rows.
+     * @param {TransactionOrKnex} [trxOrKnex] - Optional transaction or Knex instance to run the query on.
+     * @returns {QueryBuilderType<InstanceType<T>>} The query builder resolving to all rows.
      */
     static all(trxOrKnex) {
         return this.query(trxOrKnex).select();
@@ -137,9 +136,9 @@ export default class BaseModel extends Model {
     /**
      * Inserts a new row - shorthand for `query().insert(payload)`.
      *
-     * @param payload - The column values to insert.
-     * @param trxOrKnex - Optional transaction or Knex instance to run the query on.
-     * @returns The query builder resolving to the inserted row.
+     * @param {Record<string, any>} payload - The column values to insert.
+     * @param {TransactionOrKnex} [trxOrKnex] - Optional transaction or Knex instance to run the query on.
+     * @returns {QueryBuilderType<InstanceType<T>>} The query builder resolving to the inserted row.
      */
     static create(payload, trxOrKnex) {
         return this.query(trxOrKnex).insert(payload);
@@ -148,25 +147,24 @@ export default class BaseModel extends Model {
      * Finds a row by primary key - shorthand for `query().findById(id)`.
      * Resolves to `undefined` if no matching row exists.
      *
-     * @param id - The primary key value to look up.
-     * @param trxOrKnex - Optional transaction or Knex instance to run the query on.
-     * @returns The query builder resolving to the matching row, if any.
+     * @param {bigint | number | string} id - The primary key value to look up.
+     * @param {TransactionOrKnex} [trxOrKnex] - Optional transaction or Knex instance to run the query on.
+     * @returns {QueryBuilderType<InstanceType<T>>} The query builder resolving to the matching row, if any.
      */
     static find(id, trxOrKnex) {
         return this.query(trxOrKnex).findById(id);
     }
     /**
-     * Finds a row by primary key, throwing if it doesn't exist - mirrors
-     * Laravel's `Model::findOrFail()`.
+     * Finds a row by primary key, throwing if it doesn't exist.
      *
-     * @param id - The primary key value to look up.
-     * @param trxOrKnex - Optional transaction or Knex instance to run the query on.
-     * @returns The matching row.
+     * @param {bigint | number | string} id - The primary key value to look up.
+     * @param {TransactionOrKnex} [trxOrKnex] - Optional transaction or Knex instance to run the query on.
+     * @returns {Promise<InstanceType<T>>} The matching row.
      * @throws {ModelNotFoundException} If no row matches the given id.
      */
     static async findOrFail(id, trxOrKnex) {
         const result = await this.query(trxOrKnex).findById(id);
-        if (isEmpty(result))
+        if (!result)
             throw new ModelNotFoundException(`No query results for model [${this.namespace}] [${id}].`);
         return result;
     }

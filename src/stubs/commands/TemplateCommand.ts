@@ -1,3 +1,7 @@
+/**
+ * Template stub for creating new Ace console commands.
+ * Extend this class and fill in the `handle()` method with your command logic.
+ */
 export default class TemplateCommand {
     /**
      * The name and signature of the console command.
@@ -30,8 +34,8 @@ export default class TemplateCommand {
     /**
      * Executes this command.
      *
-     * @param options - Parsed CLI options, matching the flags declared in `$options`.
-     * @param args - Parsed positional CLI arguments, matching `$arguments`.
+     * @param {any} options - Parsed CLI options, matching the flags declared in `$options`.
+     * @param {any} args - Parsed positional CLI arguments, matching `$arguments`.
      */
     public async handle(options: any, args: any): Promise<void> {
         // Your code goes here

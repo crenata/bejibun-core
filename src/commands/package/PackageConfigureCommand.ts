@@ -1,6 +1,5 @@
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
-import {defineValue, isEmpty} from "@bejibun/utils";
 
 /**
  * Console command: `Configure package after installation`
@@ -42,10 +41,10 @@ export default class PackageConfigureCommand {
     /**
      * Executes this command.
      *
-     * @param options - Parsed CLI options, matching the flags declared in `$options`.
+     * @param {any} options - Parsed CLI options, matching the flags declared in `$options`.
      */
     public async handle(options: any): Promise<void> {
-        if (isEmpty(options.package)) {
+        if (!options.package) {
             Logger.setContext("APP").error("Package is not provided, please use --package.");
             return;
         }
@@ -58,7 +57,7 @@ export default class PackageConfigureCommand {
             if (error?.message.includes("Cannot find module")) return;
 
             Logger.setContext("APP")
-                .error(defineValue(error?.message, "Whoops, something went wrong."))
+                .error(error?.message ?? "Whoops, something went wrong.")
                 .trace(error);
         }
     }

@@ -1,7 +1,6 @@
 import App from "@bejibun/app";
 import RateLimiterException from "@bejibun/limiter/exceptions/RateLimiterException";
 import Logger from "@bejibun/logger";
-import {defineValue} from "@bejibun/utils";
 import HttpMethodEnum from "@bejibun/utils/enums/HttpMethodEnum";
 import {ValidationError} from "objection";
 import ModelNotFoundException from "@/exceptions/ModelNotFoundException";
@@ -28,8 +27,8 @@ export default class ExceptionHandler {
      * uses its own `message`/`statusCode`. Anything else falls back to a
      * generic `500 Internal server error.` response.
      *
-     * @param error - The thrown error to handle.
-     * @returns The resulting JSON error response.
+     * @param {Bun.ErrorLike | ModelNotFoundException | QueueException | RateLimiterException | RouterException | RuntimeException | ValidatorException | ValidationError} error - The thrown error to handle.
+     * @returns {globalThis.Response} The resulting JSON error response.
      */
     public handle(
         error:
@@ -57,7 +56,7 @@ export default class ExceptionHandler {
         if (error instanceof ValidationError)
             return Response.setMessage(error.message).setStatus(error.statusCode).send();
 
-        return Response.setMessage(defineValue(error.message, "Internal server error."))
+        return Response.setMessage(error.message ?? "Internal server error.")
             .setStatus(500)
             .send();
     }
@@ -68,8 +67,8 @@ export default class ExceptionHandler {
      * directory; if none exists, returns a `204` (for `OPTIONS`
      * requests) or `404` JSON response.
      *
-     * @param request - The unmatched incoming request.
-     * @returns The static file response, or a 204/404 fallback.
+     * @param {Bejibun.Request} request - The unmatched incoming request.
+     * @returns {Promise<globalThis.Response>} The static file response, or a 204/404 fallback.
      */
     public async publicRoute(request: Bejibun.Request): Promise<globalThis.Response> {
         const url: URL = new URL(request.url);

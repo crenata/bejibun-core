@@ -47,7 +47,7 @@ export default class MaintenanceDownCommand {
     /**
      * Executes this command.
      *
-     * @param options - Parsed CLI options, matching the flags declared in `$options`.
+     * @param {any} options - Parsed CLI options, matching the flags declared in `$options`.
      */
     public async handle(options: any): Promise<void> {
         await Bun.write(

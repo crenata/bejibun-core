@@ -1,10 +1,10 @@
 import RateLimiterException from "@bejibun/limiter/exceptions/RateLimiterException";
 import { ValidationError } from "objection";
-import ModelNotFoundException from "../exceptions/ModelNotFoundException";
-import QueueException from "../exceptions/QueueException";
-import RouterException from "../exceptions/RouterException";
-import RuntimeException from "../exceptions/RuntimeException";
-import ValidatorException from "../exceptions/ValidatorException";
+import ModelNotFoundException from "./ModelNotFoundException";
+import QueueException from "./QueueException";
+import RouterException from "./RouterException";
+import RuntimeException from "./RuntimeException";
+import ValidatorException from "./ValidatorException";
 /**
  * Central exception-to-response translator. Converts thrown errors into
  * consistent JSON error responses (message + status code), and serves
@@ -22,8 +22,8 @@ export default class ExceptionHandler {
      * uses its own `message`/`statusCode`. Anything else falls back to a
      * generic `500 Internal server error.` response.
      *
-     * @param error - The thrown error to handle.
-     * @returns The resulting JSON error response.
+     * @param {Bun.ErrorLike | ModelNotFoundException | QueueException | RateLimiterException | RouterException | RuntimeException | ValidatorException | ValidationError} error - The thrown error to handle.
+     * @returns {globalThis.Response} The resulting JSON error response.
      */
     handle(error: Bun.ErrorLike | ModelNotFoundException | QueueException | RateLimiterException | RouterException | RuntimeException | ValidatorException | ValidationError): globalThis.Response;
     /**
@@ -32,8 +32,8 @@ export default class ExceptionHandler {
      * directory; if none exists, returns a `204` (for `OPTIONS`
      * requests) or `404` JSON response.
      *
-     * @param request - The unmatched incoming request.
-     * @returns The static file response, or a 204/404 fallback.
+     * @param {Bejibun.Request} request - The unmatched incoming request.
+     * @returns {Promise<globalThis.Response>} The static file response, or a 204/404 fallback.
      */
     publicRoute(request: Bejibun.Request): Promise<globalThis.Response>;
 }

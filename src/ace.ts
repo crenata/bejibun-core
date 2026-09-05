@@ -12,6 +12,7 @@ import {version} from "package.json";
 
 await import(App.Path.rootPath("bootstrap.ts"));
 
+/** The name of the CLI binary, used for help and version output. */
 const commandExec = "ace";
 
 program

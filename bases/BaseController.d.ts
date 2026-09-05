@@ -6,8 +6,10 @@ import Response from "../facades/Response";
  */
 export default class BaseController {
     /**
-     * Convenient accessor for the `Response` facade, so controllers can
-     * write `this.response.setData(...)` instead of importing the facade.
+     * Convenient accessor for the `Response` facade, providing controllers
+     * a shorthand for `this.response.setData(...)` and other fluent calls.
+     *
+     * @returns {typeof Response} The `Response` facade.
      */
     get response(): typeof Response;
 }

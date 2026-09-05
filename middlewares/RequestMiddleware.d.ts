@@ -17,14 +17,14 @@ import type { HandlerType } from "../types/router";
  * 5. Raw request body text, stored under the `plainText` key
  *
  * Any parsing failure is swallowed silently, leaving `payload` as whatever
- * was successfully collected before the error.
+ * data is successfully collected before the error.
  */
 export default class RequestMiddleware {
     /**
      * Wraps the handler so `request.payload` is populated before it runs.
      *
-     * @param handler - The handler to wrap.
-     * @returns The payload-populating handler.
+     * @param {HandlerType} handler - The handler to wrap.
+     * @returns {HandlerType} The payload-populating handler.
      */
     handle(handler: HandlerType): HandlerType;
 }

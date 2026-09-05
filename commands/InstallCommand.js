@@ -1,6 +1,5 @@
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
-import { isEmpty } from "@bejibun/utils";
 /**
  * Console command: `Install package dependencies`
  *
@@ -35,11 +34,11 @@ export default class InstallCommand {
     /**
      * Executes this command.
      *
-     * @param options - Parsed CLI options, matching the flags declared in `$options`.
-     * @param args - Parsed positional CLI arguments, matching `$arguments`.
+     * @param {any} options - Parsed CLI options, matching the flags declared in `$options`.
+     * @param {Array<string>} args - Parsed positional CLI arguments, matching `$arguments`.
      */
     async handle(options, args) {
-        if (isEmpty(args)) {
+        if (!args) {
             Logger.setContext("APP").error("There is no packages provided.");
             return;
         }

@@ -1,8 +1,7 @@
 import CorsLoader from "@/loader/CorsLoader";
-import {isNotEmpty} from "@bejibun/utils";
 
 /**
- * Fluent builder used to construct HTTP responses. Wraps `data`,
+ * Fluent builder for constructing HTTP responses. Wraps `data`,
  * `message`, `status`, and any custom top-level fields into a consistent
  * JSON envelope, applies CORS headers, and manages response cookies via
  * Bun's `CookieMap`. This is what the `Response` facade delegates to.
@@ -34,8 +33,8 @@ export default class ResponseBuilder {
     /**
      * Sets the response body's `data` field.
      *
-     * @param data - The data to include in the response.
-     * @returns This builder, for chaining.
+     * @param {any} data - The data to include in the response.
+     * @returns {ResponseBuilder} This builder, for chaining.
      */
     public setData(data?: any): ResponseBuilder {
         this.data = data;
@@ -46,8 +45,8 @@ export default class ResponseBuilder {
     /**
      * Sets the response body's `message` field.
      *
-     * @param message - The message to include in the response.
-     * @returns This builder, for chaining.
+     * @param {string} message - The message to include in the response.
+     * @returns {ResponseBuilder} This builder, for chaining.
      */
     public setMessage(message: string): ResponseBuilder {
         this.message = message;
@@ -58,8 +57,8 @@ export default class ResponseBuilder {
     /**
      * Sets the HTTP status code for the response.
      *
-     * @param status - The HTTP status code.
-     * @returns This builder, for chaining.
+     * @param {number} status - The HTTP status code.
+     * @returns {ResponseBuilder} This builder, for chaining.
      */
     public setStatus(status: number): ResponseBuilder {
         this.status = status;
@@ -71,8 +70,8 @@ export default class ResponseBuilder {
      * Sets additional top-level fields to merge into the response body,
      * alongside `data` and `message`.
      *
-     * @param custom - The additional fields to include.
-     * @returns This builder, for chaining.
+     * @param {Record<string, any>} custom - The additional fields to include.
+     * @returns {ResponseBuilder} This builder, for chaining.
      */
     public setCustom(custom?: Record<string, any>): ResponseBuilder {
         this.custom = custom;
@@ -83,10 +82,10 @@ export default class ResponseBuilder {
     /**
      * Queues a single cookie to be set on the outgoing response.
      *
-     * @param key - The cookie name.
-     * @param value - The cookie value.
-     * @param options - Optional cookie attributes (domain, path, expiry, etc.).
-     * @returns This builder, for chaining.
+     * @param {string} key - The cookie name.
+     * @param {string} value - The cookie value.
+     * @param {Bun.CookieInit} options - Optional cookie attributes (domain, path, expiry, etc.).
+     * @returns {ResponseBuilder} This builder, for chaining.
      */
     public setCookie(key: string, value: string, options?: Bun.CookieInit): ResponseBuilder {
         this.cookies.set(key, value, options);
@@ -97,8 +96,8 @@ export default class ResponseBuilder {
     /**
      * Queues multiple cookies to be set on the outgoing response.
      *
-     * @param cookies - The cookies to set, each with a key, value, and optional attributes.
-     * @returns This builder, for chaining.
+     * @param {Array<{key: string; value: string; options?: Bun.CookieInit}>} cookies - The cookies to set, each with a key, value, and optional attributes.
+     * @returns {ResponseBuilder} This builder, for chaining.
      */
     public setCookies(
         cookies: Array<{key: string; value: string; options?: Bun.CookieInit}>
@@ -113,15 +112,15 @@ export default class ResponseBuilder {
     /**
      * Queues a single cookie to be deleted (expired) on the outgoing response.
      *
-     * @param key - The cookie name to delete.
-     * @param options - Optional `domain`/`path` to scope the deletion to.
-     * @returns This builder, for chaining.
+     * @param {string} key - The cookie name to delete.
+     * @param {Pick<Bun.CookieInit, "domain" | "path">} options - Optional `domain`/`path` to scope the deletion to.
+     * @returns {ResponseBuilder} This builder, for chaining.
      */
     public deleteCookie(
         key: string,
         options?: Pick<Bun.CookieInit, "domain" | "path">
     ): ResponseBuilder {
-        if (isNotEmpty(options)) this.cookies.delete(key, options as any);
+        if (options) this.cookies.delete(key, options as any);
         else this.cookies.delete(key);
 
         return this;
@@ -130,8 +129,8 @@ export default class ResponseBuilder {
     /**
      * Queues multiple cookies to be deleted (expired) on the outgoing response.
      *
-     * @param cookies - The cookies to delete, each with a key and optional `domain`/`path` scoping.
-     * @returns This builder, for chaining.
+     * @param {Array<{key: string; options?: Pick<Bun.CookieInit, "domain" | "path">}>} cookies - The cookies to delete, each with a key and optional `domain`/`path` scoping.
+     * @returns {ResponseBuilder} This builder, for chaining.
      */
     public deleteCookies(
         cookies: Array<{
@@ -140,7 +139,7 @@ export default class ResponseBuilder {
         }>
     ): ResponseBuilder {
         for (const cookie of cookies) {
-            if (isNotEmpty(cookie.options)) this.cookies.delete(cookie.key, cookie.options as any);
+            if (cookie.options) this.cookies.delete(cookie.key, cookie.options as any);
             else this.cookies.delete(cookie.key);
         }
 
@@ -152,7 +151,7 @@ export default class ResponseBuilder {
      * `message`, `status`, and any custom fields into the response body,
      * with CORS headers and any queued cookies applied.
      *
-     * @returns The built `Response` object.
+     * @returns {globalThis.Response} The built `Response` object.
      */
     public send(): globalThis.Response {
         return globalThis.Response.json(
@@ -173,11 +172,11 @@ export default class ResponseBuilder {
 
     /**
      * Builds and returns a streamed file response (using the value
-     * previously set via `setData()` as the file path), with CORS headers
+     * set via `setData()` as the file path), with CORS headers
      * and any queued cookies applied.
      *
-     * @param options - Additional `ResponseInit` options to merge in.
-     * @returns The built streaming `Response` object.
+     * @param {ResponseInit} options - Additional `ResponseInit` options to merge in.
+     * @returns {globalThis.Response} The built streaming `Response` object.
      */
     public stream(options: ResponseInit = {}): globalThis.Response {
         return new globalThis.Response(Bun.file(this.data), {
@@ -193,8 +192,8 @@ export default class ResponseBuilder {
      * Appends every queued cookie (sets and deletions) as `Set-Cookie`
      * headers onto the given base headers.
      *
-     * @param headers - The base headers to extend.
-     * @returns A `Headers` instance including the base headers plus every queued cookie.
+     * @param {Record<string, string>} headers - The base headers to extend.
+     * @returns {Headers} A `Headers` instance including the base headers plus every queued cookie.
      */
     private applyCookies(headers: Record<string, string>): Headers {
         const responseHeaders: Headers = new Headers(headers);

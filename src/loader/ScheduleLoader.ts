@@ -12,7 +12,7 @@ export default class ScheduleLoader {
     /**
      * Registers a scheduled task.
      *
-     * @param schedule - The schedule descriptor to register.
+     * @param {TSchedule} schedule - The schedule descriptor to register.
      */
     public static add(schedule: TSchedule): void {
         ScheduleLoader.schedulers.push(schedule);
