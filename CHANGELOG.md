@@ -3,11 +3,68 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [v0.6.11](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.6.1...v0.6.11) - 2026-09-05
+## [v0.6.11](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.6.1...v0.6.11) - 2026-09-06
 
 ### 🩹 Fixes
+- Fixed the `server.ts` WebSocket config resolver, which fell back to `RouteConfig` instead of the bundled `WebsocketConfig` when the app hasn't published its own `config/websocket.ts` -- WebSocket options (`idleTimeout`, `maxPayloadLength`, `backpressureLimit`, etc.) are now sourced correctly
+- Fixed the `bases`, `middlewares`, and `models` barrel files, which used `export *` and therefore never re-exported their default classes; they now use the `export {default as ...}` pattern already used by `facades`, `exceptions`, and `enums`, so public entry point imports (e.g. `BaseController`, `MaintenanceMiddleware`, `EpochTimestamps`) resolve correctly
+- Fixed `RouterBuilder` importing `EnumItem` from `@bejibun/utils/facades/Enum`, which was removed in `@bejibun/utils@0.1.30`; it now imports the type from `@bejibun/utils/types/enum`
+- Fixed `RequestMiddleware`, which called `request.text()` on every request even after `json()`/`formData()` had already consumed the body, so `payload.plainText` was never populated for JSON/form requests; the raw body is now only read for non-JSON/non-form content types
+
+### 🚀 Features
+#### Request Helpers
+Replaced the old `BaseController.parse()` / `BaseController.validate()` flow with a new **request-helper system** that attaches parsed payload + fluent accessors directly onto every incoming `Bun.BunRequest`:
+
+- **`RouterBuilder.attachRequestHelpers()`** -- wraps every resolved route handler (built-in + user-defined) in a helper layer that attaches 36 fluent `request.*` methods, so controllers can read/coerce/validate input directly without calling `await super.parse(...)` first
+- **`RequestMiddleware`** -- new global middleware (applied by `server.ts`) that populates a single flat `request.payload` from (in precedence order): JSON body → route params → query string → form data (`multipart/form-data` / `application/x-www-form-urlencoded`, including uploaded `File`s) → raw body text under `payload.plainText`; parse failures are swallowed silently
+- **`validatePayload()`** (`@/utils/validate`) -- shared helper normalizing any Vine validation failure into a `ValidatorException`, used by both `request.validate()` and `BaseController.validate()`
+
+The 36 `request.*` accessors:
+
+| Category               | Methods                                                                           |
+| ---------------------- | --------------------------------------------------------------------------------- |
+| Header / cookie / auth | `header`, `hasHeader`, `bearerToken`, `cookie`, `userAgent`, `ip`                 |
+| URL / protocol         | `path`, `fullUrl`, `is`, `isMethod`, `secure`, `ajax`, `wantsJson`, `expectsJson` |
+| Payload access         | `get`, `set`, `all`, `keys`, `input`, `only`, `except`, `merge`, `replace`        |
+| Presence checks        | `has`, `hasAny`, `filled`, `missing`                                              |
+| Type coercion          | `array`, `boolean`, `float`, `integer`, `object`, `string`, `file`, `hasFile`     |
+| Validation             | `validate`                                                                        |
+
+**Example** (new flow -- no more `await super.parse(request)`):
+
+```ts
+public async store(request: Bejibun.Request): Promise<Response> {
+    await request.validate(StoreValidator.store);   // throws ValidatorException (422)
+
+    const name = request.input("name", "guest");    // key + fallback
+    const age  = request.integer("age");            // coerced
+    const wants = request.filled("terms");          // presence + non-empty
+
+    return this.response.setData(data).setMessage("Created").send();
+}
+```
+
+> ⚠️ **Breaking change**: the legacy `BaseController.parse(request)` and `BaseController.validate(validator, body)` methods have been removed -- migrate to `request.input(...)` / `request.validate(...)` (see the table above). Controllers receive the populated `Bun.BunRequest` (with `request.payload`) directly as their first argument.
 
 ### 📖 Changes
+#### Performance
+- Replaced the `@bejibun/utils` `defineValue`/`isEmpty`/`isNotEmpty`/`isModuleExists` calls with native nullish coalescing (`??`), truthiness, and `require.resolve()` checks across the hot paths:
+  - `RouterBuilder`: route grouping/prefix/namespace resolution, `match()`/`any()` type guards, `isMethodMap()`, x402 module detection
+  - `RateLimiterMiddleware`, `RequestMiddleware`: header/content checks and rate-limit config resolution
+  - `ResponseBuilder`: cookie delete scoping
+  - `BaseModel`, `BaseJob`, `BaseWebSocket`, `NamespaceBuilder`, `EpochTimestamps`: namespace/path emptiness checks
+  - `globals` `config()`/`env()` helpers
+  - `ExceptionHandler` and every framework exception constructor status-code defaulting
+  - `server.ts`: OpenAPI metadata defaulting, development flag, serialized-route fallback
+  - `validate.ts` + the Vine `unique`/`exists` rules
+  - `Kernel.ts` and all console commands (make/install/package/route/schedule/queue)
+    Object/array emptiness checks with `{}`/`[]` semantics (e.g. route-registration `newRoutes[path]`, type guards like `hasRaw`/`hasRaws`) were intentionally left as `length`/`Object.keys` checks to preserve empty-collection behavior.
+- WebSocket message dispatch (`server.ts`) now resolves the controller + route via a precomputed `Map<path, {controller, route}>` index built once at startup, replacing two per-message linear `find()` scans
+- `RouterBuilder.group()` de-duplicated: the identical `hasRaws`/`hasRaw` route-compilation loops are now a single `compileRawRoute()` helper
+
+#### Documentation
+- Added full JSDoc coverage (`@param`/`@returns`/`@throws`) to all public and protected methods across the framework -- including the `Router` facade (19 methods), `RouterBuilder` HTTP verbs and request helpers, every middleware `handle()`, the `server.ts` getters, and the exception constructors -- with consistent `@returns`-before-`@throws` ordering
+
 #### Tooling
 - Added `prettier` + `.prettierrc.json` / `.prettierignore` and an `eslint.config.js` (flat config, `typescript-eslint`) for consistent formatting/linting across `src`
 - Added `bun run format`, `bun run eslint`, and `bun run lint` scripts; `bun run build` now runs `lint` before compiling

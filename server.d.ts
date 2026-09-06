@@ -10,9 +10,13 @@
  * messages to the correct WebSocket controller method.
  */
 export default class Server {
+    /** Index of WebSocket route path -> controller/route, built once at startup for O(1) message dispatch. */
+    private _webSocketIndex?;
     /**
      * Loads the application's custom exception handler class from
      * `app/exceptions/handler.ts`.
+     *
+     * @returns {any} The exception handler class.
      */
     private get exceptionHandler();
     /**
@@ -57,6 +61,14 @@ export default class Server {
      * @returns {Record<string, any>} The WebSocket configuration.
      */
     private get websocket();
+    /**
+     * Builds (once) an index mapping each WebSocket route path to its
+     * controller class and route definition, so the per-message dispatch
+     * is an O(1) lookup instead of two linear scans.
+     *
+     * @returns {Map<string, {controller: any; route: any}>} The built WebSocket route index.
+     */
+    private get webSocketIndex();
     /**
      * Builds and starts the Bun server: generates `public/apis.json` from
      * the API routes' `apiDoc` metadata, assembles the conditional

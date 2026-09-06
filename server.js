@@ -1,9 +1,5 @@
 import App from "@bejibun/app";
 import Logger from "@bejibun/logger";
-import { isEmpty } from "@bejibun/utils";
-import fs from "fs";
-import PerformanceConfig from "./config/performance";
-import RouteConfig from "./config/route";
 import RuntimeException from "./exceptions/RuntimeException";
 import Router from "./facades/Router";
 import MaintenanceMiddleware from "./middlewares/MaintenanceMiddleware";
@@ -26,9 +22,13 @@ await import(App.Path.rootPath("bootstrap.ts"));
  * messages to the correct WebSocket controller method.
  */
 export default class Server {
+    /** Index of WebSocket route path -> controller/route, built once at startup for O(1) message dispatch. */
+    _webSocketIndex;
     /**
      * Loads the application's custom exception handler class from
      * `app/exceptions/handler.ts`.
+     *
+     * @returns {any} The exception handler class.
      */
     get exceptionHandler() {
         const exceptionHandlerPath = App.Path.appPath("exceptions/handler.ts");
@@ -89,12 +89,13 @@ export default class Server {
      * @returns {Record<string, any>} The performance configuration.
      */
     get performance() {
-        const configPath = App.Path.configPath("performance.ts");
         let config;
-        if (fs.existsSync(configPath))
-            config = require(configPath).default;
-        else
-            config = PerformanceConfig;
+        try {
+            config = require(App.Path.configPath("performance.ts")).default;
+        }
+        catch {
+            config = require("./config/performance").default;
+        }
         return config;
     }
     /**
@@ -105,12 +106,13 @@ export default class Server {
      * @returns {Record<string, any>} The route documentation configuration.
      */
     get route() {
-        const configPath = App.Path.configPath("route.ts");
         let config;
-        if (fs.existsSync(configPath))
-            config = require(configPath).default;
-        else
-            config = RouteConfig;
+        try {
+            config = require(App.Path.configPath("route.ts")).default;
+        }
+        catch {
+            config = require("./config/route").default;
+        }
         return config;
     }
     /**
@@ -121,13 +123,43 @@ export default class Server {
      * @returns {Record<string, any>} The WebSocket configuration.
      */
     get websocket() {
-        const configPath = App.Path.configPath("websocket.ts");
         let config;
-        if (fs.existsSync(configPath))
-            config = require(configPath).default;
-        else
-            config = RouteConfig;
+        try {
+            config = require(App.Path.configPath("websocket.ts")).default;
+        }
+        catch {
+            config = require("./config/websocket").default;
+        }
         return config;
+    }
+    /**
+     * Builds (once) an index mapping each WebSocket route path to its
+     * controller class and route definition, so the per-message dispatch
+     * is an O(1) lookup instead of two linear scans.
+     *
+     * @returns {Map<string, {controller: any; route: any}>} The built WebSocket route index.
+     */
+    get webSocketIndex() {
+        if (this._webSocketIndex)
+            return this._webSocketIndex;
+        const index = new Map();
+        for (const controller of WebSocketLoader.controllers) {
+            const path = controller.path;
+            if (path)
+                index.set(path, { controller, route: index.get(path)?.route });
+        }
+        const routes = Array.isArray(this.webSocketRoutes)
+            ? this.webSocketRoutes
+            : this.webSocketRoutes.raws;
+        for (const route of routes) {
+            const path = route.raw?.path;
+            if (!path)
+                continue;
+            const existing = index.get(path);
+            index.set(path, { controller: existing?.controller, route });
+        }
+        this._webSocketIndex = index;
+        return index;
     }
     /**
      * Builds and starts the Bun server: generates `public/apis.json` from
@@ -222,18 +254,12 @@ export default class Server {
                  * message to its handler method.
                  */
                 message: (ws, message) => {
-                    const Controller = WebSocketLoader.controllers.find((controller) => controller.path === ws.data.path);
-                    if (isEmpty(Controller))
+                    const entry = this.webSocketIndex.get(ws.data.path);
+                    if (!entry?.controller)
                         throw new RuntimeException(`WebSocket controller not found for route [${ws.data.path}].`);
-                    let route;
-                    if (Array.isArray(this.webSocketRoutes)) {
-                        route = this.webSocketRoutes.find((route) => route.raw.path === ws.data.path);
-                    }
-                    else {
-                        route = this.webSocketRoutes.raws.find((route) => route.raw.path === ws.data.path);
-                    }
-                    if (isEmpty(route))
+                    if (!entry.route)
                         throw new RuntimeException(`WebSocket route not found [${ws.data.path}].`);
+                    const { controller: Controller, route } = entry;
                     const [controllerName, methodName] = route.raw.handler.split("@");
                     const instance = new Controller();
                     if (typeof instance[methodName] !== "function") {

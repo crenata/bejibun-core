@@ -1,8 +1,26 @@
 import App from "@bejibun/app";
 import RateLimiter from "@bejibun/limiter";
-import LimiterConfig from "@bejibun/limiter/config/limiter";
-import { defineValue } from "@bejibun/utils";
 import Str from "@bejibun/utils/facades/Str";
+/** The rate limiter config, resolved once and reused per request. */
+let cachedConfig;
+/**
+ * Resolves the rate limiter config once: prefers the app's own
+ * `config/limiter.ts` if it exists, otherwise falls back to the bundled
+ * default.
+ *
+ * @returns {any} The resolved limiter config.
+ */
+const loadConfig = () => {
+    if (cachedConfig)
+        return cachedConfig;
+    try {
+        cachedConfig = require(App.Path.configPath("limiter.ts")).default;
+    }
+    catch {
+        cachedConfig = require("@bejibun/limiter/config/limiter").default;
+    }
+    return cachedConfig;
+};
 /**
  * Middleware that rate-limits requests per client IP, using `@bejibun/limiter`.
  * Falls back to the package's bundled `LimiterConfig` when the application
@@ -20,13 +38,8 @@ export default class RateLimiterMiddleware {
      */
     handle(handler) {
         return async (request, server) => {
-            const configPath = App.Path.configPath("limiter.ts");
-            let config;
-            if (await Bun.file(configPath).exists())
-                config = require(configPath).default;
-            else
-                config = LimiterConfig;
-            return await RateLimiter.attempt(`rate-limiter/${Str.ipToFileName(defineValue(server.requestIP(request)?.address, ""))}`, defineValue(config?.limit, 60), () => {
+            const config = loadConfig();
+            return await RateLimiter.attempt(`rate-limiter/${Str.ipToFileName(server.requestIP(request)?.address ?? "")}`, config?.limit ?? 60, () => {
                 return handler(request, server);
             });
         };
