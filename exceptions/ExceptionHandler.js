@@ -27,7 +27,7 @@ export default class ExceptionHandler {
      * generic `500 Internal server error.` response.
      *
      * @param {Bun.ErrorLike | ModelNotFoundException | QueueException | RateLimiterException | RouterException | RuntimeException | ValidatorException | ValidationError} error - The thrown error to handle.
-     * @returns {globalThis.Response} The resulting JSON error response.
+     * @returns {Bejibun.Response} The resulting JSON error response.
      */
     handle(error) {
         Logger.setContext("APP").error(error.message).trace(error.stack);
@@ -51,7 +51,7 @@ export default class ExceptionHandler {
      * requests) or `404` JSON response.
      *
      * @param {Bejibun.Request} request - The unmatched incoming request.
-     * @returns {Promise<globalThis.Response>} The static file response, or a 204/404 fallback.
+     * @returns {Promise<Bejibun.Response>} The static file response, or a 204/404 fallback.
      */
     async publicRoute(request) {
         const url = new URL(request.url);

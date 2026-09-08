@@ -23,9 +23,9 @@ export default class ExceptionHandler {
      * generic `500 Internal server error.` response.
      *
      * @param {Bun.ErrorLike | ModelNotFoundException | QueueException | RateLimiterException | RouterException | RuntimeException | ValidatorException | ValidationError} error - The thrown error to handle.
-     * @returns {globalThis.Response} The resulting JSON error response.
+     * @returns {Bejibun.Response} The resulting JSON error response.
      */
-    handle(error: Bun.ErrorLike | ModelNotFoundException | QueueException | RateLimiterException | RouterException | RuntimeException | ValidatorException | ValidationError): globalThis.Response;
+    handle(error: Bun.ErrorLike | ModelNotFoundException | QueueException | RateLimiterException | RouterException | RuntimeException | ValidatorException | ValidationError): Bejibun.Response;
     /**
      * Fallback handler for requests that didn't match any registered
      * route. Attempts to serve a matching static file from the public
@@ -33,7 +33,7 @@ export default class ExceptionHandler {
      * requests) or `404` JSON response.
      *
      * @param {Bejibun.Request} request - The unmatched incoming request.
-     * @returns {Promise<globalThis.Response>} The static file response, or a 204/404 fallback.
+     * @returns {Promise<Bejibun.Response>} The static file response, or a 204/404 fallback.
      */
-    publicRoute(request: Bejibun.Request): Promise<globalThis.Response>;
+    publicRoute(request: Bejibun.Request): Promise<Bejibun.Response>;
 }

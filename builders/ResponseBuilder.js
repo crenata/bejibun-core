@@ -122,7 +122,7 @@ export default class ResponseBuilder {
      * `message`, `status`, and any custom fields into the response body,
      * with CORS headers and any queued cookies applied.
      *
-     * @returns {globalThis.Response} The built `Response` object.
+     * @returns {Bejibun.Response} The built `Response` object.
      */
     send() {
         return globalThis.Response.json({
@@ -143,7 +143,7 @@ export default class ResponseBuilder {
      * and any queued cookies applied.
      *
      * @param {ResponseInit} options - Additional `ResponseInit` options to merge in.
-     * @returns {globalThis.Response} The built streaming `Response` object.
+     * @returns {Bejibun.Response} The built streaming `Response` object.
      */
     stream(options = {}) {
         return new globalThis.Response(Bun.file(this.data), {

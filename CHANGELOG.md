@@ -3,6 +3,35 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.6.12](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.6.11...v0.6.12) - 2026-09-08
+
+### 🩹 Fixes
+
+### 🚀 Features
+#### `Bejibun.Response` ambient type
+Added a scoped `Bejibun.Response` type to the global `Bejibun` namespace (`src/types/global.d.ts`), alongside the existing `Bejibun.Request` and `Bejibun.Validator`:
+
+- `type Response = globalThis.Response` -- an alias of the standard Web `Response`, so every property (`status`, `headers`, `body`, `json()`, ...) remains available directly
+
+### 📖 Changes
+#### Response Types
+- `ResponseBuilder.send()` / `ResponseBuilder.stream()` now declare their return type as `Bejibun.Response` instead of `globalThis.Response`
+- `ExceptionHandler.handle()` / `ExceptionHandler.publicRoute()` now declare their return type as `Bejibun.Response` instead of `globalThis.Response`
+- Updated the `app/exceptions/handler.ts` and README exception-handler examples to use `Bejibun.Response`
+
+Runtime construction still uses `globalThis.Response` (`new globalThis.Response(...)`, `globalThis.Response.json(...)`), because `Bejibun.Response` is a type-only ambient alias with no runtime counterpart -- value positions are intentionally unchanged.
+
+### 📦 Dependencies
+- Bumped `@types/bun` (devDependency) from `^1.4.1` to `^1.4.2`
+- Bumped `typescript-eslint` (devDependency) from `^8.69.0` to `^8.70.0`
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.6.11](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.6.1...v0.6.11) - 2026-09-06
 
 ### 🩹 Fixes

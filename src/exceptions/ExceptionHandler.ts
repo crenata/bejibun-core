@@ -28,7 +28,7 @@ export default class ExceptionHandler {
      * generic `500 Internal server error.` response.
      *
      * @param {Bun.ErrorLike | ModelNotFoundException | QueueException | RateLimiterException | RouterException | RuntimeException | ValidatorException | ValidationError} error - The thrown error to handle.
-     * @returns {globalThis.Response} The resulting JSON error response.
+     * @returns {Bejibun.Response} The resulting JSON error response.
      */
     public handle(
         error:
@@ -40,7 +40,7 @@ export default class ExceptionHandler {
             | RuntimeException
             | ValidatorException
             | ValidationError
-    ): globalThis.Response {
+    ): Bejibun.Response {
         Logger.setContext("APP").error(error.message).trace(error.stack);
 
         if (
@@ -68,9 +68,9 @@ export default class ExceptionHandler {
      * requests) or `404` JSON response.
      *
      * @param {Bejibun.Request} request - The unmatched incoming request.
-     * @returns {Promise<globalThis.Response>} The static file response, or a 204/404 fallback.
+     * @returns {Promise<Bejibun.Response>} The static file response, or a 204/404 fallback.
      */
-    public async publicRoute(request: Bejibun.Request): Promise<globalThis.Response> {
+    public async publicRoute(request: Bejibun.Request): Promise<Bejibun.Response> {
         const url: URL = new URL(request.url);
         const file: Bun.BunFile = Bun.file(App.Path.publicPath(url.pathname.replace(/^\//, "")));
 

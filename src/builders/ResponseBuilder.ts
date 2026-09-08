@@ -151,9 +151,9 @@ export default class ResponseBuilder {
      * `message`, `status`, and any custom fields into the response body,
      * with CORS headers and any queued cookies applied.
      *
-     * @returns {globalThis.Response} The built `Response` object.
+     * @returns {Bejibun.Response} The built `Response` object.
      */
-    public send(): globalThis.Response {
+    public send(): Bejibun.Response {
         return globalThis.Response.json(
             {
                 data: this.data,
@@ -176,9 +176,9 @@ export default class ResponseBuilder {
      * and any queued cookies applied.
      *
      * @param {ResponseInit} options - Additional `ResponseInit` options to merge in.
-     * @returns {globalThis.Response} The built streaming `Response` object.
+     * @returns {Bejibun.Response} The built streaming `Response` object.
      */
-    public stream(options: ResponseInit = {}): globalThis.Response {
+    public stream(options: ResponseInit = {}): Bejibun.Response {
         return new globalThis.Response(Bun.file(this.data), {
             ...options,
             headers: this.applyCookies({

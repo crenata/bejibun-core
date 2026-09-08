@@ -88,18 +88,18 @@ export default class ResponseBuilder {
      * `message`, `status`, and any custom fields into the response body,
      * with CORS headers and any queued cookies applied.
      *
-     * @returns {globalThis.Response} The built `Response` object.
+     * @returns {Bejibun.Response} The built `Response` object.
      */
-    send(): globalThis.Response;
+    send(): Bejibun.Response;
     /**
      * Builds and returns a streamed file response (using the value
      * set via `setData()` as the file path), with CORS headers
      * and any queued cookies applied.
      *
      * @param {ResponseInit} options - Additional `ResponseInit` options to merge in.
-     * @returns {globalThis.Response} The built streaming `Response` object.
+     * @returns {Bejibun.Response} The built streaming `Response` object.
      */
-    stream(options?: ResponseInit): globalThis.Response;
+    stream(options?: ResponseInit): Bejibun.Response;
     /**
      * Appends every queued cookie (sets and deletions) as `Set-Cookie`
      * headers onto the given base headers.

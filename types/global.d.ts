@@ -51,6 +51,14 @@ declare global {
          * bodies, query params, or other structured input.
          */
         type Validator = VineValidator<SchemaTypes, Record<string, any> | undefined>;
+
+        /**
+         * The framework response type returned by helpers and middleware
+         * that produce HTTP responses. Alias of the standard Web
+         * `Response`, so all standard properties (status, headers, body,
+         * `json()`, etc.) are available directly.
+         */
+        type Response = globalThis.Response;
     }
 }
 
