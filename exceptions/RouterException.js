@@ -17,7 +17,7 @@ export default class RouterException extends Error {
     constructor(message, code) {
         super(message);
         this.name = "RouterException";
-        this.code = code ?? 500;
+        this.code = code || 500;
         Logger.setContext(this.name).error(this.message).trace(this.stack);
         if (Error.captureStackTrace) {
             Error.captureStackTrace(this, RouterException);

@@ -41,4 +41,4 @@ import RuntimeException from "@/exceptions/RuntimeException";
  * `Bun.env`, falling back to `defaultValue` when the variable is unset.
  */
 (globalThis as any).env = (key: string, defaultValue: any = null): string | undefined =>
-    Bun.env[key] ?? defaultValue;
+    Bun.env[key] || defaultValue;

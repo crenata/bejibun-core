@@ -25,7 +25,7 @@ class BunQueryBuilder extends SoftDeletes {
         const cloneQuery = this.clone();
         const beforeRows = await cloneQuery;
         if (!beforeRows || beforeRows.length === 0)
-            return beforeRows ?? undefined;
+            return beforeRows || undefined;
         await super.update(payload);
         return cloneQuery;
     }

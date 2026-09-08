@@ -57,7 +57,7 @@ export default class PackageConfigureCommand {
             if (error?.message.includes("Cannot find module")) return;
 
             Logger.setContext("APP")
-                .error(error?.message ?? "Whoops, something went wrong.")
+                .error(error?.message || "Whoops, something went wrong.")
                 .trace(error);
         }
     }

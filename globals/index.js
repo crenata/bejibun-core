@@ -35,4 +35,4 @@ globalThis.config = (key, defaultValue = null) => {
  * Global `env(key, defaultValue)` implementation. Thin wrapper around
  * `Bun.env`, falling back to `defaultValue` when the variable is unset.
  */
-globalThis.env = (key, defaultValue = null) => Bun.env[key] ?? defaultValue;
+globalThis.env = (key, defaultValue = null) => Bun.env[key] || defaultValue;

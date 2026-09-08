@@ -45,8 +45,8 @@ export default class RateLimiterMiddleware {
             const config = loadConfig();
 
             return await RateLimiter.attempt(
-                `rate-limiter/${Str.ipToFileName(server.requestIP(request)?.address ?? "")}`,
-                config?.limit ?? 60,
+                `rate-limiter/${Str.ipToFileName(server.requestIP(request)?.address || "")}`,
+                config?.limit || 60,
                 () => {
                     return handler(request, server);
                 }

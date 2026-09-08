@@ -41,7 +41,7 @@ class BunQueryBuilder<M extends Model, R = M[]> extends SoftDeletes<M, R> {
 
         const beforeRows: any = await cloneQuery;
 
-        if (!beforeRows || beforeRows.length === 0) return beforeRows ?? undefined;
+        if (!beforeRows || beforeRows.length === 0) return beforeRows || undefined;
 
         await super.update(payload);
 

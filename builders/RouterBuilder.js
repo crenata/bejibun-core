@@ -160,11 +160,11 @@ export default class RouterBuilder {
      * @param {Array<Route>} rawGroups - The accumulator of compiled raw routes.
      */
     compileRawRoute(route, newRoutes, rawGroups) {
-        const middlewares = this.middlewares.concat(route.raw.middlewares ?? []);
+        const middlewares = this.middlewares.concat(route.raw.middlewares || []);
         const effectiveNamespace = route.raw.websocket
             ? defineValue("app/websockets", route.raw.namespace)
             : defineValue(this.baseNamespace, route.raw.namespace);
-        const cleanPath = this.joinPaths(route.raw.prefix ?? this.basePath, route.raw.path);
+        const cleanPath = this.joinPaths(route.raw.prefix || this.basePath, route.raw.path);
         let resolvedHandler = typeof route.raw.handler === "string"
             ? this.resolveControllerString(route.raw.handler, effectiveNamespace, route.raw.websocket
                 ? {
@@ -550,7 +550,7 @@ export default class RouterBuilder {
              * @returns {string | undefined} The header value, the fallback, or `undefined`.
              */
             request.header = (key, defaultValue) => {
-                return request.headers.get(key) ?? defaultValue;
+                return request.headers.get(key) || defaultValue;
             };
             /**
              * Determines if the given header is present on the request.
@@ -567,7 +567,7 @@ export default class RouterBuilder {
              * @returns {string | undefined} The bearer token, or `undefined` when absent.
              */
             request.bearerToken = () => {
-                const authorization = request.header("authorization") ?? "";
+                const authorization = request.header("authorization") || "";
                 return authorization.toLowerCase().startsWith("bearer ")
                     ? authorization.slice(7).trim()
                     : undefined;
@@ -579,7 +579,7 @@ export default class RouterBuilder {
              * @returns {string | undefined} The cookie value, or `undefined` when absent.
              */
             request.cookie = (key) => {
-                return request.cookies?.get(key) ?? undefined;
+                return request.cookies?.get(key) || undefined;
             };
             /**
              * Retrieves the `User-Agent` header value, if any.
@@ -654,7 +654,7 @@ export default class RouterBuilder {
              * @returns {boolean} True for XHR requests; otherwise false.
              */
             request.ajax = () => {
-                return ((request.header("x-requested-with") ?? "").toLowerCase() === "xmlhttprequest");
+                return ((request.header("x-requested-with") || "").toLowerCase() === "xmlhttprequest");
             };
             /**
              * Determines if the request's `Accept` header indicates it
@@ -663,7 +663,7 @@ export default class RouterBuilder {
              * @returns {boolean} True when JSON is accepted; otherwise false.
              */
             request.wantsJson = () => {
-                return (request.header("accept") ?? "").toLowerCase().includes("json");
+                return (request.header("accept") || "").toLowerCase().includes("json");
             };
             /**
              * Determines if the request expects JSON - true when it's
@@ -958,7 +958,7 @@ export default class RouterBuilder {
         if (!controllerName || !methodName) {
             throw new RouterException(`Invalid router controller definition: ${definition}.`);
         }
-        const controllerPath = App.Path.rootPath(overrideNamespace ?? this.baseNamespace);
+        const controllerPath = App.Path.rootPath(overrideNamespace || this.baseNamespace);
         let location = null;
         try {
             location = Bun.resolveSync(`./${controllerName}.ts`, controllerPath);
@@ -1082,8 +1082,8 @@ export default class RouterBuilder {
             const newRoutes = {};
             const rawGroups = [];
             for (const route of rawRoutes) {
-                const middlewares = route.raw.middlewares.concat(this.middlewares ?? []);
-                const cleanPath = this.joinPaths(route.raw.prefix ?? this.basePath, route.raw.path);
+                const middlewares = route.raw.middlewares.concat(this.middlewares || []);
+                const cleanPath = this.joinPaths(route.raw.prefix || this.basePath, route.raw.path);
                 const effectiveNamespace = route.raw.websocket
                     ? defineValue(this.baseNamespace === "app/websockets" ? null : this.baseNamespace, route.raw.namespace)
                     : defineValue(this.baseNamespace === "app/controllers" ? null : this.baseNamespace, route.raw.namespace);

@@ -214,12 +214,12 @@ export default class RouterBuilder {
         rawGroups: Array<Route>
     ): void {
         const middlewares: Array<IMiddleware> = this.middlewares.concat(
-            route.raw.middlewares ?? []
+            route.raw.middlewares || []
         );
         const effectiveNamespace: string = route.raw.websocket
             ? defineValue("app/websockets", route.raw.namespace)
             : defineValue(this.baseNamespace, route.raw.namespace);
-        const cleanPath: string = this.joinPaths(route.raw.prefix ?? this.basePath, route.raw.path);
+        const cleanPath: string = this.joinPaths(route.raw.prefix || this.basePath, route.raw.path);
 
         let resolvedHandler: HandlerType =
             typeof route.raw.handler === "string"
@@ -667,7 +667,7 @@ export default class RouterBuilder {
              * @returns {string | undefined} The header value, the fallback, or `undefined`.
              */
             request.header = (key: string, defaultValue?: string): string | undefined => {
-                return request.headers.get(key) ?? defaultValue;
+                return request.headers.get(key) || defaultValue;
             };
 
             /**
@@ -686,7 +686,7 @@ export default class RouterBuilder {
              * @returns {string | undefined} The bearer token, or `undefined` when absent.
              */
             request.bearerToken = (): string | undefined => {
-                const authorization: string = request.header("authorization") ?? "";
+                const authorization: string = request.header("authorization") || "";
 
                 return authorization.toLowerCase().startsWith("bearer ")
                     ? authorization.slice(7).trim()
@@ -700,7 +700,7 @@ export default class RouterBuilder {
              * @returns {string | undefined} The cookie value, or `undefined` when absent.
              */
             request.cookie = (key: string): string | undefined => {
-                return request.cookies?.get(key) ?? undefined;
+                return request.cookies?.get(key) || undefined;
             };
 
             /**
@@ -788,7 +788,7 @@ export default class RouterBuilder {
              */
             request.ajax = (): boolean => {
                 return (
-                    (request.header("x-requested-with") ?? "").toLowerCase() === "xmlhttprequest"
+                    (request.header("x-requested-with") || "").toLowerCase() === "xmlhttprequest"
                 );
             };
 
@@ -799,7 +799,7 @@ export default class RouterBuilder {
              * @returns {boolean} True when JSON is accepted; otherwise false.
              */
             request.wantsJson = (): boolean => {
-                return (request.header("accept") ?? "").toLowerCase().includes("json");
+                return (request.header("accept") || "").toLowerCase().includes("json");
             };
 
             /**
@@ -1140,7 +1140,7 @@ export default class RouterBuilder {
             throw new RouterException(`Invalid router controller definition: ${definition}.`);
         }
 
-        const controllerPath = App.Path.rootPath(overrideNamespace ?? this.baseNamespace);
+        const controllerPath = App.Path.rootPath(overrideNamespace || this.baseNamespace);
         let location: any = null;
 
         try {
@@ -1306,10 +1306,10 @@ export default class RouterBuilder {
 
             for (const route of rawRoutes) {
                 const middlewares: Array<IMiddleware> = route.raw.middlewares.concat(
-                    this.middlewares ?? []
+                    this.middlewares || []
                 );
                 const cleanPath: string = this.joinPaths(
-                    route.raw.prefix ?? this.basePath,
+                    route.raw.prefix || this.basePath,
                     route.raw.path
                 );
                 const effectiveNamespace: string = route.raw.websocket

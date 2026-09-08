@@ -27,7 +27,7 @@ export default class RequestMiddleware {
      */
     handle(handler) {
         return async (request, server) => {
-            const contentType = request.headers.get("content-type") ?? "";
+            const contentType = request.headers.get("content-type") || "";
             const payload = {};
             const isJson = contentType.includes("application/json");
             const isForm = contentType.includes("multipart/form-data") ||

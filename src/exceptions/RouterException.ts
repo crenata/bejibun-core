@@ -19,7 +19,7 @@ export default class RouterException extends Error {
     public constructor(message?: string, code?: number) {
         super(message);
         this.name = "RouterException";
-        this.code = code ?? 500;
+        this.code = code || 500;
 
         Logger.setContext(this.name).error(this.message).trace(this.stack);
 

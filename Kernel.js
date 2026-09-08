@@ -68,7 +68,7 @@ export default class Kernel {
         for (const instance of instances.sort((a, b) => a.$signature.localeCompare(b.$signature))) {
             const cmd = program
                 .command(instance.$signature)
-                .description(instance.$description ?? "");
+                .description(instance.$description || "");
             if (Array.isArray(instance.$options)) {
                 for (const option of instance.$options) {
                     cmd.option(...option);

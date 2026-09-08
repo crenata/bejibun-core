@@ -68,7 +68,7 @@ export default class ScheduleWorkCommand {
             if (!schedule.cron)
                 continue;
             try {
-                const timezone = schedule.timezone ?? "UTC";
+                const timezone = schedule.timezone || "UTC";
                 const now = Luxon.DateTime.now().setZone(timezone).toJSDate();
                 const expression = CronExpressionParser.parse(schedule.cron, {
                     currentDate: now

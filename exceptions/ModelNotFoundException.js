@@ -16,7 +16,7 @@ export default class ModelNotFoundException extends Error {
     constructor(message, code) {
         super(message);
         this.name = "ModelNotFoundException";
-        this.code = code ?? 404;
+        this.code = code || 404;
         Logger.setContext(this.name).error(this.message).trace(this.stack);
         if (Error.captureStackTrace) {
             Error.captureStackTrace(this, ModelNotFoundException);

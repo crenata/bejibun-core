@@ -21,7 +21,7 @@ export async function validatePayload(validator, body) {
         if (error instanceof errors.E_VALIDATION_ERROR && error.messages?.length)
             message = error.messages[0]?.message;
         else
-            message = error?.message ?? "Invalid syntax validation.";
+            message = error?.message || "Invalid syntax validation.";
         throw new ValidatorException(message);
     }
 }

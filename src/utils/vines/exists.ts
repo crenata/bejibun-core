@@ -15,7 +15,7 @@ const exists = async (value: unknown, options: ExtendOptions, field: any): Promi
     if (!field.isValid) return;
     if (options.nullable) return;
 
-    const column = options.column ?? field.name;
+    const column = options.column || field.name;
 
     let query: any = options.table;
     if (options.withTrashed) query = query.withTrashed();

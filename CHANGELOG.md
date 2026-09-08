@@ -3,6 +3,31 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v0.6.14](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.6.12...v0.6.14) - 2026-09-08
+
+### 🩹 Fixes
+- Fix compiled routes
+
+### 📖 Changes
+
+### 📦 Dependencies
+- Bumped [`@bejibun/app`](https://github.com/Bejibun-Framework/bejibun-app) from `^0.1.26` to `^0.1.27`
+- Bumped [`@bejibun/cache`](https://github.com/Bejibun-Framework/bejibun-cache) from `^0.1.26` to `^0.1.27`
+- Bumped [`@bejibun/cors`](https://github.com/Bejibun-Framework/bejibun-cors) from `^0.1.19` to `^0.1.20`
+- Bumped [`@bejibun/database`](https://github.com/Bejibun-Framework/bejibun-database) from `^0.1.23` to `^0.1.24`
+- Bumped [`@bejibun/limiter`](https://github.com/Bejibun-Framework/bejibun-limiter) from `^0.1.12` to `^0.1.13`
+- Bumped [`@bejibun/logger`](https://github.com/Bejibun-Framework/bejibun-logger) from `^0.2.1` to `^0.2.10`
+- Bumped [`@bejibun/storage`](https://github.com/Bejibun-Framework/bejibun-storage) from `^0.1.11` to `^0.1.12`
+- Bumped [`@bejibun/utils`](https://github.com/Bejibun-Framework/bejibun-utils) from `^0.1.30` to `^0.1.31`
+- Bumped [`@bejibun/x402`](https://github.com/Bejibun-Framework/bejibun-x402) (devDependency) from `^0.2.12` to `^0.2.13`
+
+### ❤️Contributors
+- Havea Crenata ([@crenata](https://github.com/crenata))
+
+**Full Changelog**: https://github.com/Bejibun-Framework/bejibun-core/blob/master/CHANGELOG.md
+
+---
+
 ## [v0.6.12](https://github.com/Bejibun-Framework/bejibun-core/compare/v0.6.11...v0.6.12) - 2026-09-08
 
 ### 🩹 Fixes

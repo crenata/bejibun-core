@@ -28,7 +28,7 @@ export default class BaseWebSocket {
      * @returns {Array<any>} The list of connected client instances (empty when none).
      */
     get connections() {
-        return BaseWebSocket.clients[this.currentPath] ?? [];
+        return BaseWebSocket.clients[this.currentPath] || [];
     }
     /**
      * Registers a newly-connected client under the given path.

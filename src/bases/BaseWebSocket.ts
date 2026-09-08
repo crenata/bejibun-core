@@ -33,7 +33,7 @@ export default class BaseWebSocket {
      * @returns {Array<any>} The list of connected client instances (empty when none).
      */
     public get connections(): Array<any> {
-        return BaseWebSocket.clients[this.currentPath] ?? [];
+        return BaseWebSocket.clients[this.currentPath] || [];
     }
 
     /**

@@ -13,7 +13,7 @@ const unique = async (value, options, field) => {
         return;
     if (options.nullable)
         return;
-    const column = options.column ?? field.name;
+    const column = options.column || field.name;
     let query = options.table;
     if (options.withTrashed)
         query = query.withTrashed();

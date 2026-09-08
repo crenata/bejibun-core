@@ -18,7 +18,7 @@ export default class ValidatorException extends Error {
     public constructor(message?: string, code?: number) {
         super(message);
         this.name = "ValidatorException";
-        this.code = code ?? 422;
+        this.code = code || 422;
 
         Logger.setContext(this.name).error(this.message).trace(this.stack);
 

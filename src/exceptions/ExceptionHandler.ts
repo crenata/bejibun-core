@@ -56,7 +56,7 @@ export default class ExceptionHandler {
         if (error instanceof ValidationError)
             return Response.setMessage(error.message).setStatus(error.statusCode).send();
 
-        return Response.setMessage(error.message ?? "Internal server error.")
+        return Response.setMessage(error.message || "Internal server error.")
             .setStatus(500)
             .send();
     }

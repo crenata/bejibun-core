@@ -179,11 +179,11 @@ export default class Server {
             if (!paths[path])
                 paths[path] = {};
             paths[path][raw.method.toLowerCase()] = {
-                deprecated: raw.apiDoc?.deprecated ?? false,
-                parameters: raw.apiDoc?.request?.params ?? [],
-                summary: raw.apiDoc?.description ?? "",
-                tags: raw.apiDoc?.tags ?? [],
-                responses: raw.apiDoc?.response ?? {
+                deprecated: raw.apiDoc?.deprecated || false,
+                parameters: raw.apiDoc?.request?.params || [],
+                summary: raw.apiDoc?.description || "",
+                tags: raw.apiDoc?.tags || [],
+                responses: raw.apiDoc?.response || {
                     200: {
                         description: "Success",
                         content: {
@@ -210,7 +210,7 @@ export default class Server {
         if (this.performance.middlewares.maintenance)
             middlewares.push(new MaintenanceMiddleware());
         const server = Bun.serve({
-            development: (Bun.env.APP_ENV ?? "development") !== "production" && {
+            development: (Bun.env.APP_ENV || "development") !== "production" && {
                 // Enable browser hot reloading in development
                 hmr: true,
                 // Echo console logs from the browser to the server
@@ -225,7 +225,7 @@ export default class Server {
                 // stack plus RequestMiddleware (which populates request.payload).
                 ...Object.assign({}, Router.serialize(Router.middleware(...middlewares)
                     .middleware(new RequestMiddleware())
-                    .group([apiRoutes, Router.serialize(this.webRoutes)])) ?? {}),
+                    .group([apiRoutes, Router.serialize(this.webRoutes)])) || {}),
                 // WebSocket upgrade endpoints - one per path declared in
                 // routes/websocket.ts, each simply upgrading the connection.
                 ...Object.fromEntries(Object.keys(this.webSocketRoutes.routes).map((key) => [

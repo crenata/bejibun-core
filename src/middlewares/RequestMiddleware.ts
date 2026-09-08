@@ -29,7 +29,7 @@ export default class RequestMiddleware {
      */
     public handle(handler: HandlerType): HandlerType {
         return async (request: Bejibun.Request, server: Bun.Server<any>) => {
-            const contentType: string = request.headers.get("content-type") ?? "";
+            const contentType: string = request.headers.get("content-type") || "";
 
             const payload: Record<string, any> = {};
 
